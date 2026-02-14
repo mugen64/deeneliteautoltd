@@ -168,7 +168,7 @@ function App() {
                 <button
                   key={type.label}
                   onClick={() => setSelectedBodyType(type.label)}
-                  className={`flex flex-col items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all min-w-[100px] ${
+                  className={`flex flex-col items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all min-w-25 ${
                     selectedBodyType === type.label
                       ? 'border-primary bg-primary/10'
                       : 'border-border bg-card hover:border-primary/50'
@@ -470,7 +470,7 @@ function App() {
                   key={car.id}
                   className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden">
+                  <div className="relative aspect-4/3 overflow-hidden">
                     <img
                       src={car.image}
                       alt={car.name}
