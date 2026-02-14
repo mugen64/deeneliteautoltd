@@ -17,7 +17,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Deen Elite Auto Ltd',
       },
     ],
     links: [
@@ -45,7 +45,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           }}
           plugins={[
             {
-              name: 'Tanstack Router',
+              name: 'Deen Elite Auto Ltd Router Devtools',
               render: <TanStackRouterDevtoolsPanel />,
             },
           ]}
