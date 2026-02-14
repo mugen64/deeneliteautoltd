@@ -25,7 +25,9 @@ export default function Header() {
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-4">
           <div className="flex items-center gap-8">
             <h1 className="text-2xl font-black">
-              DEEN <span className="font-bold">ELITE AUTO LTD</span>
+              <Link to="/">
+                DEEN <span className="font-bold">ELITE AUTO LTD</span>
+              </Link>
             </h1>
           </div>
 
@@ -43,8 +45,17 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost">Sell Your Car</Button>
-            <Button variant="ghost">Submit Your Enquiry</Button>
+            <Link to="/">
+              <Button variant="ghost">Inventory</Button>
+            </Link>
+
+            <Link to="/sell-car">
+              <Button variant="ghost">Sell Your Car</Button>
+            </Link>
+            
+            <Link to="/submit-enquiry">
+              <Button variant="ghost">Submit Your Enquiry</Button>
+            </Link>
             
             {/* Theme Switcher */}
             <DropdownMenu>

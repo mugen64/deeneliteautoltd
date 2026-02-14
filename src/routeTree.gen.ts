@@ -9,10 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SubmitEnquiryRouteImport } from './routes/submit-enquiry'
+import { Route as SellCarRouteImport } from './routes/sell-car'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
 
+const SubmitEnquiryRoute = SubmitEnquiryRouteImport.update({
+  id: '/submit-enquiry',
+  path: '/submit-enquiry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellCarRoute = SellCarRouteImport.update({
+  id: '/sell-car',
+  path: '/sell-car',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +43,69 @@ const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/sell-car': typeof SellCarRoute
+  '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/sell-car': typeof SellCarRoute
+  '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin': typeof AdminIndexRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/sell-car': typeof SellCarRoute
+  '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin/' | '/admin/dashboard/'
+  fullPaths:
+    | '/'
+    | '/sell-car'
+    | '/submit-enquiry'
+    | '/admin/'
+    | '/admin/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/admin/dashboard'
-  id: '__root__' | '/' | '/admin/' | '/admin/dashboard/'
+  to: '/' | '/sell-car' | '/submit-enquiry' | '/admin' | '/admin/dashboard'
+  id:
+    | '__root__'
+    | '/'
+    | '/sell-car'
+    | '/submit-enquiry'
+    | '/admin/'
+    | '/admin/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SellCarRoute: typeof SellCarRoute
+  SubmitEnquiryRoute: typeof SubmitEnquiryRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/submit-enquiry': {
+      id: '/submit-enquiry'
+      path: '/submit-enquiry'
+      fullPath: '/submit-enquiry'
+      preLoaderRoute: typeof SubmitEnquiryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell-car': {
+      id: '/sell-car'
+      path: '/sell-car'
+      fullPath: '/sell-car'
+      preLoaderRoute: typeof SellCarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +132,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SellCarRoute: SellCarRoute,
+  SubmitEnquiryRoute: SubmitEnquiryRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
 }

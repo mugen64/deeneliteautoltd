@@ -153,19 +153,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="border-b border-border bg-card/50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-            <span>Home</span>
-            <ChevronRight className="size-3.5" />
-            <span className="text-foreground">Pre-owned Selection</span>
-          </div>
-          <h2 className="text-xl font-semibold">
-            56 Certified Cars available Now
-          </h2>
-        </div>
-      </div>
-
       {/* Body Type Filter */}
       <div className="border-b border-border bg-background">
         <div className="container mx-auto px-4">
