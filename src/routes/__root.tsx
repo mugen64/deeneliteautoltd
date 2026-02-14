@@ -1,13 +1,24 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import Header from '../components/Header'
 import { ThemeProvider } from '../lib/theme'
+import { AuthProvider } from '../contexts/auth'
 
 import appCss from '../styles.css?url'
 
+const queryClient = new QueryClient()
+
 export const Route = createRootRoute({
+  beforeLoad: async ({ location }) => {
+    // Protect routes starting with /admin
+    if (location.pathname.startsWith('/admin')) {
+      // You can add auth checks here later using a server function
+      // For now, this is a placeholder for route protection logic
+    }
+  },
   head: () => ({
     meta: [
       {
@@ -56,21 +67,25 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         />
       </head>
       <body>
-        <ThemeProvider defaultTheme="system" storageKey="deeneliteauto-theme">
-          <Header />
-          {children}
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Deen Elite Auto Ltd Router Devtools',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <ThemeProvider defaultTheme="system" storageKey="deeneliteauto-theme">
+              <Header />
+              {children}
+              <TanStackDevtools
+                config={{
+                  position: 'bottom-right',
+                }}
+                plugins={[
+                  {
+                    name: 'Deen Elite Auto Ltd Router Devtools',
+                    render: <TanStackRouterDevtoolsPanel />,
+                  },
+                ]}
+              />
+            </ThemeProvider>
+          </AuthProvider>
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>

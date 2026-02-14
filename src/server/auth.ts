@@ -92,6 +92,44 @@ export const getCurrentUserFn = createServerFn({ method: 'GET' }).handler(
     },
 )
 
+// Check if any users exist
+export const checkUsersExistFn = createServerFn({ method: 'GET' }).handler(
+    async () => {
+        const adminEmail = process.env.ADMIN_LOGIN
+        if (!adminEmail) {
+            return { exists: false, adminEmail: null }
+        }
+        
+        const user = await userStore.getUserByEmail(adminEmail)
+        return { exists: !!user, adminEmail }
+    },
+)
+
+// Verify session (for route protection)
+export const verifySessionFn = createServerFn({ method: 'GET' }).handler(
+    async () => {
+        const session = await useAppSession()
+        const userId = session.data.userId
+
+        if (!userId) {
+            throw redirect({ to: '/admin' })
+        }
+
+        const user = await userStore.getUserById(userId)
+        if (!user) {
+            throw redirect({ to: '/admin' })
+        }
+
+        return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            phone: user.phone,
+            role: user.role,
+        }
+    },
+)
+
 
 
 

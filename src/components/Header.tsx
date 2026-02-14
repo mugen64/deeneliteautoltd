@@ -3,6 +3,7 @@ import { Search, User, Moon, Sun, Monitor } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import React from 'react'
 import { Button } from './ui/button'
+import { Link } from '@tanstack/react-router'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,10 +11,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useTheme } from '@/lib/theme'
+import { useAuth } from '@/contexts/auth'
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = React.useState('')
   const { setTheme } = useTheme()
+  const { user } = useAuth()
 
   return (
     <>
@@ -68,10 +71,14 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="outline" size="default">
-              <User className="size-4" />
-              Login/Register
-            </Button>
+            {user && (
+              <Link to="/admin">
+                <Button variant="outline" size="default">
+                  <User className="size-4" />
+                  Admin
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </header>
