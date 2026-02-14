@@ -26,8 +26,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { getServerVersion } from '@/storage/db/data'
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute('/')({
+  component: App,
+  loader: async () => {
+    return getServerVersion()
+  },
+  staleTime: Infinity,
+
+})
 
 // Sample car data
 const cars = [
@@ -96,6 +104,7 @@ const cars = [
 ]
 
 function App() {
+  const serverVersion = Route.useLoaderData()
   const [selectedBodyType, setSelectedBodyType] = useState<string>('Sedan')
   const [selectedMakes, setSelectedMakes] = useState<string[]>(['Mercedes-Benz', 'BMW', 'Lexus'])
   const [selectedFuel, setSelectedFuel] = useState<string[]>([])
@@ -144,7 +153,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Breadcrumb & Title Section */}
       <div className="border-b border-border bg-card/50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
@@ -168,25 +176,22 @@ function App() {
                 <button
                   key={type.label}
                   onClick={() => setSelectedBodyType(type.label)}
-                  className={`flex flex-col items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all min-w-25 ${
-                    selectedBodyType === type.label
+                  className={`flex flex-col items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all min-w-25 ${selectedBodyType === type.label
                       ? 'border-primary bg-primary/10'
                       : 'border-border bg-card hover:border-primary/50'
-                  }`}
+                    }`}
                 >
                   <Icon
-                    className={`size-8 ${
-                      selectedBodyType === type.label
+                    className={`size-8 ${selectedBodyType === type.label
                         ? 'text-primary'
                         : 'text-muted-foreground'
-                    }`}
+                      }`}
                   />
                   <span
-                    className={`text-xs font-medium ${
-                      selectedBodyType === type.label
+                    className={`text-xs font-medium ${selectedBodyType === type.label
                         ? 'text-primary'
                         : 'text-foreground'
-                    }`}
+                      }`}
                   >
                     {type.label}
                   </span>
@@ -262,11 +267,10 @@ function App() {
                     (height, i) => (
                       <div
                         key={i}
-                        className={`flex-1 rounded-sm transition-colors ${
-                          i >= 2 && i <= 18
+                        className={`flex-1 rounded-sm transition-colors ${i >= 2 && i <= 18
                             ? 'bg-primary'
                             : 'bg-muted'
-                        }`}
+                          }`}
                         style={{ height: `${height}%` }}
                       />
                     )
