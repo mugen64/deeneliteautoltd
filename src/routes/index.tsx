@@ -5,9 +5,17 @@ import {
   Fuel,
   Calendar,
   Gauge,
+  X,
+  Plus,
+  Facebook,
+  Instagram,
+  Linkedin,
+  ArrowRight,
+  Car,
+  TruckIcon,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-
+import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -88,25 +96,54 @@ const cars = [
 ]
 
 function App() {
-  const [selectedBudget, setSelectedBudget] = useState<string[]>([])
-  const [selectedEmi, setSelectedEmi] = useState<string[]>(['20000-40000', '40000-60000', 'more-60000'])
+  const [selectedBodyType, setSelectedBodyType] = useState<string>('Sedan')
+  const [selectedMakes, setSelectedMakes] = useState<string[]>(['Mercedes-Benz', 'BMW', 'Lexus'])
+  const [selectedFuel, setSelectedFuel] = useState<string[]>([])
+  const [selectedTransmission, setSelectedTransmission] = useState<string[]>([])
+  const [selectedDrive, setSelectedDrive] = useState<string[]>([])
+  const [yearRange] = useState([2013, 2024])
+  const [priceRange] = useState([8000, 58000])
+  const [mileageRange] = useState([0, 30000])
 
-  const toggleBudget = (value: string) => {
-    setSelectedBudget((prev) =>
+  const bodyTypes = [
+    { label: 'Sedan', icon: Car },
+    { label: 'SUV', icon: TruckIcon },
+    { label: 'Hatchback', icon: Car },
+    { label: 'Coupe', icon: Car },
+    { label: 'Sport cars', icon: Car },
+  ]
+
+  const removeMake = (value: string) => {
+    setSelectedMakes((prev) => prev.filter((v) => v !== value))
+  }
+
+  const toggleFuel = (value: string) => {
+    setSelectedFuel((prev) =>
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
     )
   }
 
-  const toggleEmi = (value: string) => {
-    setSelectedEmi((prev) =>
+  const toggleTransmission = (value: string) => {
+    setSelectedTransmission((prev) =>
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
     )
+  }
+
+  const toggleDrive = (value: string) => {
+    setSelectedDrive((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    )
+  }
+
+  const resetFilters = () => {
+    setSelectedMakes([])
+    setSelectedFuel([])
+    setSelectedTransmission([])
+    setSelectedDrive([])
   }
 
   return (
     <div className="min-h-screen bg-background">
-      
-
       {/* Breadcrumb & Title Section */}
       <div className="border-b border-border bg-card/50">
         <div className="container mx-auto px-4 py-4">
@@ -121,144 +158,287 @@ function App() {
         </div>
       </div>
 
+      {/* Body Type Filter */}
+      <div className="border-b border-border bg-background">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-end gap-2 overflow-x-auto py-4">
+            {bodyTypes.map((type) => {
+              const Icon = type.icon
+              return (
+                <button
+                  key={type.label}
+                  onClick={() => setSelectedBodyType(type.label)}
+                  className={`flex flex-col items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all min-w-[100px] ${
+                    selectedBodyType === type.label
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border bg-card hover:border-primary/50'
+                  }`}
+                >
+                  <Icon
+                    className={`size-8 ${
+                      selectedBodyType === type.label
+                        ? 'text-primary'
+                        : 'text-muted-foreground'
+                    }`}
+                  />
+                  <span
+                    className={`text-xs font-medium ${
+                      selectedBodyType === type.label
+                        ? 'text-primary'
+                        : 'text-foreground'
+                    }`}
+                  >
+                    {type.label}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
         <div className="flex gap-6">
           {/* Filters Sidebar */}
-          <aside className="w-64 shrink-0">
+          <aside className="w-80 shrink-0">
             <div className="sticky top-6 space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Filter</h3>
-                <Button variant="link" size="sm" className="text-xs">
-                  Clear Filters
+              {/* Make and Model Filter */}
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold text-sm">Make and model</h4>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={resetFilters}
+                  >
+                    Reset
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {selectedMakes.map((make) => (
+                    <Badge
+                      key={make}
+                      variant="secondary"
+                      className="gap-1 pl-2.5 pr-1.5"
+                    >
+                      {make}
+                      <button
+                        onClick={() => removeMake(make)}
+                        className="hover:bg-muted rounded-full p-0.5"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  AMG GT, Class A, I-03k...
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                >
+                  <Plus className="size-4" />
+                  Add model
                 </Button>
               </div>
 
-              {/* Budget Filter */}
-              <div>
-                <h4 className="mb-3 font-semibold text-sm">Budget</h4>
-                <div className="space-y-2">
-                  {[
-                    { label: '0 - 5 lakh', value: '0-5' },
-                    { label: '5 - 10 lakh', value: '5-10' },
-                    { label: '10 - 20 lakh', value: '10-20' },
-                    { label: '20 - 50 lakh', value: '20-50' },
-                  ].map((option) => (
-                    <label
-                      key={option.value}
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedBudget.includes(option.value)}
-                        onChange={() => toggleBudget(option.value)}
-                        className="size-4 rounded border-input accent-primary"
-                      />
-                      <span className="text-sm">{option.label}</span>
-                    </label>
-                  ))}
+              {/* Price Filter with Histogram */}
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold text-sm">Price</h4>
+                  <Button
+                    variant="link"
+                    size="sm"
+                  >
+                    Reset
+                  </Button>
                 </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <Select>
-                    <SelectTrigger size="sm" className="flex-1">
-                      <SelectValue placeholder="Min" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="0">₹ 0</SelectItem>
-                        <SelectItem value="5">₹ 5L</SelectItem>
-                        <SelectItem value="10">₹ 10L</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <Select>
-                    <SelectTrigger size="sm" className="flex-1">
-                      <SelectValue placeholder="Max" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="10">₹ 10L</SelectItem>
-                        <SelectItem value="20">₹ 20L</SelectItem>
-                        <SelectItem value="50">₹ 50L</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                {/* Simple histogram visualization */}
+                <div className="mb-4 h-20 flex items-end gap-0.5">
+                  {[8, 12, 18, 22, 28, 35, 42, 38, 45, 52, 48, 55, 58, 52, 45, 38, 32, 28, 22, 18, 14, 10, 8, 6, 4].map(
+                    (height, i) => (
+                      <div
+                        key={i}
+                        className={`flex-1 rounded-sm transition-colors ${
+                          i >= 2 && i <= 18
+                            ? 'bg-primary'
+                            : 'bg-muted'
+                        }`}
+                        style={{ height: `${height}%` }}
+                      />
+                    )
+                  )}
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="text"
+                      value={`${priceRange[0]}`}
+                      readOnly
+                      className="w-20 text-center"
+                    />
+                    <span className="text-muted-foreground">€</span>
+                  </div>
+                  <span className="text-muted-foreground">-</span>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="text"
+                      value={`${priceRange[1]}`}
+                      readOnly
+                      className="w-20 text-center"
+                    />
+                    <span className="text-muted-foreground">€</span>
+                  </div>
                 </div>
               </div>
 
-              {/* EMI Filter */}
-              <div>
-                <h4 className="mb-3 font-semibold text-sm">EMI per month</h4>
-                <div className="space-y-2">
-                  {[
-                    { label: '0 - 20,000', value: '0-20000' },
-                    { label: '20,000 - 40,000', value: '20000-40000' },
-                    { label: '40,000 - 60,000', value: '40000-60000' },
-                    { label: 'more than 60,000', value: 'more-60000' },
-                  ].map((option) => (
-                    <label
-                      key={option.value}
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedEmi.includes(option.value)}
-                        onChange={() => toggleEmi(option.value)}
-                        className="size-4 rounded border-input accent-primary"
-                      />
-                      <span className="text-sm">{option.label}</span>
-                    </label>
+              {/* Mileage Filter */}
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold text-sm">Mileage, km</h4>
+                  <Button
+                    variant="link"
+                    size="sm"
+                  >
+                    Reset
+                  </Button>
+                </div>
+                {/* Simple mileage visualization */}
+                <div className="mb-4 h-16 flex items-end gap-px">
+                  {[5, 8, 12, 15, 18, 22, 25, 20, 18, 15, 12, 10, 8, 6].map((height, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 bg-primary rounded-sm opacity-80"
+                      style={{ height: `${height * 3}%` }}
+                    />
                   ))}
                 </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <Select>
-                    <SelectTrigger size="sm" className="flex-1">
-                      <SelectValue placeholder="Min" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="0">₹ 0</SelectItem>
-                        <SelectItem value="20000">₹ 20K</SelectItem>
-                        <SelectItem value="40000">₹ 40K</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <Select>
-                    <SelectTrigger size="sm" className="flex-1">
-                      <SelectValue placeholder="Max" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="40000">₹ 40K</SelectItem>
-                        <SelectItem value="60000">₹ 60K</SelectItem>
-                        <SelectItem value="100000">₹ 100K</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                <div className="flex items-center gap-3 text-sm">
+                  <Input
+                    type="text"
+                    value={mileageRange[0]}
+                    readOnly
+                    className="flex-1 text-center"
+                  />
+                  <span className="text-muted-foreground">-</span>
+                  <Input
+                    type="text"
+                    value={`${mileageRange[1]}`}
+                    readOnly
+                    className="flex-1 text-center"
+                  />
                 </div>
               </div>
 
-              {/* Kilometers Filter */}
-              <div>
-                <h4 className="mb-3 font-semibold text-sm">Kilometers</h4>
-                <div className="space-y-2">
-                  {[
-                    { label: '0 - 20,000', value: '0-20000' },
-                    { label: '20,000 - 50,000', value: '20000-50000' },
-                  ].map((option) => (
-                    <label
-                      key={option.value}
-                      className="flex items-center gap-2 cursor-pointer"
+              {/* Fuel Filter */}
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-semibold text-sm">Fuel</h4>
+                  <Button
+                    variant="link"
+                    size="sm"
+                  >
+                    Reset
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {['Electric', 'Petrol', 'Diesel', 'Hybrid'].map((fuel) => (
+                    <Button
+                      key={fuel}
+                      variant={selectedFuel.includes(fuel) ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => toggleFuel(fuel)}
                     >
-                      <input
-                        type="checkbox"
-                        className="size-4 rounded border-input accent-primary"
-                      />
-                      <span className="text-sm">{option.label}</span>
-                    </label>
+                      {fuel}
+                    </Button>
                   ))}
                 </div>
               </div>
+
+              {/* Transmission Filter */}
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-semibold text-sm">Transmission</h4>
+                  <Button
+                    variant="link"
+                    size="sm"
+                  >
+                    Reset
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {['Automatic', 'Mechanical', 'Variator'].map((trans) => (
+                    <Button
+                      key={trans}
+                      variant={selectedTransmission.includes(trans) ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => toggleTransmission(trans)}
+                    >
+                      {trans}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Drive Filter */}
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-semibold text-sm">Drive</h4>
+                  <Button
+                    variant="link"
+                    size="sm"
+                  >
+                    Reset
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {['All', '4WD', 'AWD', 'FWD', 'RWD'].map((drive) => (
+                    <Button
+                      key={drive}
+                      variant={selectedDrive.includes(drive) ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => toggleDrive(drive)}
+                    >
+                      {drive}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Vehicle Year Filter */}
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-semibold text-sm">Vehicle year</h4>
+                  <Button
+                    variant="link"
+                    size="sm"
+                  >
+                    Reset
+                  </Button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium">{yearRange[0]}</span>
+                  <div className="flex-1 h-2 bg-muted rounded-full relative">
+                    <div
+                      className="absolute h-full bg-primary rounded-full"
+                      style={{ left: '10%', right: '10%' }}
+                    />
+                  </div>
+                  <span className="text-sm font-medium">{yearRange[1]}</span>
+                </div>
+              </div>
+
+              {/* Reset All Button */}
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={resetFilters}
+              >
+                Reset all
+              </Button>
             </div>
           </aside>
 
@@ -332,9 +512,173 @@ function App() {
                 </Card>
               ))}
             </div>
+
+            {/* Pagination */}
+            <div className="mt-8 flex items-center justify-center gap-2">
+              <Button variant="ghost" size="sm">
+                <ChevronRight className="size-4 rotate-180" />
+                Previous
+              </Button>
+              <div className="flex gap-1">
+                <Button variant="default" size="sm">
+                  1
+                </Button>
+                <Button variant="outline" size="sm">
+                  2
+                </Button>
+                <Button variant="outline" size="sm">
+                  3
+                </Button>
+                <span className="px-2 text-sm text-muted-foreground">...</span>
+                <Button variant="outline" size="sm">
+                  15
+                </Button>
+              </div>
+              <Button variant="ghost" size="sm">
+                Next
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
           </main>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="mt-16 border-t border-border bg-card">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Buy Section */}
+            <div>
+              <h3 className="font-semibold text-sm mb-4">Buy</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    Sedan
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    SUV
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    Hatchback
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    Motorcycles
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Sell Section */}
+            <div>
+              <h3 className="font-semibold text-sm mb-4">Sell</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    Valuation
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    Traded-in
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    Commission sale
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Company Section */}
+            <div>
+              <h3 className="font-semibold text-sm mb-4">Company</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    Career
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    Contacts
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-foreground transition-colors">
+                    Magazine
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Newsletter Section */}
+            <div>
+              <h3 className="font-semibold text-sm mb-4">Subscribe to the newsletter</h3>
+              <div className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="E-mail"
+                  className="flex-1"
+                />
+                <Button
+                  size="icon"
+                  className="shrink-0"
+                >
+                  <ArrowRight className="size-4" />
+                </Button>
+              </div>
+              <div className="flex gap-3 mt-4">
+                <a
+                  href="#"
+                  className="size-8 rounded-full bg-foreground text-background flex items-center justify-center hover:opacity-80 transition-opacity"
+                >
+                  <Facebook className="size-4" fill="currentColor" />
+                </a>
+                <a
+                  href="#"
+                  className="size-8 rounded-full bg-foreground text-background flex items-center justify-center hover:opacity-80 transition-opacity"
+                >
+                  <Instagram className="size-4" />
+                </a>
+                <a
+                  href="#"
+                  className="size-8 rounded-full bg-foreground text-background flex items-center justify-center hover:opacity-80 transition-opacity"
+                >
+                  <Linkedin className="size-4" fill="currentColor" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Bottom */}
+          <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+            <p>© 2024 «CarDealings» All rights reserved</p>
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-foreground transition-colors">
+                Terms of use
+              </a>
+              <a href="#" className="hover:text-foreground transition-colors">
+                Privacy Policy
+              </a>
+              <a href="#" className="hover:text-foreground transition-colors">
+                User Agreement
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

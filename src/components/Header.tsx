@@ -13,8 +13,8 @@ export default function Header() {
       <header className="border-b border-border bg-card">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-4">
           <div className="flex items-center gap-8">
-            <h1 className="text-2xl font-bold text-red-600">
-              SHREEVAS <span className="text-foreground">MOTORS</span>
+            <h1 className="text-2xl font-black">
+              DEEN <span className="font-bold">ELITE AUTO LTD</span>
             </h1>
           </div>
 
