@@ -86,13 +86,13 @@ export function RegistrationForm({ adminEmail }: RegistrationFormProps) {
 
   if (success) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex items-center justify-center min-h-screen ">
         <Card className="w-full max-w-md">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold mb-4 text-green-600">Registration Successful!</h2>
             <p className="text-gray-600 mb-4">Your admin account has been created.</p>
             <Link
-              to="/admin/dashboard"
+              to="/admin"
               className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Go to Dashboard
@@ -104,7 +104,7 @@ export function RegistrationForm({ adminEmail }: RegistrationFormProps) {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen ">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Complete Admin Registration</CardTitle>
@@ -117,7 +117,7 @@ export function RegistrationForm({ adminEmail }: RegistrationFormProps) {
               </div>
             )}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium">
                 Email
               </label>
               <Input
@@ -125,12 +125,12 @@ export function RegistrationForm({ adminEmail }: RegistrationFormProps) {
                 type="email"
                 value={adminEmail}
                 disabled
-                className="mt-1 bg-gray-100 cursor-not-allowed"
+                className="mt-1  cursor-not-allowed"
               />
               <p className="text-xs text-gray-500 mt-1">Email is set to the admin email</p>
             </div>
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="name" className="block text-sm font-medium">
                 Full Name
               </label>
               <Input
@@ -144,7 +144,7 @@ export function RegistrationForm({ adminEmail }: RegistrationFormProps) {
               />
             </div>
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="phone" className="block text-sm font-medium">
                 Phone Number
               </label>
               <Input
@@ -164,7 +164,7 @@ export function RegistrationForm({ adminEmail }: RegistrationFormProps) {
               )}
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium">
                 Password
               </label>
               <Input
@@ -178,7 +178,7 @@ export function RegistrationForm({ adminEmail }: RegistrationFormProps) {
               />
             </div>
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium">
                 Confirm Password
               </label>
               <Input

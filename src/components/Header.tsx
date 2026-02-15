@@ -2,6 +2,7 @@
 import { Search, User, Moon, Sun, Monitor } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import React from 'react'
+import { useServerFn } from '@tanstack/react-start'
 import { Button } from './ui/button'
 import { Link } from '@tanstack/react-router'
 import {
@@ -12,11 +13,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTheme } from '@/lib/theme'
 import { useAuth } from '@/contexts/auth'
+import { logoutFn } from '@/server/auth'
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = React.useState('')
   const { setTheme } = useTheme()
   const { user } = useAuth()
+  const logout = useServerFn(logoutFn)
 
   return (
     <>
@@ -83,12 +86,35 @@ export default function Header() {
             </DropdownMenu>
 
             {user && (
-              <Link to="/admin">
-                <Button variant="outline" size="default">
-                  <User className="size-4" />
-                  Admin
-                </Button>
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={(
+                    <Button variant="outline" size="default">
+                      <User className="size-4" />
+                      Admin
+                    </Button>
+                  )}
+                />
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <Link to="/admin" className="w-full">
+                      Admin Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      try { 
+                        await logout()
+                        location.href = '/admin' // Redirect to login page after logout
+                      } catch (err) {
+                        throw err
+                      }
+                    }}
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         </div>

@@ -13,7 +13,7 @@ import { Route as SubmitEnquiryRouteImport } from './routes/submit-enquiry'
 import { Route as SellCarRouteImport } from './routes/sell-car'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
 
 const SubmitEnquiryRoute = SubmitEnquiryRouteImport.update({
   id: '/submit-enquiry',
@@ -35,9 +35,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
-  id: '/admin/dashboard/',
-  path: '/admin/dashboard/',
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -45,49 +45,44 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sell-car': typeof SellCarRoute
   '/submit-enquiry': typeof SubmitEnquiryRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
-  '/admin/dashboard/': typeof AdminDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sell-car': typeof SellCarRoute
   '/submit-enquiry': typeof SubmitEnquiryRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
-  '/admin/dashboard': typeof AdminDashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/sell-car': typeof SellCarRoute
   '/submit-enquiry': typeof SubmitEnquiryRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
-  '/admin/dashboard/': typeof AdminDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/sell-car'
-    | '/submit-enquiry'
-    | '/admin/'
-    | '/admin/dashboard/'
+  fullPaths: '/' | '/sell-car' | '/submit-enquiry' | '/admin/login' | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sell-car' | '/submit-enquiry' | '/admin' | '/admin/dashboard'
+  to: '/' | '/sell-car' | '/submit-enquiry' | '/admin/login' | '/admin'
   id:
     | '__root__'
     | '/'
     | '/sell-car'
     | '/submit-enquiry'
+    | '/admin/login'
     | '/admin/'
-    | '/admin/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SellCarRoute: typeof SellCarRoute
   SubmitEnquiryRoute: typeof SubmitEnquiryRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
-  AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -120,11 +115,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/dashboard/': {
-      id: '/admin/dashboard/'
-      path: '/admin/dashboard'
-      fullPath: '/admin/dashboard/'
-      preLoaderRoute: typeof AdminDashboardIndexRouteImport
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -134,8 +129,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SellCarRoute: SellCarRoute,
   SubmitEnquiryRoute: SubmitEnquiryRoute,
+  AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
-  AdminDashboardIndexRoute: AdminDashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

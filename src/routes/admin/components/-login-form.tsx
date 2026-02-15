@@ -23,7 +23,7 @@ export function LoginForm() {
         data: { email, password },
       })
 
-      if ('error' in result) {
+      if (result && 'error' in result) {
         setError(result.error || 'Login failed')
       }
       // Success will redirect automatically
@@ -36,7 +36,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen ">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Admin Login</CardTitle>
@@ -49,7 +49,7 @@ export function LoginForm() {
               </div>
             )}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium ">
                 Email
               </label>
               <Input
@@ -62,7 +62,7 @@ export function LoginForm() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium">
                 Password
               </label>
               <Input
