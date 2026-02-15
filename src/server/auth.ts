@@ -92,6 +92,31 @@ export const getCurrentUserFn = createServerFn({ method: 'GET' }).handler(
     },
 )
 
+// Get session user (for route guards)
+export const getSessionUserFn = createServerFn({ method: 'GET' }).handler(
+    async () => {
+        const session = await useAppSession()
+        const userId = session.data.userId
+
+        if (!userId) {
+            return null
+        }
+
+        const user = await userStore.getUserById(userId)
+        if (!user) {
+            return null
+        }
+
+        return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            phone: user.phone,
+            role: user.role,
+        }
+    },
+)
+
 // Check if any users exist
 export const checkUsersExistFn = createServerFn({ method: 'GET' }).handler(
     async () => {

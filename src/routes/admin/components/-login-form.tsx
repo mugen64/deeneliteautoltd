@@ -25,6 +25,8 @@ export function LoginForm() {
 
       if (result && 'error' in result) {
         setError(result.error || 'Login failed')
+      } else {
+        location.href = '/admin' // Redirect to admin dashboard on successful login
       }
       // Success will redirect automatically
     } catch (err) {

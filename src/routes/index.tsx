@@ -104,7 +104,6 @@ const cars = [
 ]
 
 function App() {
-  const serverVersion = Route.useLoaderData()
   const [selectedBodyType, setSelectedBodyType] = useState<string>('Sedan')
   const [selectedMakes, setSelectedMakes] = useState<string[]>(['Mercedes-Benz', 'BMW', 'Lexus'])
   const [selectedFuel, setSelectedFuel] = useState<string[]>([])
