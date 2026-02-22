@@ -21,14 +21,8 @@ export function InventoryTab() {
   })
 
   const handleToggleListed = async (carId: string, isListed: boolean) => {
-    const carRows = allCars.filter(
-      (c: { cars: { id: string }; car_photos?: { isPrimary?: boolean } | null }) =>
-        c.cars.id === carId,
-    )
-    const hasPrimaryImage = carRows.some(
-      (row: { car_photos?: { isPrimary?: boolean } | null }) => row.car_photos?.isPrimary,
-    )
-    if (!isListed && !hasPrimaryImage) {
+    const car = allCars.find((c: { id: string; primaryImage?: string | null }) => c.id === carId)
+    if (!isListed && !car?.primaryImage) {
       toast.error('Cannot list a car without a primary image. Please set a primary image first.')
       return
     }
@@ -61,10 +55,8 @@ export function InventoryTab() {
   }
 
   const handleToggleFeatured = async (carId: string, isFeatured: boolean) => {
-    const car = allCars.find(
-      (c: { cars: { id: string }; files?: { media_url?: string } | null }) => c.cars.id === carId,
-    )
-    if (!isFeatured && !car?.files?.media_url) {
+    const car = allCars.find((c: { id: string; primaryImage?: string | null }) => c.id === carId)
+    if (!isFeatured && !car?.primaryImage) {
       toast.error('Cannot feature a car without images. Please add images first.')
       return
     }
@@ -174,14 +166,14 @@ export function InventoryTab() {
           <div className="text-muted-foreground">Loading cars...</div>
         ) : allCars.length > 0 ? (
           allCars.map((car: any) => (
-            <Card key={car.cars.id} className="overflow-hidden">
+            <Card key={car.id} className="overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex gap-6">
                   <div className="shrink-0 w-32 h-24 bg-muted rounded-lg overflow-hidden">
-                    {car.files?.media_url ? (
+                    {car.primaryImage ? (
                       <img
-                        src={car.files.media_url}
-                        alt={`${car.cars.year} ${car.car_makes.name} ${car.car_models.name}`}
+                        src={car.primaryImage}
+                        alt={`${car.year} - ${car.sku}`}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -194,53 +186,39 @@ export function InventoryTab() {
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg font-semibold">
-                        {car.cars.year} {car.car_makes.name} {car.car_models.name}
+                        {car.year} - {car.color}
                       </h3>
+                      <div className="flex gap-2">
+                        {car.sold && (
+                          <span className="px-2 py-1 text-xs font-semibold bg-destructive/10 text-destructive rounded">
+                            Sold
+                          </span>
+                        )}
+                        {car.listed && !car.sold && (
+                          <span className="px-2 py-1 text-xs font-semibold bg-green-500/10 text-green-700 rounded">
+                            Listed
+                          </span>
+                        )}
+                        {car.isFeatured && (
+                          <span className="px-2 py-1 text-xs font-semibold bg-blue-500/10 text-blue-700 rounded">
+                            Featured
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <p className="text-sm text-muted-foreground">
                       SKU:{' '}
-                      <span className="font-mono font-semibold text-sm">{car.cars.sku}</span>
+                      <span className="font-mono font-semibold text-sm">{car.sku}</span>
                     </p>
 
-                    <div className="grid grid-cols-5 gap-6 pt-2">
+                    <div className="grid grid-cols-2 gap-6 pt-2">
                       <div>
                         <p className="text-xs text-muted-foreground">Price</p>
-                        <p className="font-semibold">UGX {parseInt(car.cars.price).toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Body Type</p>
-                        <p className="font-semibold">{car.cars.bodyType}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Mileage</p>
-                        <p className="font-semibold">{car.cars.mileage.toLocaleString()} mi</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Condition</p>
-                        <p className="font-semibold">{car.cars.condition}</p>
+                        <p className="font-semibold">UGX {parseInt(car.price).toLocaleString()}</p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">Color</p>
-                        <p className="font-semibold">{car.cars.color}</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-4 gap-6 pt-2">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Transmission</p>
-                        <p className="font-semibold">{car.cars.transmission}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Fuel</p>
-                        <p className="font-semibold">{car.cars.fuelType}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Status</p>
-                        <p
-                          className={`font-semibold ${car.cars.sold ? 'text-destructive' : 'text-green-600'}`}
-                        >
-                          {car.cars.sold ? 'Sold' : 'Available'}
-                        </p>
+                        <p className="font-semibold">{car.color}</p>
                       </div>
                     </div>
                   </div>
@@ -248,31 +226,31 @@ export function InventoryTab() {
                   <div className="flex flex-col items-end justify-between">
                     <div className="flex flex-col gap-2">
                       <Button
-                        variant={car.cars.listed ? 'default' : 'outline'}
+                        variant={car.listed ? 'default' : 'outline'}
                         size="sm"
-                        onClick={() => handleToggleListed(car.cars.id, car.cars.listed)}
+                        onClick={() => handleToggleListed(car.id, car.listed)}
                         className="gap-2"
-                        disabled={car.cars.sold}
+                        disabled={car.sold}
                       >
-                        {car.cars.listed ? 'Unlist' : 'List'}
+                        {car.listed ? 'Unlist' : 'List'}
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleToggleFeatured(car.cars.id, car.cars.isFeatured)}
+                        onClick={() => handleToggleFeatured(car.id, car.isFeatured)}
                         className="gap-2"
-                        disabled={car.cars.sold}
+                        disabled={car.sold}
                       >
-                        {car.cars.isFeatured ? 'Unfeature' : 'Feature'}
+                        {car.isFeatured ? 'Unfeature' : 'Feature'}
                       </Button>
                       <Button
-                        variant={car.cars.sold ? 'destructive' : 'outline'}
+                        variant={car.sold ? 'destructive' : 'outline'}
                         size="sm"
-                        onClick={() => handleToggleSold(car.cars.id, car.cars.sold)}
+                        onClick={() => handleToggleSold(car.id, car.sold)}
                         className="gap-2"
-                        disabled={car.cars.sold}
+                        disabled={car.sold}
                       >
-                        {car.cars.sold ? 'Sold' : 'Mark Sold'}
+                        {car.sold ? 'Sold' : 'Mark Sold'}
                       </Button>
                     </div>
 
@@ -283,7 +261,7 @@ export function InventoryTab() {
                         onClick={() => {
                           navigate({
                             to: '/admin/console/car-inventory/$id/images',
-                            params: { id: car.cars.id },
+                            params: { id: car.id },
                           })
                         }}
                         title="Manage images"
@@ -294,13 +272,13 @@ export function InventoryTab() {
                         variant="ghost"
                         size="icon"
                         onClick={() => {
-                          if (car.cars.sold) {
+                          if (car.sold) {
                             toast.error('Cannot edit a sold car')
                             return
                           }
                           navigate({
                             to: '/admin/console/car-inventory/$id',
-                            params: { id: car.cars.id },
+                            params: { id: car.id },
                           })
                         }}
                       >
@@ -309,7 +287,7 @@ export function InventoryTab() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(car.cars.id)}
+                        onClick={() => handleDelete(car.id)}
                       >
                         <Trash2 className="size-4 text-destructive" />
                       </Button>

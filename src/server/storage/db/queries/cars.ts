@@ -295,6 +295,28 @@ async function getAllCars() {
         .execute()
 }
 
+async function getCarsInventoryList() {
+    return db
+        .select({
+            id: cars.id,
+            sku: cars.sku,
+            year: cars.year,
+            price: cars.price,
+            color: cars.color,
+            listed: cars.listed,
+            sold: cars.sold,
+            isFeatured: cars.isFeatured,
+            primaryImage: files.media_url,
+        })
+        .from(cars)
+        .leftJoin(
+            carPhotos,
+            and(eq(cars.id, carPhotos.carId), eq(carPhotos.isPrimary, true))
+        )
+        .leftJoin(files, eq(carPhotos.photoId, files.id))
+        .execute()
+}
+
 async function getCarById(id: string) {
     const result = await db
         .select()
@@ -562,6 +584,7 @@ export const carStore = {
     setCarHistoryChecklist,
     getModelsByMake,
     getAllCars,
+    getCarsInventoryList,
     getCarById,
     getFeaturedCars,
     getCarPhotos,

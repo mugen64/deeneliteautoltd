@@ -6,7 +6,7 @@ export const Route = createFileRoute('/api/cars/inventory/')({
     handlers: {
       GET: async () => {
         try {
-          const cars = await carStore.getAllCars()
+          const cars = await carStore.getCarsInventoryList()
           return Response.json({ cars })
         } catch (error) {
           console.error('Error fetching cars:', error)
