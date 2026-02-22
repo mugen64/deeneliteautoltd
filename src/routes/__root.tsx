@@ -2,6 +2,7 @@ import { HeadContent, Scripts, createRootRoute, redirect } from '@tanstack/react
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from 'sonner'
 
 import Header from '../components/Header'
 import { ThemeProvider } from '../lib/theme'
@@ -79,8 +80,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <AuthProvider>
             <ThemeProvider defaultTheme="system" storageKey="deeneliteauto-theme">
               <Header />
-              
               {children}
+              <Toaster richColors closeButton />
               <TanStackDevtools
                 config={{
                   position: 'bottom-right',

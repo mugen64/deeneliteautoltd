@@ -29,7 +29,8 @@ export const Route = createFileRoute('/api/cars/inventory/$id')({
           const data = await request.json()
 
           // Remove flag fields - these are managed via dedicated toggle endpoints
-          const { sold: _, isFeatured: __, listed: ___, ...updateData } = data
+          // Remove features and history - these are managed via dedicated endpoints
+          const { sold: _, isFeatured: __, listed: ___, featureIds: ____, historyChecklistIds: _____, ...updateData } = data
 
           // Fetch existing car
           const existingCar = await carStore.getCarById(params.id)

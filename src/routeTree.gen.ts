@@ -64,6 +64,8 @@ import { Route as AdminConsoleCarInventoryIdRouteImport } from './routes/admin/c
 import { Route as AdminConsoleCarInventoryIdIndexRouteImport } from './routes/admin/console/car-inventory/$id/index'
 import { Route as ApiCarsInventoryPhotosPhotoIdRouteImport } from './routes/api/cars/inventory/photos/$photoId'
 import { Route as ApiCarsInventoryIdPhotosRouteImport } from './routes/api/cars/inventory/$id/photos'
+import { Route as ApiCarsInventoryIdHistoryRouteImport } from './routes/api/cars/inventory/$id.history'
+import { Route as ApiCarsInventoryIdFeaturesRouteImport } from './routes/api/cars/inventory/$id.features'
 import { Route as AdminConsoleCarModelsEditModelModelIdRouteImport } from './routes/admin/console/car-models/edit-model/$modelId'
 import { Route as AdminConsoleCarModelsEditMakeMakeIdRouteImport } from './routes/admin/console/car-models/edit-make/$makeId'
 import { Route as AdminConsoleCarModelsEditBodyTypeBodyTypeIdRouteImport } from './routes/admin/console/car-models/edit-body-type/$bodyTypeId'
@@ -364,6 +366,18 @@ const ApiCarsInventoryIdPhotosRoute =
     path: '/photos',
     getParentRoute: () => ApiCarsInventoryIdRoute,
   } as any)
+const ApiCarsInventoryIdHistoryRoute =
+  ApiCarsInventoryIdHistoryRouteImport.update({
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => ApiCarsInventoryIdRoute,
+  } as any)
+const ApiCarsInventoryIdFeaturesRoute =
+  ApiCarsInventoryIdFeaturesRouteImport.update({
+    id: '/features',
+    path: '/features',
+    getParentRoute: () => ApiCarsInventoryIdRoute,
+  } as any)
 const AdminConsoleCarModelsEditModelModelIdRoute =
   AdminConsoleCarModelsEditModelModelIdRouteImport.update({
     id: '/car-models/edit-model/$modelId',
@@ -452,6 +466,8 @@ export interface FileRoutesByFullPath {
   '/admin/console/car-models/edit-body-type/$bodyTypeId': typeof AdminConsoleCarModelsEditBodyTypeBodyTypeIdRoute
   '/admin/console/car-models/edit-make/$makeId': typeof AdminConsoleCarModelsEditMakeMakeIdRoute
   '/admin/console/car-models/edit-model/$modelId': typeof AdminConsoleCarModelsEditModelModelIdRoute
+  '/api/cars/inventory/$id/features': typeof ApiCarsInventoryIdFeaturesRoute
+  '/api/cars/inventory/$id/history': typeof ApiCarsInventoryIdHistoryRoute
   '/api/cars/inventory/$id/photos': typeof ApiCarsInventoryIdPhotosRoute
   '/api/cars/inventory/photos/$photoId': typeof ApiCarsInventoryPhotosPhotoIdRouteWithChildren
   '/admin/console/car-inventory/$id/': typeof AdminConsoleCarInventoryIdIndexRoute
@@ -511,6 +527,8 @@ export interface FileRoutesByTo {
   '/admin/console/car-models/edit-body-type/$bodyTypeId': typeof AdminConsoleCarModelsEditBodyTypeBodyTypeIdRoute
   '/admin/console/car-models/edit-make/$makeId': typeof AdminConsoleCarModelsEditMakeMakeIdRoute
   '/admin/console/car-models/edit-model/$modelId': typeof AdminConsoleCarModelsEditModelModelIdRoute
+  '/api/cars/inventory/$id/features': typeof ApiCarsInventoryIdFeaturesRoute
+  '/api/cars/inventory/$id/history': typeof ApiCarsInventoryIdHistoryRoute
   '/api/cars/inventory/$id/photos': typeof ApiCarsInventoryIdPhotosRoute
   '/api/cars/inventory/photos/$photoId': typeof ApiCarsInventoryPhotosPhotoIdRouteWithChildren
   '/admin/console/car-inventory/$id': typeof AdminConsoleCarInventoryIdIndexRoute
@@ -574,6 +592,8 @@ export interface FileRoutesById {
   '/admin/console/car-models/edit-body-type/$bodyTypeId': typeof AdminConsoleCarModelsEditBodyTypeBodyTypeIdRoute
   '/admin/console/car-models/edit-make/$makeId': typeof AdminConsoleCarModelsEditMakeMakeIdRoute
   '/admin/console/car-models/edit-model/$modelId': typeof AdminConsoleCarModelsEditModelModelIdRoute
+  '/api/cars/inventory/$id/features': typeof ApiCarsInventoryIdFeaturesRoute
+  '/api/cars/inventory/$id/history': typeof ApiCarsInventoryIdHistoryRoute
   '/api/cars/inventory/$id/photos': typeof ApiCarsInventoryIdPhotosRoute
   '/api/cars/inventory/photos/$photoId': typeof ApiCarsInventoryPhotosPhotoIdRouteWithChildren
   '/admin/console/car-inventory/$id/': typeof AdminConsoleCarInventoryIdIndexRoute
@@ -638,6 +658,8 @@ export interface FileRouteTypes {
     | '/admin/console/car-models/edit-body-type/$bodyTypeId'
     | '/admin/console/car-models/edit-make/$makeId'
     | '/admin/console/car-models/edit-model/$modelId'
+    | '/api/cars/inventory/$id/features'
+    | '/api/cars/inventory/$id/history'
     | '/api/cars/inventory/$id/photos'
     | '/api/cars/inventory/photos/$photoId'
     | '/admin/console/car-inventory/$id/'
@@ -697,6 +719,8 @@ export interface FileRouteTypes {
     | '/admin/console/car-models/edit-body-type/$bodyTypeId'
     | '/admin/console/car-models/edit-make/$makeId'
     | '/admin/console/car-models/edit-model/$modelId'
+    | '/api/cars/inventory/$id/features'
+    | '/api/cars/inventory/$id/history'
     | '/api/cars/inventory/$id/photos'
     | '/api/cars/inventory/photos/$photoId'
     | '/admin/console/car-inventory/$id'
@@ -759,6 +783,8 @@ export interface FileRouteTypes {
     | '/admin/console/car-models/edit-body-type/$bodyTypeId'
     | '/admin/console/car-models/edit-make/$makeId'
     | '/admin/console/car-models/edit-model/$modelId'
+    | '/api/cars/inventory/$id/features'
+    | '/api/cars/inventory/$id/history'
     | '/api/cars/inventory/$id/photos'
     | '/api/cars/inventory/photos/$photoId'
     | '/admin/console/car-inventory/$id/'
@@ -1191,6 +1217,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCarsInventoryIdPhotosRouteImport
       parentRoute: typeof ApiCarsInventoryIdRoute
     }
+    '/api/cars/inventory/$id/history': {
+      id: '/api/cars/inventory/$id/history'
+      path: '/history'
+      fullPath: '/api/cars/inventory/$id/history'
+      preLoaderRoute: typeof ApiCarsInventoryIdHistoryRouteImport
+      parentRoute: typeof ApiCarsInventoryIdRoute
+    }
+    '/api/cars/inventory/$id/features': {
+      id: '/api/cars/inventory/$id/features'
+      path: '/features'
+      fullPath: '/api/cars/inventory/$id/features'
+      preLoaderRoute: typeof ApiCarsInventoryIdFeaturesRouteImport
+      parentRoute: typeof ApiCarsInventoryIdRoute
+    }
     '/admin/console/car-models/edit-model/$modelId': {
       id: '/admin/console/car-models/edit-model/$modelId'
       path: '/car-models/edit-model/$modelId'
@@ -1309,10 +1349,14 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 )
 
 interface ApiCarsInventoryIdRouteChildren {
+  ApiCarsInventoryIdFeaturesRoute: typeof ApiCarsInventoryIdFeaturesRoute
+  ApiCarsInventoryIdHistoryRoute: typeof ApiCarsInventoryIdHistoryRoute
   ApiCarsInventoryIdPhotosRoute: typeof ApiCarsInventoryIdPhotosRoute
 }
 
 const ApiCarsInventoryIdRouteChildren: ApiCarsInventoryIdRouteChildren = {
+  ApiCarsInventoryIdFeaturesRoute: ApiCarsInventoryIdFeaturesRoute,
+  ApiCarsInventoryIdHistoryRoute: ApiCarsInventoryIdHistoryRoute,
   ApiCarsInventoryIdPhotosRoute: ApiCarsInventoryIdPhotosRoute,
 }
 

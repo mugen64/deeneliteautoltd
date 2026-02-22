@@ -9,15 +9,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Textarea } from '@/components/ui/textarea'
+import { IconDisplay, IconPicker } from '@/components/IconPicker'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Plus, X } from 'lucide-react'
+import { isFeatureIconName } from '@/lib/icon-names'
 import { toast } from 'sonner'
-
-const isValidSvg = (value: string) => {
-  const normalized = value.trim()
-  return normalized.startsWith('<svg') && normalized.includes('</svg>')
-}
 
 export function FeatureTab() {
   const queryClient = useQueryClient()
@@ -36,7 +39,7 @@ export function FeatureTab() {
   const [featureForm, setFeatureForm] = useState({
     id: '',
     name: '',
-    icon: '',
+    iconName: '',
   })
   const [featureDialogOpen, setFeatureDialogOpen] = useState(false)
 
@@ -45,19 +48,19 @@ export function FeatureTab() {
     [carFeatures],
   )
 
-  const resetFeatureForm = () => setFeatureForm({ id: '', name: '', icon: '' })
+  const resetFeatureForm = () => setFeatureForm({ id: '', name: '', iconName: '' })
 
   const handleSaveFeature = async () => {
     const name = featureForm.name.trim()
-    const icon = featureForm.icon.trim()
+    const iconName = featureForm.iconName.trim()
 
     if (!name) {
       toast.error('Feature name is required')
       return
     }
 
-    if (!icon || !isValidSvg(icon)) {
-      toast.error('Feature icon must be valid SVG text')
+    if (!iconName || !isFeatureIconName(iconName)) {
+      toast.error('Select a supported icon')
       return
     }
 
@@ -71,7 +74,7 @@ export function FeatureTab() {
         body: JSON.stringify({
           id: featureForm.id,
           name,
-          icon,
+          iconName,
         }),
       })
 
@@ -95,7 +98,7 @@ export function FeatureTab() {
     setFeatureForm({
       id: feature.id || '',
       name: feature.name || '',
-      icon: feature.icon || '',
+      iconName: feature.icon || '',
     })
     setFeatureDialogOpen(true)
   }
@@ -145,26 +148,40 @@ export function FeatureTab() {
           <Plus className="size-4" />
           Add Feature
         </Button>
-        {featureDialogOpen ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-            <div className="w-full max-w-2xl rounded-lg border bg-background p-4 shadow-xl">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold">
-                  {featureForm.id ? 'Edit Feature' : 'Add Feature'}
-                </h3>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setFeatureDialogOpen(false)
-                    resetFeatureForm()
-                  }}
-                  aria-label="Close"
-                >
-                  <X className="size-4" />
-                </Button>
-              </div>
-              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Dialog
+          open={featureDialogOpen}
+          onOpenChange={(open) => {
+            setFeatureDialogOpen(open)
+            if (!open) resetFeatureForm()
+          }}
+        >
+          <DialogContent>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault()
+                handleSaveFeature()
+              }}
+            >
+              <DialogHeader>
+                <div className="flex items-center justify-between">
+                  <DialogTitle>
+                    {featureForm.id ? 'Edit Feature' : 'Add Feature'}
+                  </DialogTitle>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setFeatureDialogOpen(false)
+                      resetFeatureForm()
+                    }}
+                    aria-label="Close"
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+              </DialogHeader>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-sm font-medium" htmlFor="feature-name">
                     Feature Name
@@ -178,23 +195,16 @@ export function FeatureTab() {
                     placeholder="e.g. Sunroof"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium" htmlFor="feature-icon">
-                    SVG Icon
-                  </label>
-                  <Textarea
-                    id="feature-icon"
-                    value={featureForm.icon}
-                    onChange={(event) =>
-                      setFeatureForm({ ...featureForm, icon: event.target.value })
-                    }
-                    placeholder="<svg ...>...</svg>"
-                    rows={4}
-                  />
-                </div>
+                <IconPicker
+                  type="feature"
+                  label="Icon"
+                  value={featureForm.iconName}
+                  onChange={(value) => setFeatureForm({ ...featureForm, iconName: value })}
+                />
               </div>
-              <div className="mt-4 flex items-center justify-end gap-2">
+              <DialogFooter>
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={() => {
                     setFeatureDialogOpen(false)
@@ -203,13 +213,13 @@ export function FeatureTab() {
                 >
                   Cancel
                 </Button>
-                <Button onClick={handleSaveFeature}>
+                <Button type="submit">
                   {featureForm.id ? 'Update Feature' : 'Add Feature'}
                 </Button>
-              </div>
-            </div>
-          </div>
-        ) : null}
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {isLoadingFeatures ? (
@@ -228,7 +238,10 @@ export function FeatureTab() {
               <TableRow key={feature.id}>
                 <TableCell>{feature.name}</TableCell>
                 <TableCell className="max-w-xs whitespace-normal">
-                  {feature.icon}
+                  <span className="inline-flex items-center gap-2">
+                    <IconDisplay name={feature.icon} />
+                    <span>{feature.icon}</span>
+                  </span>
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">

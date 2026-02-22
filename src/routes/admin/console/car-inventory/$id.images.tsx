@@ -31,6 +31,7 @@ type CarResponse = {
   cars: {
     id: string
     year: number
+    color: string
   }
   car_models: {
     name: string
@@ -225,7 +226,7 @@ function CarImagesComponent() {
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
-          {car.year} {carMakes.name} {carModels.name}
+          {car.year} {carMakes.name} {carModels.name} - {car.color}
         </h1>
         <p className="text-muted-foreground">Manage images for this vehicle</p>
       </div>

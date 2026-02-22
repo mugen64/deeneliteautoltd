@@ -33,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 export const Route = createFileRoute(
   '/admin/console/car-inventory/$id/' as '/admin/console/car-inventory/$id/',
@@ -48,7 +48,6 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const params = Route.useParams()
-  const navigate = Route.useNavigate()
   const queryClient = useQueryClient()
 
   const { data: carBodyTypes = [] } = useQuery({
@@ -125,8 +124,6 @@ function RouteComponent() {
       color: carData?.cars?.color || '',
       transmission: carData?.cars?.transmission || 'Automatic',
       fuelType: carData?.cars?.fuelType || 'Diesel',
-      featureIds: (carData as any)?.featureIds || [],
-      historyChecklistIds: (carData as any)?.historyChecklistIds || [],
     },
     onSubmit: async ({ value }) => {
       try {
@@ -147,17 +144,104 @@ function RouteComponent() {
         queryClient.invalidateQueries({ queryKey: ['car', params.id] })
         queryClient.invalidateQueries({ queryKey: ['cars'] })
         toast.success('Car updated successfully')
-
-        navigate({
-          to: '/admin/console/car-inventory',
-          replace: true,
-        })
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to update car'
         toast.error(message)
       }
     },
   })
+
+  const [savingFeatures, setSavingFeatures] = useState(false)
+  const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>(
+    (carData as any)?.featureIds || [],
+  )
+  const selectedFeatures = useMemo(() => new Set(selectedFeatureIds), [selectedFeatureIds])
+
+  const [savingHistory, setSavingHistory] = useState(false)
+  const [selectedHistoryIds, setSelectedHistoryIds] = useState<string[]>(
+    (carData as any)?.historyChecklistIds || [],
+  )
+  const selectedHistory = useMemo(() => new Set(selectedHistoryIds), [selectedHistoryIds])
+
+  const toggleFeature = useCallback((featureId: string, checked: boolean) => {
+    setSelectedFeatureIds((prev) => {
+      const next = new Set(prev)
+      if (checked) {
+        next.add(featureId)
+      } else {
+        next.delete(featureId)
+      }
+      return Array.from(next)
+    })
+  }, [])
+
+  const toggleHistory = useCallback((itemId: string, checked: boolean) => {
+    setSelectedHistoryIds((prev) => {
+      const next = new Set(prev)
+      if (checked) {
+        next.add(itemId)
+      } else {
+        next.delete(itemId)
+      }
+      return Array.from(next)
+    })
+  }, [])
+
+  const handleSaveFeatures = async () => {
+    setSavingFeatures(true)
+    try {
+      const response = await fetch(`/api/cars/inventory/${params.id}/features`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ featureIds: selectedFeatureIds }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        toast.error(error.error || 'Failed to update features')
+        return
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['car', params.id] })
+      queryClient.invalidateQueries({ queryKey: ['cars'] })
+      toast.success('Features updated successfully')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update features'
+      toast.error(message)
+    } finally {
+      setSavingFeatures(false)
+    }
+  }
+
+  const handleSaveHistory = async () => {
+    setSavingHistory(true)
+    try {
+      const response = await fetch(`/api/cars/inventory/${params.id}/history`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ historyChecklistIds: selectedHistoryIds }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        toast.error(error.error || 'Failed to update history checklist')
+        return
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['car', params.id] })
+      queryClient.invalidateQueries({ queryKey: ['cars'] })
+      toast.success('History checklist updated successfully')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update history checklist'
+      toast.error(message)
+    } finally {
+      setSavingHistory(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -218,13 +302,14 @@ function RouteComponent() {
       )}
 
       <form
-        className="space-y-4"
+        className="space-y-4 rounded-lg border p-4"
         onSubmit={(event) => {
           event.preventDefault()
           event.stopPropagation()
           form.handleSubmit()
         }}
       >
+        <h2 className="text-xl font-semibold">Car Details</h2>
         <div className="grid grid-cols-2 gap-4">
           <form.Field
             name="year"
@@ -502,9 +587,23 @@ function RouteComponent() {
           </form.Field>
         </div>
 
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Features</h2>
-          {featureRows.length > 0 ? (
+        <Button
+          type="submit"
+          disabled={form.state.isSubmitting || isSold}
+          className="gap-2"
+        >
+          {form.state.isSubmitting ? (
+            <>⏳ Saving...</>
+          ) : (
+            <>✓ Save Changes</>
+          )}
+        </Button>
+      </form>
+
+      <div className="space-y-4 rounded-lg border p-4">
+        <h2 className="text-xl font-semibold">Features</h2>
+        {featureRows.length > 0 ? (
+          <>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -519,14 +618,8 @@ function RouteComponent() {
                     <TableCell>
                       <input
                         type="checkbox"
-                        checked={form.state.values.featureIds.includes(feature.id)}
-                        onChange={(event) => {
-                          const checked = event.target.checked
-                          const next = checked
-                            ? [...form.state.values.featureIds, feature.id]
-                            : form.state.values.featureIds.filter((id: string) => id !== feature.id)
-                          form.setFieldValue('featureIds', next)
-                        }}
+                        checked={selectedFeatures.has(feature.id)}
+                        onChange={(event) => toggleFeature(feature.id, event.target.checked)}
                         disabled={isSold}
                       />
                     </TableCell>
@@ -534,14 +627,21 @@ function RouteComponent() {
                 ))}
               </TableBody>
             </Table>
-          ) : (
-            <p className="text-sm text-muted-foreground">No features available.</p>
-          )}
-        </div>
+            <div className="flex justify-end">
+              <Button onClick={handleSaveFeatures} disabled={savingFeatures || isSold}>
+                {savingFeatures ? '⏳ Saving...' : '✓ Save Features'}
+              </Button>
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground">No features available.</p>
+        )}
+      </div>
 
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold">History Checklist</h2>
-          {historyRows.length > 0 ? (
+      <div className="space-y-4 rounded-lg border p-4">
+        <h2 className="text-xl font-semibold">History Checklist</h2>
+        {historyRows.length > 0 ? (
+          <>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -556,14 +656,8 @@ function RouteComponent() {
                     <TableCell>
                       <input
                         type="checkbox"
-                        checked={form.state.values.historyChecklistIds.includes(item.id)}
-                        onChange={(event) => {
-                          const checked = event.target.checked
-                          const next = checked
-                            ? [...form.state.values.historyChecklistIds, item.id]
-                            : form.state.values.historyChecklistIds.filter((id: string) => id !== item.id)
-                          form.setFieldValue('historyChecklistIds', next)
-                        }}
+                        checked={selectedHistory.has(item.id)}
+                        onChange={(event) => toggleHistory(item.id, event.target.checked)}
                         disabled={isSold}
                       />
                     </TableCell>
@@ -571,23 +665,16 @@ function RouteComponent() {
                 ))}
               </TableBody>
             </Table>
-          ) : (
-            <p className="text-sm text-muted-foreground">No checklist items available.</p>
-          )}
-        </div>
-
-        <Button
-          type="submit"
-          disabled={form.state.isSubmitting || isSold}
-          className="gap-2"
-        >
-          {form.state.isSubmitting ? (
-            <>⏳ Saving...</>
-          ) : (
-            <>✓ Save Changes</>
-          )}
-        </Button>
-      </form>
+            <div className="flex justify-end">
+              <Button onClick={handleSaveHistory} disabled={savingHistory || isSold}>
+                {savingHistory ? '⏳ Saving...' : '✓ Save History Checklist'}
+              </Button>
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground">No checklist items available.</p>
+        )}
+      </div>
     </div>
   )
 }

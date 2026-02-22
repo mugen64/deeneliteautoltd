@@ -75,7 +75,7 @@ export const carFeatureTypes = pgTable('car_feature_types', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 120 }).notNull().unique(),
   slug: varchar('slug', { length: 160 }).notNull().unique(),
-  icon: text('icon').notNull(),
+  icon: varchar('icon', { length: 64 }).notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ([
@@ -126,7 +126,7 @@ export const carPhotos = pgTable('car_photos', {
 export const carHistoryChecklist = pgTable('car_history_checklist', {
   id: uuid('id').primaryKey().defaultRandom(),
   description: text('description').notNull(),
-  iconSvg: text('icon_svg').notNull(),
+  iconSvg: varchar('icon_svg', { length: 64 }).notNull(),
   displayIndex: integer('display_index').notNull().default(0),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),

@@ -1,11 +1,7 @@
 import { carStore } from '@/server/storage/db/queries/cars'
 import { useAppSession } from '@/server/session'
 import { createFileRoute } from '@tanstack/react-router'
-
-const isValidSvg = (value: string) => {
-  const normalized = value.trim()
-  return normalized.startsWith('<svg') && normalized.includes('</svg>')
-}
+import { isHistoryIconName } from '@/lib/icon-names'
 
 export const Route = createFileRoute('/api/cars/history-checklist/update')({
   server: {
@@ -20,7 +16,7 @@ export const Route = createFileRoute('/api/cars/history-checklist/update')({
           const data = await request.json()
           const id = typeof data?.id === 'string' ? data.id.trim() : ''
           const description = typeof data?.description === 'string' ? data.description.trim() : ''
-          const iconSvg = typeof data?.iconSvg === 'string' ? data.iconSvg.trim() : ''
+          const iconName = typeof data?.iconName === 'string' ? data.iconName.trim() : ''
           const displayIndex = data?.displayIndex
 
           if (!id) {
@@ -29,11 +25,11 @@ export const Route = createFileRoute('/api/cars/history-checklist/update')({
 
           const updateData: { description?: string; iconSvg?: string; displayIndex?: number } = {}
           if (description) updateData.description = description
-          if (iconSvg) {
-            if (!isValidSvg(iconSvg)) {
-              return Response.json({ error: 'Icon must be valid SVG text' }, { status: 400 })
+          if (iconName) {
+            if (!isHistoryIconName(iconName)) {
+              return Response.json({ error: 'Icon must be a supported icon name' }, { status: 400 })
             }
-            updateData.iconSvg = iconSvg
+            updateData.iconSvg = iconName
           }
           if (Number.isFinite(Number(displayIndex))) {
             updateData.displayIndex = Number(displayIndex)

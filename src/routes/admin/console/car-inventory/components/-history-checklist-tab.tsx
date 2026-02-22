@@ -9,15 +9,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Textarea } from '@/components/ui/textarea'
+import { IconDisplay, IconPicker } from '@/components/IconPicker'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Plus, X } from 'lucide-react'
+import { isHistoryIconName } from '@/lib/icon-names'
 import { toast } from 'sonner'
-
-const isValidSvg = (value: string) => {
-  const normalized = value.trim()
-  return normalized.startsWith('<svg') && normalized.includes('</svg>')
-}
 
 export function HistoryChecklistTab() {
   const queryClient = useQueryClient()
@@ -36,7 +39,7 @@ export function HistoryChecklistTab() {
   const [historyForm, setHistoryForm] = useState({
     id: '',
     description: '',
-    iconSvg: '',
+    iconName: '',
   })
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false)
 
@@ -45,19 +48,19 @@ export function HistoryChecklistTab() {
     [carHistoryChecklist],
   )
 
-  const resetHistoryForm = () => setHistoryForm({ id: '', description: '', iconSvg: '' })
+  const resetHistoryForm = () => setHistoryForm({ id: '', description: '', iconName: '' })
 
   const handleSaveHistory = async () => {
     const description = historyForm.description.trim()
-    const iconSvg = historyForm.iconSvg.trim()
+    const iconName = historyForm.iconName.trim()
 
     if (!description) {
       toast.error('Description is required')
       return
     }
 
-    if (!iconSvg || !isValidSvg(iconSvg)) {
-      toast.error('Icon must be valid SVG text')
+    if (!iconName || !isHistoryIconName(iconName)) {
+      toast.error('Select a supported icon')
       return
     }
 
@@ -73,7 +76,7 @@ export function HistoryChecklistTab() {
         body: JSON.stringify({
           id: historyForm.id,
           description,
-          iconSvg,
+          iconName,
         }),
       })
 
@@ -97,7 +100,7 @@ export function HistoryChecklistTab() {
     setHistoryForm({
       id: item.id || '',
       description: item.description || '',
-      iconSvg: item.iconSvg || '',
+      iconName: item.iconSvg || '',
     })
     setHistoryDialogOpen(true)
   }
@@ -147,26 +150,40 @@ export function HistoryChecklistTab() {
           <Plus className="size-4" />
           Add Checklist Item
         </Button>
-        {historyDialogOpen ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-            <div className="w-full max-w-2xl rounded-lg border bg-background p-4 shadow-xl">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold">
-                  {historyForm.id ? 'Edit Checklist Item' : 'Add Checklist Item'}
-                </h3>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setHistoryDialogOpen(false)
-                    resetHistoryForm()
-                  }}
-                  aria-label="Close"
-                >
-                  <X className="size-4" />
-                </Button>
-              </div>
-              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Dialog
+          open={historyDialogOpen}
+          onOpenChange={(open) => {
+            setHistoryDialogOpen(open)
+            if (!open) resetHistoryForm()
+          }}
+        >
+          <DialogContent>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault()
+                handleSaveHistory()
+              }}
+            >
+              <DialogHeader>
+                <div className="flex items-center justify-between">
+                  <DialogTitle>
+                    {historyForm.id ? 'Edit Checklist Item' : 'Add Checklist Item'}
+                  </DialogTitle>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setHistoryDialogOpen(false)
+                      resetHistoryForm()
+                    }}
+                    aria-label="Close"
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+              </DialogHeader>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-sm font-medium" htmlFor="history-description">
                     Description
@@ -180,23 +197,16 @@ export function HistoryChecklistTab() {
                     placeholder="e.g. Accident free"
                   />
                 </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium" htmlFor="history-icon">
-                    SVG Icon
-                  </label>
-                  <Textarea
-                    id="history-icon"
-                    value={historyForm.iconSvg}
-                    onChange={(event) =>
-                      setHistoryForm({ ...historyForm, iconSvg: event.target.value })
-                    }
-                    placeholder="<svg ...>...</svg>"
-                    rows={4}
-                  />
-                </div>
+                <IconPicker
+                  type="history"
+                  label="Icon"
+                  value={historyForm.iconName}
+                  onChange={(value) => setHistoryForm({ ...historyForm, iconName: value })}
+                />
               </div>
-              <div className="mt-4 flex items-center justify-end gap-2">
+              <DialogFooter>
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={() => {
                     setHistoryDialogOpen(false)
@@ -205,13 +215,13 @@ export function HistoryChecklistTab() {
                 >
                   Cancel
                 </Button>
-                <Button onClick={handleSaveHistory}>
+                <Button type="submit">
                   {historyForm.id ? 'Update Checklist Item' : 'Add Checklist Item'}
                 </Button>
-              </div>
-            </div>
-          </div>
-        ) : null}
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {isLoadingHistory ? (
@@ -230,7 +240,10 @@ export function HistoryChecklistTab() {
               <TableRow key={item.id}>
                 <TableCell>{item.description}</TableCell>
                 <TableCell className="max-w-xs whitespace-normal">
-                  {item.iconSvg}
+                  <span className="inline-flex items-center gap-2">
+                    <IconDisplay name={item.iconSvg} />
+                    <span>{item.iconSvg}</span>
+                  </span>
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">

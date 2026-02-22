@@ -1,11 +1,7 @@
 import { carStore } from '@/server/storage/db/queries/cars'
 import { useAppSession } from '@/server/session'
 import { createFileRoute } from '@tanstack/react-router'
-
-const isValidSvg = (value: string) => {
-  const normalized = value.trim()
-  return normalized.startsWith('<svg') && normalized.includes('</svg>')
-}
+import { isFeatureIconName } from '@/lib/icon-names'
 
 export const Route = createFileRoute('/api/cars/features/update')({
   server: {
@@ -20,7 +16,7 @@ export const Route = createFileRoute('/api/cars/features/update')({
           const data = await request.json()
           const id = typeof data?.id === 'string' ? data.id.trim() : ''
           const name = typeof data?.name === 'string' ? data.name.trim() : ''
-          const icon = typeof data?.icon === 'string' ? data.icon.trim() : ''
+          const iconName = typeof data?.iconName === 'string' ? data.iconName.trim() : ''
 
           if (!id) {
             return Response.json({ error: 'Feature id is required' }, { status: 400 })
@@ -28,11 +24,11 @@ export const Route = createFileRoute('/api/cars/features/update')({
 
           const updateData: { name?: string; icon?: string } = {}
           if (name) updateData.name = name
-          if (icon) {
-            if (!isValidSvg(icon)) {
-              return Response.json({ error: 'Icon must be valid SVG text' }, { status: 400 })
+          if (iconName) {
+            if (!isFeatureIconName(iconName)) {
+              return Response.json({ error: 'Icon must be a supported icon name' }, { status: 400 })
             }
-            updateData.icon = icon
+            updateData.icon = iconName
           }
 
           if (!Object.keys(updateData).length) {

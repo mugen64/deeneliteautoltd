@@ -1,11 +1,7 @@
 import { carStore } from '@/server/storage/db/queries/cars'
 import { useAppSession } from '@/server/session'
 import { createFileRoute } from '@tanstack/react-router'
-
-const isValidSvg = (value: string) => {
-  const normalized = value.trim()
-  return normalized.startsWith('<svg') && normalized.includes('</svg>')
-}
+import { isHistoryIconName } from '@/lib/icon-names'
 
 export const Route = createFileRoute('/api/cars/history-checklist/create')({
   server: {
@@ -19,21 +15,21 @@ export const Route = createFileRoute('/api/cars/history-checklist/create')({
 
           const data = await request.json()
           const description = typeof data?.description === 'string' ? data.description.trim() : ''
-          const iconSvg = typeof data?.iconSvg === 'string' ? data.iconSvg.trim() : ''
+          const iconName = typeof data?.iconName === 'string' ? data.iconName.trim() : ''
 
           if (!description) {
             return Response.json({ error: 'Description is required' }, { status: 400 })
           }
 
-          if (!iconSvg || !isValidSvg(iconSvg)) {
-            return Response.json({ error: 'Icon must be valid SVG text' }, { status: 400 })
+          if (!iconName || !isHistoryIconName(iconName)) {
+            return Response.json({ error: 'Icon must be a supported icon name' }, { status: 400 })
           }
 
           const displayIndex = await carStore.getNextHistoryChecklistDisplayIndex()
 
           const item = await carStore.createCarHistoryChecklist({
             description,
-            iconSvg,
+            iconSvg: iconName,
             displayIndex,
           })
 
