@@ -39,7 +39,7 @@ function RouteComponent() {
   const { data: carMakes = [] } = useQuery({
     queryKey: ['carMakes'],
     queryFn: async () => {
-      const response = await fetch('/api/cars')
+      const response = await fetch('/api/cars/car-makes')
       if (!response.ok) {
         throw new Error('Failed to fetch car makes')
       }
@@ -53,6 +53,17 @@ function RouteComponent() {
       const response = await fetch('/api/cars/models')
       if (!response.ok) {
         throw new Error('Failed to fetch car models')
+      }
+      return response.json()
+    },
+  })
+
+  const { data: carBodyTypes = [] } = useQuery({
+    queryKey: ['carBodyTypes'],
+    queryFn: async () => {
+      const response = await fetch('/api/cars/body-types')
+      if (!response.ok) {
+        throw new Error('Failed to fetch body types')
       }
       return response.json()
     },
@@ -74,17 +85,24 @@ function RouteComponent() {
         }))
     : []
 
+  const bodyTypes = carBodyTypes && Array.isArray(carBodyTypes)
+    ? carBodyTypes.map((item: any) => ({
+        id: item.car_body_types?.id,
+        name: item.car_body_types?.name,
+      }))
+    : []
+
   const form = useForm({
     defaultValues: {
       year: new Date().getFullYear(),
-      makeId: '',
       modelId: '',
       price: '',
-      bodyType: '',
+      bodyTypeId: '',
       mileage: 0,
-      condition: '',
-      isFeatured: false,
-      rating: 0,
+      condition: 'Good',
+      color: '',
+      transmission: 'Automatic',
+      fuelType: 'Diesel',
     },
     onSubmit: async ({ value }) => {
       try {
@@ -151,7 +169,7 @@ function RouteComponent() {
       </div>
 
       <form
-        className="max-w-2xl space-y-4"
+        className="space-y-4 p-4 border rounded"
         onSubmit={(event) => {
           event.preventDefault()
           event.stopPropagation()
@@ -163,55 +181,94 @@ function RouteComponent() {
             name="year"
             validators={{
               onChange: ({ value }) =>
-                value > 1900 && value <= new Date().getFullYear() + 1
-                  ? undefined
-                  : { message: 'Invalid year' },
+                value ? undefined : { message: 'Year is required' },
+            }}
+          >
+            {(field) => {
+              const currentYear = new Date().getFullYear()
+              const years = Array.from({ length: currentYear - 1959 }, (_, i) => currentYear - i)
+              return (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>Year</FieldLabel>
+                  <FieldContent>
+                    <Select
+                      value={String(field.state.value)}
+                      onValueChange={(value) => field.handleChange(Number(value))}
+                    >
+                      <SelectTrigger id={field.name}>
+                        <SelectValue placeholder="Select year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {years.map((year) => (
+                          <SelectItem key={year} value={String(year)}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FieldError errors={field.state.meta.errors} />
+                  </FieldContent>
+                </Field>
+              )
+            }}
+          </form.Field>
+
+          <form.Field
+            name="color"
+            validators={{
+              onChange: ({ value }) =>
+                value.trim().length ? undefined : { message: 'Color is required' },
             }}
           >
             {(field) => (
               <Field>
-                <FieldLabel htmlFor={field.name}>Year</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Color</FieldLabel>
                 <FieldContent>
                   <Input
                     id={field.name}
-                    type="number"
                     value={field.state.value}
                     onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(Number(event.target.value))}
+                    onChange={(event) => field.handleChange(event.target.value)}
+                    placeholder="e.g. Red"
                   />
                   <FieldError errors={field.state.meta.errors} />
                 </FieldContent>
               </Field>
             )}
           </form.Field>
+        </div>
 
+        <div className="grid grid-cols-3 gap-4">
           <form.Field
-            name="makeId"
+            name="bodyTypeId"
             validators={{
               onChange: ({ value }) =>
-                value ? undefined : { message: 'Make is required' },
+                value ? undefined : { message: 'Body type is required' },
             }}
           >
-            {(field) => (
+            {(field) => {
+              const selectedBodyType = bodyTypes.find(b => b.id === field.state.value)
+              return (
               <Field>
-                <FieldLabel htmlFor={field.name}>Make</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Body Type</FieldLabel>
                 <FieldContent>
                   <Select
                     value={field.state.value}
                     onValueChange={(value) => {
                       if (value) {
                         field.handleChange(value)
-                        setSelectedMakeId(value)
                       }
                     }}
                   >
-                    <SelectTrigger id={field.name}>
-                      <SelectValue placeholder="Select a make" />
+                    <SelectTrigger id={field.name} className="w-full">
+                      <SelectValue placeholder="Select a body type">
+                        {selectedBodyType?.name || 'Select a body type'}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      {makes.map((make: any) => (
-                        <SelectItem key={make.id} value={make.id}>
-                          {make.name}
+                      {bodyTypes.map((bodyType: any) => (
+                        <SelectItem key={bodyType.id} value={bodyType.id}>
+                          {bodyType.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -219,8 +276,37 @@ function RouteComponent() {
                   <FieldError errors={field.state.meta.errors} />
                 </FieldContent>
               </Field>
-            )}
+            )
+            }}
           </form.Field>
+
+          <Field className="w-full">
+            <FieldLabel>Make</FieldLabel>
+            <FieldContent>
+              <Select
+                value={selectedMakeId}
+                onValueChange={(value) => {
+                  if (value) {
+                    setSelectedMakeId(value)
+                  }
+                }}
+                
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a make" >
+                    {makes.find(m => m.id === selectedMakeId)?.name || 'Select a make'}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent >
+                  {makes.map((make: any) => (
+                    <SelectItem key={make.id} value={make.id}>
+                      {make.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FieldContent>
+          </Field>
 
           <form.Field
             name="modelId"
@@ -229,7 +315,9 @@ function RouteComponent() {
                 value ? undefined : { message: 'Model is required' },
             }}
           >
-            {(field) => (
+            {(field) => {
+              const selectedModel = models.find(m => m.id === field.state.value)
+              return (
               <Field>
                 <FieldLabel htmlFor={field.name}>Model</FieldLabel>
                 <FieldContent>
@@ -242,8 +330,10 @@ function RouteComponent() {
                     }}
                     disabled={!selectedMakeId}
                   >
-                    <SelectTrigger id={field.name}>
-                      <SelectValue placeholder="Select a model" />
+                    <SelectTrigger id={field.name} className="w-full">
+                      <SelectValue placeholder="Select a model">
+                        {selectedModel?.name || 'Select a model'}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {models.map((model: any) => (
@@ -256,46 +346,26 @@ function RouteComponent() {
                   <FieldError errors={field.state.meta.errors} />
                 </FieldContent>
               </Field>
-            )}
-          </form.Field>
-
-          <form.Field
-            name="bodyType"
-            validators={{
-              onChange: ({ value }) =>
-                value.trim().length ? undefined : { message: 'Body type is required' },
+            )
             }}
-          >
-            {(field) => (
-              <Field>
-                <FieldLabel htmlFor={field.name}>Body Type</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                    placeholder="e.g. Sedan"
-                  />
-                  <FieldError errors={field.state.meta.errors} />
-                </FieldContent>
-              </Field>
-            )}
           </form.Field>
+        </div>
 
+        <div className="grid grid-cols-2 gap-4">
           <form.Field
             name="price"
             validators={{
               onChange: ({ value }) =>
-                value && Number(value) > 0 ? undefined : { message: 'Valid price is required' },
+                value && Number(value) >= 5000000 ? undefined : { message: 'Price must be at least 5,000,000 UGX' },
             }}
           >
             {(field) => (
               <Field>
-                <FieldLabel htmlFor={field.name}>Price</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Price (UGX)</FieldLabel>
                 <FieldContent>
                   <Input
                     id={field.name}
+                    type="number"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
@@ -330,89 +400,128 @@ function RouteComponent() {
               </Field>
             )}
           </form.Field>
+        </div>
 
+        <div className="grid grid-cols-2 gap-4">
           <form.Field
             name="condition"
             validators={{
               onChange: ({ value }) =>
-                value.trim().length ? undefined : { message: 'Condition is required' },
+                value ? undefined : { message: 'Condition is required' },
             }}
           >
-            {(field) => (
+            {(field) => {
+              const conditionOptions = ['Excellent', 'Very Good', 'Good', 'Fair', 'Poor']
+              return (
               <Field>
                 <FieldLabel htmlFor={field.name}>Condition</FieldLabel>
                 <FieldContent>
-                  <Input
-                    id={field.name}
+                  <Select
                     value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                    placeholder="e.g. Good"
-                  />
+                    onValueChange={(value) => { if (value) field.handleChange(value) }}
+                  >
+                    <SelectTrigger id={field.name} className="w-full">
+                      <SelectValue placeholder="Select condition">
+                        {field.state.value}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {conditionOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FieldError errors={field.state.meta.errors} />
                 </FieldContent>
               </Field>
-            )}
+            )
+            }}
           </form.Field>
 
           <form.Field
-            name="rating"
-            validators={{
-              onChange: ({ value }) =>
-                value >= 0 && value <= 5 ? undefined : { message: 'Rating must be between 0 and 5' },
-            }}
+            name="transmission"
           >
-            {(field) => (
+            {(field) => {
+              const transmissionOptions = ['Automatic', 'Manual']
+              const selectedTransmission = transmissionOptions.includes(field.state.value) ? field.state.value : 'Automatic'
+              return (
               <Field>
-                <FieldLabel htmlFor={field.name}>Rating</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Transmission</FieldLabel>
                 <FieldContent>
-                  <Input
-                    id={field.name}
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="5"
+                  <Select
                     value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(Number(event.target.value))}
-                  />
-                  <FieldError errors={field.state.meta.errors} />
+                    onValueChange={(value) => { if (value) field.handleChange(value) }}
+                  >
+                    <SelectTrigger id={field.name} className="w-full">
+                      <SelectValue placeholder="Select transmission">
+                        {selectedTransmission}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {transmissionOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FieldContent>
               </Field>
-            )}
+            )
+            }}
+          </form.Field>
+
+          <form.Field
+            name="fuelType"
+          >
+            {(field) => {
+              const fuelOptions = ['Diesel', 'Petrol', 'Hybrid', 'Electric']
+              const selectedFuel = fuelOptions.includes(field.state.value) ? field.state.value : 'Diesel'
+              return (
+              <Field>
+                <FieldLabel htmlFor={field.name}>Fuel Type</FieldLabel>
+                <FieldContent>
+                  <Select
+                    value={field.state.value}
+                    onValueChange={(value) => { if (value) field.handleChange(value) }}
+                  >
+                    <SelectTrigger id={field.name} className="w-full">
+                      <SelectValue placeholder="Select fuel type">
+                        {selectedFuel}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {fuelOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
+            )
+            }}
           </form.Field>
         </div>
 
-        <form.Field
-          name="isFeatured"
-        >
-          {(field) => (
-            <Field>
-              <FieldLabel htmlFor={field.name} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id={field.name}
-                  checked={field.state.value}
-                  onChange={(event) => field.handleChange(event.target.checked)}
-                  className="rounded border border-input"
-                />
-                Featured Car
-              </FieldLabel>
-            </Field>
-          )}
-        </form.Field>
 
-        <Button
-          type="submit"
-          disabled={form.state.isSubmitting}
-          className="gap-2"
-        >
-          {form.state.isSubmitting ? (
-            <>⏳ Creating...</>
-          ) : (
-            <>✓ Create Car</>
-          )}
-        </Button>
+
+        <div className="flex items-center justify-end">
+          <Button
+            type="submit"
+            disabled={form.state.isSubmitting}
+            className="gap-2"
+          >
+            {form.state.isSubmitting ? (
+              <>⏳ Creating...</>
+            ) : (
+              <>✓ Create Car</>
+            )}
+          </Button>
+        </div>
       </form>
     </div>
   )

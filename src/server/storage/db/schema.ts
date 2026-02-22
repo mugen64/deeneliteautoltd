@@ -71,22 +71,54 @@ export const carBodyTypes = pgTable('car_body_types', {
   index('car_body_types_slug_idx').on(table.slug),
 ]));
 
-export const cars = pgTable('cars', {
+export const carFeatureTypes = pgTable('car_feature_types', {
   id: uuid('id').primaryKey().defaultRandom(),
-  year: integer('year').notNull(),
-  makeId: uuid('make_id').notNull().references(() => carMakes.id),
-  modelId: uuid('model_id').notNull().references(() => carModels.id),
-  price: decimal('price', { precision: 12, scale: 2 }).notNull(),
-  bodyType: varchar('body_type', { length: 50 }).notNull(),
-  mileage: integer('mileage').notNull(),
-  condition: varchar('condition', { length: 50 }).notNull(),
-  isFeatured: boolean('is_featured').notNull().default(false),
-  rating: decimal('rating', { precision: 2, scale: 1 }).default('0'),
-  photoId: uuid('photo_id').references(() => files.id),
+  name: varchar('name', { length: 120 }).notNull().unique(),
+  slug: varchar('slug', { length: 160 }).notNull().unique(),
+  icon: text('icon').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ([
-  index('cars_make_id_idx').on(table.makeId),
+  index('car_feature_types_name_idx').on(table.name),
+  index('car_feature_types_slug_idx').on(table.slug),
+]));
+
+export const cars = pgTable('cars', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  year: integer('year').notNull(),
+  modelId: uuid('model_id').notNull().references(() => carModels.id),
+  price: decimal('price', { precision: 12, scale: 2 }).notNull(),
+  bodyTypeId: uuid('body_type_id').notNull().references(() => carBodyTypes.id),
+  mileage: integer('mileage').notNull(),
+  condition: varchar('condition', { length: 50 }).notNull(),
+  color: varchar('color', { length: 50 }).notNull(),
+  transmission: varchar('transmission', { length: 50 }).notNull().default('Automatic'),
+  fuelType: varchar('fuel_type', { length: 50 }).notNull().default('Diesel'),
+  sku: varchar('sku', { length: 20 }).notNull().unique(),
+  listed: boolean('listed').notNull().default(false),
+  sold: boolean('sold').notNull().default(false),
+  isFeatured: boolean('is_featured').notNull().default(false),
+  
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ([
   index('cars_model_id_idx').on(table.modelId),
+  index('cars_listed_idx').on(table.listed),
   index('cars_featured_idx').on(table.isFeatured),
+  index('cars_sold_idx').on(table.sold),
+  index('cars_sku_idx').on(table.sku),
+]));
+
+export const carPhotos = pgTable('car_photos', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  carId: uuid('car_id').notNull().references(() => cars.id, { onDelete: 'cascade' }),
+  photoId: uuid('photo_id').notNull().references(() => files.id),
+  description: text('description'),
+  isPrimary: boolean('is_primary').notNull().default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ([
+  index('car_photos_car_id_idx').on(table.carId),
+  index('car_photos_photo_id_idx').on(table.photoId),
+  index('car_photos_is_primary_idx').on(table.carId, table.isPrimary),
 ]));

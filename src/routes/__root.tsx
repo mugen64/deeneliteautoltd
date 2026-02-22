@@ -23,7 +23,6 @@ export const Route = createRootRoute({
       if (user && location.pathname === '/admin/login') {
         throw redirect({ to: '/admin' })
       }
-      console.log('Root beforeLoad user:', user)
       return {user}
     }
   },

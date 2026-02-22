@@ -36,6 +36,9 @@ import { Route as ApiCarsModelsUpdateRouteImport } from './routes/api/cars/model
 import { Route as ApiCarsModelsCreateRouteImport } from './routes/api/cars/models/create'
 import { Route as ApiCarsModelsByMakeRouteImport } from './routes/api/cars/models/by-make'
 import { Route as ApiCarsModelsIdRouteImport } from './routes/api/cars/models/$id'
+import { Route as ApiCarsInventoryToggleSoldRouteImport } from './routes/api/cars/inventory/toggle-sold'
+import { Route as ApiCarsInventoryToggleListedRouteImport } from './routes/api/cars/inventory/toggle-listed'
+import { Route as ApiCarsInventoryToggleFeaturedRouteImport } from './routes/api/cars/inventory/toggle-featured'
 import { Route as ApiCarsInventoryCreateRouteImport } from './routes/api/cars/inventory/create'
 import { Route as ApiCarsInventoryIdRouteImport } from './routes/api/cars/inventory/$id'
 import { Route as ApiCarsCarMakesUpdateRouteImport } from './routes/api/cars/car-makes/update'
@@ -192,6 +195,24 @@ const ApiCarsModelsIdRoute = ApiCarsModelsIdRouteImport.update({
   path: '/api/cars/models/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCarsInventoryToggleSoldRoute =
+  ApiCarsInventoryToggleSoldRouteImport.update({
+    id: '/api/cars/inventory/toggle-sold',
+    path: '/api/cars/inventory/toggle-sold',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiCarsInventoryToggleListedRoute =
+  ApiCarsInventoryToggleListedRouteImport.update({
+    id: '/api/cars/inventory/toggle-listed',
+    path: '/api/cars/inventory/toggle-listed',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiCarsInventoryToggleFeaturedRoute =
+  ApiCarsInventoryToggleFeaturedRouteImport.update({
+    id: '/api/cars/inventory/toggle-featured',
+    path: '/api/cars/inventory/toggle-featured',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiCarsInventoryCreateRoute = ApiCarsInventoryCreateRouteImport.update({
   id: '/api/cars/inventory/create',
   path: '/api/cars/inventory/create',
@@ -319,6 +340,9 @@ export interface FileRoutesByFullPath {
   '/api/cars/car-makes/update': typeof ApiCarsCarMakesUpdateRoute
   '/api/cars/inventory/$id': typeof ApiCarsInventoryIdRoute
   '/api/cars/inventory/create': typeof ApiCarsInventoryCreateRoute
+  '/api/cars/inventory/toggle-featured': typeof ApiCarsInventoryToggleFeaturedRoute
+  '/api/cars/inventory/toggle-listed': typeof ApiCarsInventoryToggleListedRoute
+  '/api/cars/inventory/toggle-sold': typeof ApiCarsInventoryToggleSoldRoute
   '/api/cars/models/$id': typeof ApiCarsModelsIdRoute
   '/api/cars/models/by-make': typeof ApiCarsModelsByMakeRoute
   '/api/cars/models/create': typeof ApiCarsModelsCreateRoute
@@ -363,6 +387,9 @@ export interface FileRoutesByTo {
   '/api/cars/car-makes/update': typeof ApiCarsCarMakesUpdateRoute
   '/api/cars/inventory/$id': typeof ApiCarsInventoryIdRoute
   '/api/cars/inventory/create': typeof ApiCarsInventoryCreateRoute
+  '/api/cars/inventory/toggle-featured': typeof ApiCarsInventoryToggleFeaturedRoute
+  '/api/cars/inventory/toggle-listed': typeof ApiCarsInventoryToggleListedRoute
+  '/api/cars/inventory/toggle-sold': typeof ApiCarsInventoryToggleSoldRoute
   '/api/cars/models/$id': typeof ApiCarsModelsIdRoute
   '/api/cars/models/by-make': typeof ApiCarsModelsByMakeRoute
   '/api/cars/models/create': typeof ApiCarsModelsCreateRoute
@@ -410,6 +437,9 @@ export interface FileRoutesById {
   '/api/cars/car-makes/update': typeof ApiCarsCarMakesUpdateRoute
   '/api/cars/inventory/$id': typeof ApiCarsInventoryIdRoute
   '/api/cars/inventory/create': typeof ApiCarsInventoryCreateRoute
+  '/api/cars/inventory/toggle-featured': typeof ApiCarsInventoryToggleFeaturedRoute
+  '/api/cars/inventory/toggle-listed': typeof ApiCarsInventoryToggleListedRoute
+  '/api/cars/inventory/toggle-sold': typeof ApiCarsInventoryToggleSoldRoute
   '/api/cars/models/$id': typeof ApiCarsModelsIdRoute
   '/api/cars/models/by-make': typeof ApiCarsModelsByMakeRoute
   '/api/cars/models/create': typeof ApiCarsModelsCreateRoute
@@ -458,6 +488,9 @@ export interface FileRouteTypes {
     | '/api/cars/car-makes/update'
     | '/api/cars/inventory/$id'
     | '/api/cars/inventory/create'
+    | '/api/cars/inventory/toggle-featured'
+    | '/api/cars/inventory/toggle-listed'
+    | '/api/cars/inventory/toggle-sold'
     | '/api/cars/models/$id'
     | '/api/cars/models/by-make'
     | '/api/cars/models/create'
@@ -502,6 +535,9 @@ export interface FileRouteTypes {
     | '/api/cars/car-makes/update'
     | '/api/cars/inventory/$id'
     | '/api/cars/inventory/create'
+    | '/api/cars/inventory/toggle-featured'
+    | '/api/cars/inventory/toggle-listed'
+    | '/api/cars/inventory/toggle-sold'
     | '/api/cars/models/$id'
     | '/api/cars/models/by-make'
     | '/api/cars/models/create'
@@ -548,6 +584,9 @@ export interface FileRouteTypes {
     | '/api/cars/car-makes/update'
     | '/api/cars/inventory/$id'
     | '/api/cars/inventory/create'
+    | '/api/cars/inventory/toggle-featured'
+    | '/api/cars/inventory/toggle-listed'
+    | '/api/cars/inventory/toggle-sold'
     | '/api/cars/models/$id'
     | '/api/cars/models/by-make'
     | '/api/cars/models/create'
@@ -580,6 +619,9 @@ export interface RootRouteChildren {
   ApiCarsCarMakesUpdateRoute: typeof ApiCarsCarMakesUpdateRoute
   ApiCarsInventoryIdRoute: typeof ApiCarsInventoryIdRoute
   ApiCarsInventoryCreateRoute: typeof ApiCarsInventoryCreateRoute
+  ApiCarsInventoryToggleFeaturedRoute: typeof ApiCarsInventoryToggleFeaturedRoute
+  ApiCarsInventoryToggleListedRoute: typeof ApiCarsInventoryToggleListedRoute
+  ApiCarsInventoryToggleSoldRoute: typeof ApiCarsInventoryToggleSoldRoute
   ApiCarsModelsIdRoute: typeof ApiCarsModelsIdRoute
   ApiCarsModelsByMakeRoute: typeof ApiCarsModelsByMakeRoute
   ApiCarsModelsCreateRoute: typeof ApiCarsModelsCreateRoute
@@ -779,6 +821,27 @@ declare module '@tanstack/react-router' {
       path: '/api/cars/models/$id'
       fullPath: '/api/cars/models/$id'
       preLoaderRoute: typeof ApiCarsModelsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/inventory/toggle-sold': {
+      id: '/api/cars/inventory/toggle-sold'
+      path: '/api/cars/inventory/toggle-sold'
+      fullPath: '/api/cars/inventory/toggle-sold'
+      preLoaderRoute: typeof ApiCarsInventoryToggleSoldRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/inventory/toggle-listed': {
+      id: '/api/cars/inventory/toggle-listed'
+      path: '/api/cars/inventory/toggle-listed'
+      fullPath: '/api/cars/inventory/toggle-listed'
+      preLoaderRoute: typeof ApiCarsInventoryToggleListedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/inventory/toggle-featured': {
+      id: '/api/cars/inventory/toggle-featured'
+      path: '/api/cars/inventory/toggle-featured'
+      fullPath: '/api/cars/inventory/toggle-featured'
+      preLoaderRoute: typeof ApiCarsInventoryToggleFeaturedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/cars/inventory/create': {
@@ -982,6 +1045,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCarsCarMakesUpdateRoute: ApiCarsCarMakesUpdateRoute,
   ApiCarsInventoryIdRoute: ApiCarsInventoryIdRoute,
   ApiCarsInventoryCreateRoute: ApiCarsInventoryCreateRoute,
+  ApiCarsInventoryToggleFeaturedRoute: ApiCarsInventoryToggleFeaturedRoute,
+  ApiCarsInventoryToggleListedRoute: ApiCarsInventoryToggleListedRoute,
+  ApiCarsInventoryToggleSoldRoute: ApiCarsInventoryToggleSoldRoute,
   ApiCarsModelsIdRoute: ApiCarsModelsIdRoute,
   ApiCarsModelsByMakeRoute: ApiCarsModelsByMakeRoute,
   ApiCarsModelsCreateRoute: ApiCarsModelsCreateRoute,

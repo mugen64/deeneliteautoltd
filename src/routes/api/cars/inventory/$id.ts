@@ -25,7 +25,37 @@ export const Route = createFileRoute('/api/cars/inventory/$id')({
           }
 
           const data = await request.json()
-          const car = await carStore.updateCar(params.id, data)
+
+          // Remove flag fields - these are managed via dedicated toggle endpoints
+          const { sold: _, isFeatured: __, listed: ___, ...updateData } = data
+
+          // Fetch existing car
+          const existingCar = await carStore.getCarById(params.id)
+          if (!existingCar) {
+            return Response.json({ error: 'Car not found' }, { status: 404 })
+          }
+
+          // Prevent editing if car is sold
+          if (existingCar.cars.sold) {
+            return Response.json({ error: 'Cannot edit a sold car' }, { status: 400 })
+          }
+
+          // If color is being updated, fetch make, model, and body type for SKU regeneration
+          if (updateData.color) {
+            const model = await carStore.getCarModelById(existingCar.cars.modelId)
+            const bodyType = await carStore.getCarBodyTypeById(existingCar.cars.bodyTypeId)
+
+            if (model && bodyType) {
+              const make = await carStore.getCarMakeById(model.car_models.makeId)
+              if (make) {
+                updateData.makeName = make.car_makes.name
+                updateData.modelName = model.car_models.name
+                updateData.bodyTypeName = bodyType.car_body_types.name
+              }
+            }
+          }
+
+          const car = await carStore.updateCar(params.id, updateData)
           if (!car) {
             return Response.json({ error: 'Car not found' }, { status: 404 })
           }

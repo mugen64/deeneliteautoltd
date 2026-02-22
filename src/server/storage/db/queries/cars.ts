@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm"
+import { eq, like } from "drizzle-orm"
 import { db } from "./db"
-import { carBodyTypes, carMakes, carModels, files, cars } from "../schema"
+import { carBodyTypes, carMakes, carModels, files, cars, carPhotos } from "../schema"
 
 function slugify(value: string) {
     return value
@@ -8,6 +8,42 @@ function slugify(value: string) {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "")
+}
+
+function generateSKUPrefix(year: number, makeName: string, modelName: string, bodyTypeName: string, color: string): string {
+    const yearPrefix = String(year)
+    const makePrefix = makeName.substring(0, 3).toUpperCase()
+    const modelPrefix = modelName.substring(0, 3).toUpperCase()
+    const bodyTypePrefix = bodyTypeName.substring(0, 3).toUpperCase()
+    const colorPrefix = color.substring(0, 2).toUpperCase()
+    return `${yearPrefix}${makePrefix}${modelPrefix}${bodyTypePrefix}${colorPrefix}`
+}
+
+async function getNextSKUNumber(prefix: string): Promise<number> {
+    const pattern = `${prefix}%`
+    const existingSKUs = await db
+        .select({ sku: cars.sku })
+        .from(cars)
+        .where(like(cars.sku, pattern))
+        .execute()
+    
+    let maxNumber = 0
+    for (const { sku } of existingSKUs) {
+        const numberPart = sku.substring(prefix.length)
+        const number = parseInt(numberPart, 10)
+        if (!isNaN(number) && number > maxNumber) {
+            maxNumber = number
+        }
+    }
+    
+    return maxNumber + 1
+}
+
+async function generateSKU(year: number, makeName: string, modelName: string, bodyTypeName: string, color: string): Promise<string> {
+    const prefix = generateSKUPrefix(year, makeName, modelName, bodyTypeName, color)
+    const nextNumber = await getNextSKUNumber(prefix)
+    const paddedNumber = String(nextNumber).padStart(4, '0')
+    return `${prefix}${paddedNumber}`
 }
 
 
@@ -139,9 +175,11 @@ async function getAllCars() {
     return db
         .select()
         .from(cars)
-        .innerJoin(carMakes, eq(cars.makeId, carMakes.id))
         .innerJoin(carModels, eq(cars.modelId, carModels.id))
-        .leftJoin(files, eq(cars.photoId, files.id))
+        .innerJoin(carMakes, eq(carModels.makeId, carMakes.id))
+        .innerJoin(carBodyTypes, eq(cars.bodyTypeId, carBodyTypes.id))
+        .leftJoin(carPhotos, eq(cars.id, carPhotos.carId))
+        .leftJoin(files, eq(carPhotos.photoId, files.id))
         .execute()
 }
 
@@ -149,9 +187,11 @@ async function getCarById(id: string) {
     const result = await db
         .select()
         .from(cars)
-        .innerJoin(carMakes, eq(cars.makeId, carMakes.id))
         .innerJoin(carModels, eq(cars.modelId, carModels.id))
-        .leftJoin(files, eq(cars.photoId, files.id))
+        .innerJoin(carMakes, eq(carModels.makeId, carMakes.id))
+        .innerJoin(carBodyTypes, eq(cars.bodyTypeId, carBodyTypes.id))
+        .leftJoin(carPhotos, eq(cars.id, carPhotos.carId))
+        .leftJoin(files, eq(carPhotos.photoId, files.id))
         .where(eq(cars.id, id))
         .execute()
     return result[0] || null
@@ -161,65 +201,190 @@ async function getFeaturedCars() {
     return db
         .select()
         .from(cars)
-        .innerJoin(carMakes, eq(cars.makeId, carMakes.id))
         .innerJoin(carModels, eq(cars.modelId, carModels.id))
-        .leftJoin(files, eq(cars.photoId, files.id))
+        .innerJoin(carMakes, eq(carModels.makeId, carMakes.id))
+        .innerJoin(carBodyTypes, eq(cars.bodyTypeId, carBodyTypes.id))
+        .leftJoin(carPhotos, eq(cars.id, carPhotos.carId))
+        .leftJoin(files, eq(carPhotos.photoId, files.id))
         .where(eq(cars.isFeatured, true))
         .execute()
 }
 
+async function getCarPhotos(carId: string) {
+    return db
+        .select()
+        .from(carPhotos)
+        .innerJoin(files, eq(carPhotos.photoId, files.id))
+        .where(eq(carPhotos.carId, carId))
+        .execute()
+}
+
+async function getPrimaryPhoto(carId: string) {
+    const result = await db
+        .select()
+        .from(carPhotos)
+        .innerJoin(files, eq(carPhotos.photoId, files.id))
+        .where(eq(carPhotos.carId, carId))
+        .execute()
+    // Find the primary photo, or return the first one
+    const primary = result.find(r => r.car_photos.isPrimary)
+    return primary || result[0] || null
+}
+
 async function createCar(data: {
     year: number
-    makeId: string
     modelId: string
+    makeName: string
+    modelName: string
+    bodyTypeId: string
+    bodyTypeName: string
     price: string
-    bodyType: string
+    color: string
+    transmission: string
+    fuelType: string
     mileage: number
     condition: string
-    isFeatured?: boolean
-    rating?: number
-    photoId?: string
+    photos?: Array<{ photoId: string; description?: string; isPrimary?: boolean }>
 }) {
+    const sku = await generateSKU(data.year, data.makeName, data.modelName, data.bodyTypeName, data.color)
+    
     const [car] = await db
         .insert(cars)
         .values({
             year: data.year,
-            makeId: data.makeId,
             modelId: data.modelId,
             price: data.price,
-            bodyType: data.bodyType,
+            bodyTypeId: data.bodyTypeId,
             mileage: data.mileage,
             condition: data.condition,
-            isFeatured: data.isFeatured || false,
-            rating: data.rating?.toString() || "0",
-            photoId: data.photoId,
+            color: data.color,
+            transmission: data.transmission,
+            fuelType: data.fuelType,
+            sku: sku,
         })
         .returning()
+    
+    // Add photos if provided
+    if (data.photos && data.photos.length > 0) {
+        const photoValues = data.photos.map(p => ({
+            carId: car.id,
+            photoId: p.photoId,
+            description: p.description,
+            isPrimary: p.isPrimary || false,
+        }))
+        await db.insert(carPhotos).values(photoValues).execute()
+    }
+    
     return car
 }
 
 async function updateCar(id: string, data: Partial<{
     year: number
-    makeId: string
     modelId: string
+    makeName?: string
+    modelName?: string
+    bodyTypeId: string
+    bodyTypeName?: string
     price: string
-    bodyType: string
+    color: string
+    transmission: string
+    fuelType: string
     mileage: number
     condition: string
     isFeatured: boolean
-    rating: number
-    photoId: string
+    sold: boolean
 }>) {
     const updateData: any = { ...data }
-    if (data.rating !== undefined) {
-        updateData.rating = data.rating.toString()
+    
+    // If color is being updated, we need year for SKU regeneration
+    if (data.color && data.makeName && data.modelName && data.bodyTypeName) {
+        // Get existing car to get year if not provided
+        let yearToUse = data.year
+        if (!yearToUse) {
+            const [existing] = await db.select({ year: cars.year }).from(cars).where(eq(cars.id, id)).execute()
+            yearToUse = existing.year
+        }
+        const sku = await generateSKU(yearToUse, data.makeName, data.modelName, data.bodyTypeName, data.color)
+        updateData.sku = sku
     }
+    
+    // Remove extra fields used only for SKU generation
+    delete updateData.makeName
+    delete updateData.modelName
+    delete updateData.bodyTypeName
+    
     const [car] = await db
         .update(cars)
         .set(updateData)
         .where(eq(cars.id, id))
         .returning()
     return car
+}
+
+async function addCarPhoto(carId: string, photoId: string, description?: string, isPrimary?: boolean) {
+    const [photo] = await db
+        .insert(carPhotos)
+        .values({
+            carId,
+            photoId,
+            description,
+            isPrimary: isPrimary || false,
+        })
+        .returning()
+    return photo
+}
+
+async function updateCarPhoto(photoId: string, data: { description?: string; isPrimary?: boolean }) {
+    const [photo] = await db
+        .update(carPhotos)
+        .set(data)
+        .where(eq(carPhotos.id, photoId))
+        .returning()
+    return photo
+}
+
+async function deleteCarPhoto(photoId: string) {
+    const [photo] = await db
+        .delete(carPhotos)
+        .where(eq(carPhotos.id, photoId))
+        .returning()
+    return photo
+}
+
+async function toggleCarListed(id: string) {
+    const [car] = await db.select().from(cars).where(eq(cars.id, id)).execute()
+    if (!car) return null
+    
+    const [updated] = await db
+        .update(cars)
+        .set({ listed: !car.listed })
+        .where(eq(cars.id, id))
+        .returning()
+    return updated
+}
+
+async function toggleCarSold(id: string) {
+    const [car] = await db.select().from(cars).where(eq(cars.id, id)).execute()
+    if (!car) return null
+    
+    const [updated] = await db
+        .update(cars)
+        .set({ sold: !car.sold })
+        .where(eq(cars.id, id))
+        .returning()
+    return updated
+}
+
+async function toggleCarFeatured(id: string) {
+    const [car] = await db.select().from(cars).where(eq(cars.id, id)).execute()
+    if (!car) return null
+    
+    const [updated] = await db
+        .update(cars)
+        .set({ isFeatured: !car.isFeatured })
+        .where(eq(cars.id, id))
+        .returning()
+    return updated
 }
 
 async function deleteCar(id: string) {
@@ -250,7 +415,17 @@ export const carStore = {
     getAllCars,
     getCarById,
     getFeaturedCars,
+    getCarPhotos,
+    getPrimaryPhoto,
     createCar,
     updateCar,
+    addCarPhoto,
+    updateCarPhoto,
+    deleteCarPhoto,
+    toggleCarListed,
+    toggleCarSold,
+    toggleCarFeatured,
     deleteCar,
+    generateSKUPrefix,
+    generateSKU,
 }

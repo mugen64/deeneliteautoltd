@@ -10,7 +10,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Edit, Trash2, Star } from 'lucide-react'
+import { Plus, Edit, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 export const Route = createFileRoute('/admin/console/car-inventory/')({
   component: RouteComponent,
@@ -32,16 +32,18 @@ function RouteComponent() {
   })
 
 
-  const handleToggleFeatured = async (carId: string, isFeatured: boolean) => {
+  const handleToggleListed = async (carId: string, isListed: boolean) => {
+    if (!confirm(`${isListed ? 'Unlist' : 'List'} this car? This action will ${isListed ? 'hide' : 'show'} the car from listings.`)) {
+      return
+    }
+
     try {
-      const response = await fetch(`/api/cars/inventory/${carId}`, {
-        method: 'PATCH',
+      const response = await fetch('/api/cars/inventory/toggle-listed', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          isFeatured: !isFeatured,
-        }),
+        body: JSON.stringify({ carId }),
       })
 
       if (!response.ok) {
@@ -51,7 +53,68 @@ function RouteComponent() {
       }
 
       queryClient.invalidateQueries({ queryKey: ['cars'] })
-      toast.success(`Car ${!isFeatured ? 'featured' : 'unfeatured'} successfully`)
+      toast.success(`Car ${isListed ? 'unlisted' : 'listed'} successfully`)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update car'
+      toast.error(message)
+    }
+  }
+
+  const handleToggleFeatured = async (carId: string, isFeatured: boolean) => {
+    if (!confirm(`${isFeatured ? 'Unfeature' : 'Feature'} this car?`)) {
+      return
+    }
+
+    try {
+      const response = await fetch('/api/cars/inventory/toggle-featured', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ carId }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        toast.error(error.error || 'Failed to update car')
+        return
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['cars'] })
+      toast.success(`Car ${isFeatured ? 'unfeatured' : 'featured'} successfully`)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update car'
+      toast.error(message)
+    }
+  }
+
+  const handleToggleSold = async (carId: string, isSold: boolean) => {
+    if (isSold) {
+      toast.error('This car is already marked as sold and cannot be unmarked.')
+      return
+    }
+
+    if (!confirm('Mark this car as sold? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      const response = await fetch('/api/cars/inventory/toggle-sold', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ carId }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        toast.error(error.error || 'Failed to update car')
+        return
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['cars'] })
+      toast.success('Car marked as sold successfully')
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to update car'
       toast.error(message)
@@ -123,7 +186,7 @@ function RouteComponent() {
               <CardContent className="p-6">
                 <div className="flex gap-6">
                   {/* Car Image */}
-                    <div className="shrink-0 w-32 h-24 bg-muted rounded-lg overflow-hidden">
+                  <div className="shrink-0 w-32 h-24 bg-muted rounded-lg overflow-hidden">
                     {car.files?.media_url ? (
                       <img
                         src={car.files.media_url}
@@ -143,16 +206,10 @@ function RouteComponent() {
                       <h3 className="text-lg font-semibold">
                         {car.cars.year} {car.car_makes.name} {car.car_models.name}
                       </h3>
-                      {car.cars.rating > 0 && (
-                        <div className="flex items-center gap-1">
-                          <Star className="size-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm">{car.cars.rating}</span>
-                        </div>
-                      )}
                     </div>
-                    <p className="text-sm text-muted-foreground">ID: {car.cars.id}</p>
+                    <p className="text-sm text-muted-foreground">SKU: <span className="font-mono font-semibold text-sm">{car.cars.sku}</span></p>
 
-                    <div className="grid grid-cols-4 gap-6 pt-2">
+                    <div className="grid grid-cols-5 gap-6 pt-2">
                       <div>
                         <p className="text-xs text-muted-foreground">Price</p>
                         <p className="font-semibold">UGX {parseInt(car.cars.price).toLocaleString()}</p>
@@ -169,19 +226,60 @@ function RouteComponent() {
                         <p className="text-xs text-muted-foreground">Condition</p>
                         <p className="font-semibold">{car.cars.condition}</p>
                       </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Color</p>
+                        <p className="font-semibold">{car.cars.color}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-6 pt-2">
+
+                      <div>
+                        <p className="text-xs text-muted-foreground">Transmission</p>
+                        <p className="font-semibold">{car.cars.transmission}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Fuel</p>
+                        <p className="font-semibold">{car.cars.fuelType}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Status</p>
+                        <p className={`font-semibold ${car.cars.sold ? 'text-destructive' : 'text-green-600'}`}>
+                          {car.cars.sold ? 'Sold' : 'Available'}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
                   {/* Status & Actions */}
                   <div className="flex flex-col items-end justify-between">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        variant={car.cars.listed ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => handleToggleListed(car.cars.id, car.cars.listed)}
+                        className="gap-2"
+                        disabled={car.cars.sold}
+                      >
+                        {car.cars.listed ? 'Unlist' : 'List'}
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleToggleFeatured(car.cars.id, car.cars.isFeatured)}
                         className="gap-2"
+                        disabled={car.cars.sold}
                       >
                         {car.cars.isFeatured ? 'Unfeature' : 'Feature'}
+                      </Button>
+                      <Button
+                        variant={car.cars.sold ? 'destructive' : 'outline'}
+                        size="sm"
+                        onClick={() => handleToggleSold(car.cars.id, car.cars.sold)}
+                        className="gap-2"
+                        disabled={car.cars.sold}
+                      >
+                        {car.cars.sold ? 'Sold' : 'Mark Sold'}
                       </Button>
                     </div>
 
@@ -190,6 +288,10 @@ function RouteComponent() {
                         variant="ghost"
                         size="icon"
                         onClick={() => {
+                          if (car.cars.sold) {
+                            toast.error('Cannot edit a sold car')
+                            return
+                          }
                           navigate({
                             to: '/admin/console/car-inventory/$id',
                             params: { id: car.cars.id },
