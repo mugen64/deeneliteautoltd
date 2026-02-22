@@ -122,3 +122,32 @@ export const carPhotos = pgTable('car_photos', {
   index('car_photos_photo_id_idx').on(table.photoId),
   index('car_photos_is_primary_idx').on(table.carId, table.isPrimary),
 ]));
+
+export const carHistoryChecklist = pgTable('car_history_checklist', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  description: text('description').notNull(),
+  iconSvg: text('icon_svg').notNull(),
+  displayIndex: integer('display_index').notNull().default(0),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ([
+  index('car_history_checklist_display_idx').on(table.displayIndex),
+]));
+
+export const carFeatures = pgTable('car_features', {
+  carId: uuid('car_id').notNull().references(() => cars.id, { onDelete: 'cascade' }),
+  featureTypeId: uuid('feature_type_id').notNull().references(() => carFeatureTypes.id, { onDelete: 'cascade' }),
+}, (table) => ([
+  index('car_features_car_id_idx').on(table.carId),
+  index('car_features_feature_type_id_idx').on(table.featureTypeId),
+  unique('car_features_unique_idx').on(table.carId, table.featureTypeId),
+]));
+
+export const carHistory = pgTable('car_history', {
+  carId: uuid('car_id').notNull().references(() => cars.id, { onDelete: 'cascade' }),
+  checklistId: uuid('checklist_id').notNull().references(() => carHistoryChecklist.id, { onDelete: 'cascade' }),
+}, (table) => ([
+  index('car_history_car_id_idx').on(table.carId),
+  index('car_history_checklist_id_idx').on(table.checklistId),
+  unique('car_history_unique_idx').on(table.carId, table.checklistId),
+]));

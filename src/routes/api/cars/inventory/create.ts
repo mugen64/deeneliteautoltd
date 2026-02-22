@@ -81,6 +81,8 @@ export const Route = createFileRoute('/api/cars/inventory/create')({
             mileage: data.mileage,
             condition: data.condition,
             photos,
+            featureIds: Array.isArray(data.featureIds) ? data.featureIds : [],
+            historyChecklistIds: Array.isArray(data.historyChecklistIds) ? data.historyChecklistIds : [],
           })
 
           return Response.json({ car }, { status: 201 })

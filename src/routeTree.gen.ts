@@ -28,6 +28,8 @@ import { Route as AdminConsoleContactFormsRouteImport } from './routes/admin/con
 import { Route as AdminConsoleAnalyticsRouteImport } from './routes/admin/console/analytics'
 import { Route as ApiCarsModelsIndexRouteImport } from './routes/api/cars/models/index'
 import { Route as ApiCarsInventoryIndexRouteImport } from './routes/api/cars/inventory/index'
+import { Route as ApiCarsHistoryChecklistIndexRouteImport } from './routes/api/cars/history-checklist/index'
+import { Route as ApiCarsFeaturesIndexRouteImport } from './routes/api/cars/features/index'
 import { Route as ApiCarsCarMakesIndexRouteImport } from './routes/api/cars/car-makes/index'
 import { Route as ApiCarsBodyTypesIndexRouteImport } from './routes/api/cars/body-types/index'
 import { Route as AdminConsoleCarModelsIndexRouteImport } from './routes/admin/console/car-models/index'
@@ -41,6 +43,12 @@ import { Route as ApiCarsInventoryToggleListedRouteImport } from './routes/api/c
 import { Route as ApiCarsInventoryToggleFeaturedRouteImport } from './routes/api/cars/inventory/toggle-featured'
 import { Route as ApiCarsInventoryCreateRouteImport } from './routes/api/cars/inventory/create'
 import { Route as ApiCarsInventoryIdRouteImport } from './routes/api/cars/inventory/$id'
+import { Route as ApiCarsHistoryChecklistUpdateRouteImport } from './routes/api/cars/history-checklist/update'
+import { Route as ApiCarsHistoryChecklistCreateRouteImport } from './routes/api/cars/history-checklist/create'
+import { Route as ApiCarsHistoryChecklistIdRouteImport } from './routes/api/cars/history-checklist/$id'
+import { Route as ApiCarsFeaturesUpdateRouteImport } from './routes/api/cars/features/update'
+import { Route as ApiCarsFeaturesCreateRouteImport } from './routes/api/cars/features/create'
+import { Route as ApiCarsFeaturesIdRouteImport } from './routes/api/cars/features/$id'
 import { Route as ApiCarsCarMakesUpdateRouteImport } from './routes/api/cars/car-makes/update'
 import { Route as ApiCarsCarMakesCreateRouteImport } from './routes/api/cars/car-makes/create'
 import { Route as ApiCarsCarMakesIdRouteImport } from './routes/api/cars/car-makes/$id'
@@ -158,6 +166,17 @@ const ApiCarsInventoryIndexRoute = ApiCarsInventoryIndexRouteImport.update({
   path: '/api/cars/inventory/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCarsHistoryChecklistIndexRoute =
+  ApiCarsHistoryChecklistIndexRouteImport.update({
+    id: '/api/cars/history-checklist/',
+    path: '/api/cars/history-checklist/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiCarsFeaturesIndexRoute = ApiCarsFeaturesIndexRouteImport.update({
+  id: '/api/cars/features/',
+  path: '/api/cars/features/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCarsCarMakesIndexRoute = ApiCarsCarMakesIndexRouteImport.update({
   id: '/api/cars/car-makes/',
   path: '/api/cars/car-makes/',
@@ -226,6 +245,39 @@ const ApiCarsInventoryCreateRoute = ApiCarsInventoryCreateRouteImport.update({
 const ApiCarsInventoryIdRoute = ApiCarsInventoryIdRouteImport.update({
   id: '/api/cars/inventory/$id',
   path: '/api/cars/inventory/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsHistoryChecklistUpdateRoute =
+  ApiCarsHistoryChecklistUpdateRouteImport.update({
+    id: '/api/cars/history-checklist/update',
+    path: '/api/cars/history-checklist/update',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiCarsHistoryChecklistCreateRoute =
+  ApiCarsHistoryChecklistCreateRouteImport.update({
+    id: '/api/cars/history-checklist/create',
+    path: '/api/cars/history-checklist/create',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiCarsHistoryChecklistIdRoute =
+  ApiCarsHistoryChecklistIdRouteImport.update({
+    id: '/api/cars/history-checklist/$id',
+    path: '/api/cars/history-checklist/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiCarsFeaturesUpdateRoute = ApiCarsFeaturesUpdateRouteImport.update({
+  id: '/api/cars/features/update',
+  path: '/api/cars/features/update',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsFeaturesCreateRoute = ApiCarsFeaturesCreateRouteImport.update({
+  id: '/api/cars/features/create',
+  path: '/api/cars/features/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsFeaturesIdRoute = ApiCarsFeaturesIdRouteImport.update({
+  id: '/api/cars/features/$id',
+  path: '/api/cars/features/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCarsCarMakesUpdateRoute = ApiCarsCarMakesUpdateRouteImport.update({
@@ -373,6 +425,12 @@ export interface FileRoutesByFullPath {
   '/api/cars/car-makes/$id': typeof ApiCarsCarMakesIdRoute
   '/api/cars/car-makes/create': typeof ApiCarsCarMakesCreateRoute
   '/api/cars/car-makes/update': typeof ApiCarsCarMakesUpdateRoute
+  '/api/cars/features/$id': typeof ApiCarsFeaturesIdRoute
+  '/api/cars/features/create': typeof ApiCarsFeaturesCreateRoute
+  '/api/cars/features/update': typeof ApiCarsFeaturesUpdateRoute
+  '/api/cars/history-checklist/$id': typeof ApiCarsHistoryChecklistIdRoute
+  '/api/cars/history-checklist/create': typeof ApiCarsHistoryChecklistCreateRoute
+  '/api/cars/history-checklist/update': typeof ApiCarsHistoryChecklistUpdateRoute
   '/api/cars/inventory/$id': typeof ApiCarsInventoryIdRouteWithChildren
   '/api/cars/inventory/create': typeof ApiCarsInventoryCreateRoute
   '/api/cars/inventory/toggle-featured': typeof ApiCarsInventoryToggleFeaturedRoute
@@ -386,6 +444,8 @@ export interface FileRoutesByFullPath {
   '/admin/console/car-models/': typeof AdminConsoleCarModelsIndexRoute
   '/api/cars/body-types/': typeof ApiCarsBodyTypesIndexRoute
   '/api/cars/car-makes/': typeof ApiCarsCarMakesIndexRoute
+  '/api/cars/features/': typeof ApiCarsFeaturesIndexRoute
+  '/api/cars/history-checklist/': typeof ApiCarsHistoryChecklistIndexRoute
   '/api/cars/inventory/': typeof ApiCarsInventoryIndexRoute
   '/api/cars/models/': typeof ApiCarsModelsIndexRoute
   '/admin/console/car-inventory/$id/images': typeof AdminConsoleCarInventoryIdImagesRoute
@@ -424,6 +484,12 @@ export interface FileRoutesByTo {
   '/api/cars/car-makes/$id': typeof ApiCarsCarMakesIdRoute
   '/api/cars/car-makes/create': typeof ApiCarsCarMakesCreateRoute
   '/api/cars/car-makes/update': typeof ApiCarsCarMakesUpdateRoute
+  '/api/cars/features/$id': typeof ApiCarsFeaturesIdRoute
+  '/api/cars/features/create': typeof ApiCarsFeaturesCreateRoute
+  '/api/cars/features/update': typeof ApiCarsFeaturesUpdateRoute
+  '/api/cars/history-checklist/$id': typeof ApiCarsHistoryChecklistIdRoute
+  '/api/cars/history-checklist/create': typeof ApiCarsHistoryChecklistCreateRoute
+  '/api/cars/history-checklist/update': typeof ApiCarsHistoryChecklistUpdateRoute
   '/api/cars/inventory/$id': typeof ApiCarsInventoryIdRouteWithChildren
   '/api/cars/inventory/create': typeof ApiCarsInventoryCreateRoute
   '/api/cars/inventory/toggle-featured': typeof ApiCarsInventoryToggleFeaturedRoute
@@ -437,6 +503,8 @@ export interface FileRoutesByTo {
   '/admin/console/car-models': typeof AdminConsoleCarModelsIndexRoute
   '/api/cars/body-types': typeof ApiCarsBodyTypesIndexRoute
   '/api/cars/car-makes': typeof ApiCarsCarMakesIndexRoute
+  '/api/cars/features': typeof ApiCarsFeaturesIndexRoute
+  '/api/cars/history-checklist': typeof ApiCarsHistoryChecklistIndexRoute
   '/api/cars/inventory': typeof ApiCarsInventoryIndexRoute
   '/api/cars/models': typeof ApiCarsModelsIndexRoute
   '/admin/console/car-inventory/$id/images': typeof AdminConsoleCarInventoryIdImagesRoute
@@ -479,6 +547,12 @@ export interface FileRoutesById {
   '/api/cars/car-makes/$id': typeof ApiCarsCarMakesIdRoute
   '/api/cars/car-makes/create': typeof ApiCarsCarMakesCreateRoute
   '/api/cars/car-makes/update': typeof ApiCarsCarMakesUpdateRoute
+  '/api/cars/features/$id': typeof ApiCarsFeaturesIdRoute
+  '/api/cars/features/create': typeof ApiCarsFeaturesCreateRoute
+  '/api/cars/features/update': typeof ApiCarsFeaturesUpdateRoute
+  '/api/cars/history-checklist/$id': typeof ApiCarsHistoryChecklistIdRoute
+  '/api/cars/history-checklist/create': typeof ApiCarsHistoryChecklistCreateRoute
+  '/api/cars/history-checklist/update': typeof ApiCarsHistoryChecklistUpdateRoute
   '/api/cars/inventory/$id': typeof ApiCarsInventoryIdRouteWithChildren
   '/api/cars/inventory/create': typeof ApiCarsInventoryCreateRoute
   '/api/cars/inventory/toggle-featured': typeof ApiCarsInventoryToggleFeaturedRoute
@@ -492,6 +566,8 @@ export interface FileRoutesById {
   '/admin/console/car-models/': typeof AdminConsoleCarModelsIndexRoute
   '/api/cars/body-types/': typeof ApiCarsBodyTypesIndexRoute
   '/api/cars/car-makes/': typeof ApiCarsCarMakesIndexRoute
+  '/api/cars/features/': typeof ApiCarsFeaturesIndexRoute
+  '/api/cars/history-checklist/': typeof ApiCarsHistoryChecklistIndexRoute
   '/api/cars/inventory/': typeof ApiCarsInventoryIndexRoute
   '/api/cars/models/': typeof ApiCarsModelsIndexRoute
   '/admin/console/car-inventory/$id/images': typeof AdminConsoleCarInventoryIdImagesRoute
@@ -535,6 +611,12 @@ export interface FileRouteTypes {
     | '/api/cars/car-makes/$id'
     | '/api/cars/car-makes/create'
     | '/api/cars/car-makes/update'
+    | '/api/cars/features/$id'
+    | '/api/cars/features/create'
+    | '/api/cars/features/update'
+    | '/api/cars/history-checklist/$id'
+    | '/api/cars/history-checklist/create'
+    | '/api/cars/history-checklist/update'
     | '/api/cars/inventory/$id'
     | '/api/cars/inventory/create'
     | '/api/cars/inventory/toggle-featured'
@@ -548,6 +630,8 @@ export interface FileRouteTypes {
     | '/admin/console/car-models/'
     | '/api/cars/body-types/'
     | '/api/cars/car-makes/'
+    | '/api/cars/features/'
+    | '/api/cars/history-checklist/'
     | '/api/cars/inventory/'
     | '/api/cars/models/'
     | '/admin/console/car-inventory/$id/images'
@@ -586,6 +670,12 @@ export interface FileRouteTypes {
     | '/api/cars/car-makes/$id'
     | '/api/cars/car-makes/create'
     | '/api/cars/car-makes/update'
+    | '/api/cars/features/$id'
+    | '/api/cars/features/create'
+    | '/api/cars/features/update'
+    | '/api/cars/history-checklist/$id'
+    | '/api/cars/history-checklist/create'
+    | '/api/cars/history-checklist/update'
     | '/api/cars/inventory/$id'
     | '/api/cars/inventory/create'
     | '/api/cars/inventory/toggle-featured'
@@ -599,6 +689,8 @@ export interface FileRouteTypes {
     | '/admin/console/car-models'
     | '/api/cars/body-types'
     | '/api/cars/car-makes'
+    | '/api/cars/features'
+    | '/api/cars/history-checklist'
     | '/api/cars/inventory'
     | '/api/cars/models'
     | '/admin/console/car-inventory/$id/images'
@@ -640,6 +732,12 @@ export interface FileRouteTypes {
     | '/api/cars/car-makes/$id'
     | '/api/cars/car-makes/create'
     | '/api/cars/car-makes/update'
+    | '/api/cars/features/$id'
+    | '/api/cars/features/create'
+    | '/api/cars/features/update'
+    | '/api/cars/history-checklist/$id'
+    | '/api/cars/history-checklist/create'
+    | '/api/cars/history-checklist/update'
     | '/api/cars/inventory/$id'
     | '/api/cars/inventory/create'
     | '/api/cars/inventory/toggle-featured'
@@ -653,6 +751,8 @@ export interface FileRouteTypes {
     | '/admin/console/car-models/'
     | '/api/cars/body-types/'
     | '/api/cars/car-makes/'
+    | '/api/cars/features/'
+    | '/api/cars/history-checklist/'
     | '/api/cars/inventory/'
     | '/api/cars/models/'
     | '/admin/console/car-inventory/$id/images'
@@ -680,6 +780,12 @@ export interface RootRouteChildren {
   ApiCarsCarMakesIdRoute: typeof ApiCarsCarMakesIdRoute
   ApiCarsCarMakesCreateRoute: typeof ApiCarsCarMakesCreateRoute
   ApiCarsCarMakesUpdateRoute: typeof ApiCarsCarMakesUpdateRoute
+  ApiCarsFeaturesIdRoute: typeof ApiCarsFeaturesIdRoute
+  ApiCarsFeaturesCreateRoute: typeof ApiCarsFeaturesCreateRoute
+  ApiCarsFeaturesUpdateRoute: typeof ApiCarsFeaturesUpdateRoute
+  ApiCarsHistoryChecklistIdRoute: typeof ApiCarsHistoryChecklistIdRoute
+  ApiCarsHistoryChecklistCreateRoute: typeof ApiCarsHistoryChecklistCreateRoute
+  ApiCarsHistoryChecklistUpdateRoute: typeof ApiCarsHistoryChecklistUpdateRoute
   ApiCarsInventoryIdRoute: typeof ApiCarsInventoryIdRouteWithChildren
   ApiCarsInventoryCreateRoute: typeof ApiCarsInventoryCreateRoute
   ApiCarsInventoryToggleFeaturedRoute: typeof ApiCarsInventoryToggleFeaturedRoute
@@ -691,6 +797,8 @@ export interface RootRouteChildren {
   ApiCarsModelsUpdateRoute: typeof ApiCarsModelsUpdateRoute
   ApiCarsBodyTypesIndexRoute: typeof ApiCarsBodyTypesIndexRoute
   ApiCarsCarMakesIndexRoute: typeof ApiCarsCarMakesIndexRoute
+  ApiCarsFeaturesIndexRoute: typeof ApiCarsFeaturesIndexRoute
+  ApiCarsHistoryChecklistIndexRoute: typeof ApiCarsHistoryChecklistIndexRoute
   ApiCarsInventoryIndexRoute: typeof ApiCarsInventoryIndexRoute
   ApiCarsModelsIndexRoute: typeof ApiCarsModelsIndexRoute
   ApiCarsInventoryPhotosPhotoIdRoute: typeof ApiCarsInventoryPhotosPhotoIdRouteWithChildren
@@ -831,6 +939,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCarsInventoryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/cars/history-checklist/': {
+      id: '/api/cars/history-checklist/'
+      path: '/api/cars/history-checklist'
+      fullPath: '/api/cars/history-checklist/'
+      preLoaderRoute: typeof ApiCarsHistoryChecklistIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/features/': {
+      id: '/api/cars/features/'
+      path: '/api/cars/features'
+      fullPath: '/api/cars/features/'
+      preLoaderRoute: typeof ApiCarsFeaturesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/cars/car-makes/': {
       id: '/api/cars/car-makes/'
       path: '/api/cars/car-makes'
@@ -920,6 +1042,48 @@ declare module '@tanstack/react-router' {
       path: '/api/cars/inventory/$id'
       fullPath: '/api/cars/inventory/$id'
       preLoaderRoute: typeof ApiCarsInventoryIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/history-checklist/update': {
+      id: '/api/cars/history-checklist/update'
+      path: '/api/cars/history-checklist/update'
+      fullPath: '/api/cars/history-checklist/update'
+      preLoaderRoute: typeof ApiCarsHistoryChecklistUpdateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/history-checklist/create': {
+      id: '/api/cars/history-checklist/create'
+      path: '/api/cars/history-checklist/create'
+      fullPath: '/api/cars/history-checklist/create'
+      preLoaderRoute: typeof ApiCarsHistoryChecklistCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/history-checklist/$id': {
+      id: '/api/cars/history-checklist/$id'
+      path: '/api/cars/history-checklist/$id'
+      fullPath: '/api/cars/history-checklist/$id'
+      preLoaderRoute: typeof ApiCarsHistoryChecklistIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/features/update': {
+      id: '/api/cars/features/update'
+      path: '/api/cars/features/update'
+      fullPath: '/api/cars/features/update'
+      preLoaderRoute: typeof ApiCarsFeaturesUpdateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/features/create': {
+      id: '/api/cars/features/create'
+      path: '/api/cars/features/create'
+      fullPath: '/api/cars/features/create'
+      preLoaderRoute: typeof ApiCarsFeaturesCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/features/$id': {
+      id: '/api/cars/features/$id'
+      path: '/api/cars/features/$id'
+      fullPath: '/api/cars/features/$id'
+      preLoaderRoute: typeof ApiCarsFeaturesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/cars/car-makes/update': {
@@ -1185,6 +1349,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCarsCarMakesIdRoute: ApiCarsCarMakesIdRoute,
   ApiCarsCarMakesCreateRoute: ApiCarsCarMakesCreateRoute,
   ApiCarsCarMakesUpdateRoute: ApiCarsCarMakesUpdateRoute,
+  ApiCarsFeaturesIdRoute: ApiCarsFeaturesIdRoute,
+  ApiCarsFeaturesCreateRoute: ApiCarsFeaturesCreateRoute,
+  ApiCarsFeaturesUpdateRoute: ApiCarsFeaturesUpdateRoute,
+  ApiCarsHistoryChecklistIdRoute: ApiCarsHistoryChecklistIdRoute,
+  ApiCarsHistoryChecklistCreateRoute: ApiCarsHistoryChecklistCreateRoute,
+  ApiCarsHistoryChecklistUpdateRoute: ApiCarsHistoryChecklistUpdateRoute,
   ApiCarsInventoryIdRoute: ApiCarsInventoryIdRouteWithChildren,
   ApiCarsInventoryCreateRoute: ApiCarsInventoryCreateRoute,
   ApiCarsInventoryToggleFeaturedRoute: ApiCarsInventoryToggleFeaturedRoute,
@@ -1196,6 +1366,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCarsModelsUpdateRoute: ApiCarsModelsUpdateRoute,
   ApiCarsBodyTypesIndexRoute: ApiCarsBodyTypesIndexRoute,
   ApiCarsCarMakesIndexRoute: ApiCarsCarMakesIndexRoute,
+  ApiCarsFeaturesIndexRoute: ApiCarsFeaturesIndexRoute,
+  ApiCarsHistoryChecklistIndexRoute: ApiCarsHistoryChecklistIndexRoute,
   ApiCarsInventoryIndexRoute: ApiCarsInventoryIndexRoute,
   ApiCarsModelsIndexRoute: ApiCarsModelsIndexRoute,
   ApiCarsInventoryPhotosPhotoIdRoute:

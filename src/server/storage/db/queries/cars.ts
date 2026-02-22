@@ -1,6 +1,17 @@
 import { and, asc, desc, eq, like } from "drizzle-orm"
 import { db } from "./db"
-import { carBodyTypes, carMakes, carModels, files, cars, carPhotos } from "../schema"
+import {
+    carBodyTypes,
+    carMakes,
+    carModels,
+    files,
+    cars,
+    carPhotos,
+    carFeatureTypes,
+    carHistoryChecklist,
+    carFeatures,
+    carHistory,
+} from "../schema"
 
 function slugify(value: string) {
     return value
@@ -145,6 +156,104 @@ async function deleteCarBodyType(id: string) {
     return carBodyType
 }
 
+// Car Feature Types functions
+async function getCarFeatureTypes() {
+    return db.select().from(carFeatureTypes).orderBy(asc(carFeatureTypes.name)).execute()
+}
+
+async function getCarFeatureTypeById(id: string) {
+    const result = await db.select().from(carFeatureTypes).where(eq(carFeatureTypes.id, id)).execute()
+    return result[0] || null
+}
+
+async function createCarFeatureType(data: { name: string; icon: string }) {
+    const [feature] = await db.insert(carFeatureTypes).values({
+        name: data.name,
+        slug: slugify(data.name),
+        icon: data.icon,
+    }).returning()
+    return feature
+}
+
+async function updateCarFeatureType(id: string, data: { name?: string; icon?: string }) {
+    const updateData: { name?: string; icon?: string; slug?: string } = { ...data }
+    if (data.name) {
+        updateData.slug = slugify(data.name)
+    }
+    const [feature] = await db.update(carFeatureTypes).set(updateData).where(eq(carFeatureTypes.id, id)).returning()
+    return feature
+}
+
+async function deleteCarFeatureType(id: string) {
+    const [feature] = await db.delete(carFeatureTypes).where(eq(carFeatureTypes.id, id)).returning()
+    return feature
+}
+
+// Car History Checklist functions
+async function getCarHistoryChecklist() {
+    return db.select().from(carHistoryChecklist).orderBy(asc(carHistoryChecklist.displayIndex), asc(carHistoryChecklist.description)).execute()
+}
+
+async function getNextHistoryChecklistDisplayIndex() {
+    const rows = await db
+        .select({ displayIndex: carHistoryChecklist.displayIndex })
+        .from(carHistoryChecklist)
+        .orderBy(desc(carHistoryChecklist.displayIndex))
+        .limit(1)
+        .execute()
+
+    const currentMax = rows[0]?.displayIndex ?? 0
+    return currentMax + 1
+}
+
+async function getCarHistoryChecklistById(id: string) {
+    const result = await db.select().from(carHistoryChecklist).where(eq(carHistoryChecklist.id, id)).execute()
+    return result[0] || null
+}
+
+async function createCarHistoryChecklist(data: { description: string; iconSvg: string; displayIndex: number }) {
+    const [item] = await db.insert(carHistoryChecklist).values({
+        description: data.description,
+        iconSvg: data.iconSvg,
+        displayIndex: data.displayIndex,
+    }).returning()
+    return item
+}
+
+async function updateCarHistoryChecklist(id: string, data: { description?: string; iconSvg?: string; displayIndex?: number }) {
+    const [item] = await db.update(carHistoryChecklist).set(data).where(eq(carHistoryChecklist.id, id)).returning()
+    return item
+}
+
+async function deleteCarHistoryChecklist(id: string) {
+    const [item] = await db.delete(carHistoryChecklist).where(eq(carHistoryChecklist.id, id)).returning()
+    return item
+}
+
+async function getCarFeatureIdsByCar(carId: string) {
+    const rows = await db.select({ featureTypeId: carFeatures.featureTypeId }).from(carFeatures).where(eq(carFeatures.carId, carId)).execute()
+    return rows.map((row) => row.featureTypeId)
+}
+
+async function getCarHistoryIdsByCar(carId: string) {
+    const rows = await db.select({ checklistId: carHistory.checklistId }).from(carHistory).where(eq(carHistory.carId, carId)).execute()
+    return rows.map((row) => row.checklistId)
+}
+
+async function setCarFeatures(carId: string, featureIds: string[]) {
+    await db.delete(carFeatures).where(eq(carFeatures.carId, carId)).execute()
+    if (!featureIds.length) return
+    const values = featureIds.map((featureTypeId) => ({ carId, featureTypeId }))
+    await db.insert(carFeatures).values(values).execute()
+}
+
+async function setCarHistoryChecklist(carId: string, checklistIds: string[]) {
+    await db.delete(carHistory).where(eq(carHistory.carId, carId)).execute()
+    if (!checklistIds.length) return
+    const values = checklistIds.map((checklistId) => ({ carId, checklistId }))
+    await db.insert(carHistory).values(values).execute()
+}
+
 async function getModelsByMake() {
     const models = await db.select().from(carModels).innerJoin(carMakes, eq(carModels.makeId, carMakes.id)).execute()
     
@@ -249,6 +358,8 @@ async function createCar(data: {
     mileage: number
     condition: string
     photos?: Array<{ photoId: string; description?: string; isPrimary?: boolean }>
+    featureIds?: string[]
+    historyChecklistIds?: string[]
 }) {
     const sku = await generateSKU(data.year, data.makeName, data.modelName, data.bodyTypeName, data.color)
     
@@ -278,6 +389,14 @@ async function createCar(data: {
         }))
         await db.insert(carPhotos).values(photoValues).execute()
     }
+
+    if (data.featureIds) {
+        await setCarFeatures(car.id, data.featureIds)
+    }
+
+    if (data.historyChecklistIds) {
+        await setCarHistoryChecklist(car.id, data.historyChecklistIds)
+    }
     
     return car
 }
@@ -297,8 +416,11 @@ async function updateCar(id: string, data: Partial<{
     condition: string
     isFeatured: boolean
     sold: boolean
+    featureIds: string[]
+    historyChecklistIds: string[]
 }>) {
-    const updateData: any = { ...data }
+    const { featureIds, historyChecklistIds, ...baseUpdate } = data
+    const updateData: any = { ...baseUpdate }
     
     // If color is being updated, we need year for SKU regeneration
     if (data.color && data.makeName && data.modelName && data.bodyTypeName) {
@@ -322,6 +444,14 @@ async function updateCar(id: string, data: Partial<{
         .set(updateData)
         .where(eq(cars.id, id))
         .returning()
+
+    if (featureIds) {
+        await setCarFeatures(id, featureIds)
+    }
+
+    if (historyChecklistIds) {
+        await setCarHistoryChecklist(id, historyChecklistIds)
+    }
     return car
 }
 
@@ -415,6 +545,21 @@ export const carStore = {
     createCarBodyType,
     updateCarBodyType,
     deleteCarBodyType,
+    getCarFeatureTypes,
+    getCarFeatureTypeById,
+    createCarFeatureType,
+    updateCarFeatureType,
+    deleteCarFeatureType,
+    getCarHistoryChecklist,
+    getNextHistoryChecklistDisplayIndex,
+    getCarHistoryChecklistById,
+    createCarHistoryChecklist,
+    updateCarHistoryChecklist,
+    deleteCarHistoryChecklist,
+    getCarFeatureIdsByCar,
+    getCarHistoryIdsByCar,
+    setCarFeatures,
+    setCarHistoryChecklist,
     getModelsByMake,
     getAllCars,
     getCarById,

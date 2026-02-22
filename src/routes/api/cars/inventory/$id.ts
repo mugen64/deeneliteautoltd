@@ -11,7 +11,9 @@ export const Route = createFileRoute('/api/cars/inventory/$id')({
           if (!car) {
             return Response.json({ error: 'Car not found' }, { status: 404 })
           }
-          return Response.json(car)
+          const featureIds = await carStore.getCarFeatureIdsByCar(params.id)
+          const historyChecklistIds = await carStore.getCarHistoryIdsByCar(params.id)
+          return Response.json({ ...car, featureIds, historyChecklistIds })
         } catch (error) {
           console.error('Error fetching car:', error)
           return Response.json({ error: 'Failed to fetch car' }, { status: 500 })

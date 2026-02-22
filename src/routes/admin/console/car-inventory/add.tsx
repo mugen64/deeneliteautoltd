@@ -23,9 +23,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useMemo } from 'react'
 
 export const Route = createFileRoute('/admin/console/car-inventory/add')({
   component: RouteComponent,
@@ -69,6 +78,30 @@ function RouteComponent() {
     },
   })
 
+  const { data: carFeatures = [] } = useQuery({
+    queryKey: ['carFeatures'],
+    queryFn: async () => {
+      const response = await fetch('/api/cars/features')
+      if (!response.ok) {
+        throw new Error('Failed to fetch car features')
+      }
+      const data = await response.json()
+      return data.features || []
+    },
+  })
+
+  const { data: carHistoryChecklist = [] } = useQuery({
+    queryKey: ['carHistoryChecklist'],
+    queryFn: async () => {
+      const response = await fetch('/api/cars/history-checklist')
+      if (!response.ok) {
+        throw new Error('Failed to fetch history checklist')
+      }
+      const data = await response.json()
+      return data.items || []
+    },
+  })
+
   const makes = carMakes && Array.isArray(carMakes)
     ? carMakes.map((item: any) => ({
         id: item.car_makes?.id,
@@ -92,6 +125,16 @@ function RouteComponent() {
       }))
     : []
 
+  const featureRows = useMemo(
+    () => carFeatures.map((feature: any) => feature.car_feature_types || feature),
+    [carFeatures],
+  )
+
+  const historyRows = useMemo(
+    () => carHistoryChecklist.map((item: any) => item.car_history_checklist || item),
+    [carHistoryChecklist],
+  )
+
   const form = useForm({
     defaultValues: {
       year: new Date().getFullYear(),
@@ -103,6 +146,8 @@ function RouteComponent() {
       color: '',
       transmission: 'Automatic',
       fuelType: 'Diesel',
+      featureIds: [] as string[],
+      historyChecklistIds: [] as string[],
     },
     onSubmit: async ({ value }) => {
       try {
@@ -505,6 +550,80 @@ function RouteComponent() {
             )
             }}
           </form.Field>
+        </div>
+
+        <div className="space-y-4 rounded-lg border p-4">
+          <div className="space-y-3 rounded-md border p-4">
+            <h2 className="text-lg font-semibold">Features</h2>
+            {featureRows.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Selected</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {featureRows.map((feature: any) => (
+                    <TableRow key={feature.id}>
+                      <TableCell>{feature.name}</TableCell>
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={form.state.values.featureIds.includes(feature.id)}
+                          onChange={(event) => {
+                            const checked = event.target.checked
+                            const next = checked
+                              ? [...form.state.values.featureIds, feature.id]
+                              : form.state.values.featureIds.filter((id) => id !== feature.id)
+                            form.setFieldValue('featureIds', next)
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <p className="text-sm text-muted-foreground">No features available.</p>
+            )}
+          </div>
+
+          <div className="space-y-3 rounded-md border p-4">
+            <h2 className="text-lg font-semibold">History Checklist</h2>
+            {historyRows.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Selected</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {historyRows.map((item: any) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.description}</TableCell>
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={form.state.values.historyChecklistIds.includes(item.id)}
+                          onChange={(event) => {
+                            const checked = event.target.checked
+                            const next = checked
+                              ? [...form.state.values.historyChecklistIds, item.id]
+                              : form.state.values.historyChecklistIds.filter((id) => id !== item.id)
+                            form.setFieldValue('historyChecklistIds', next)
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <p className="text-sm text-muted-foreground">No checklist items available.</p>
+            )}
+          </div>
         </div>
 
 
