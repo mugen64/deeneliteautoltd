@@ -1,6 +1,5 @@
 
-import { Search, User, Moon, Sun, Monitor } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import { User, Moon, Sun, Monitor } from 'lucide-react'
 import React from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { Button } from './ui/button'
@@ -16,7 +15,6 @@ import { useAuth } from '@/contexts/auth'
 import { logoutFn } from '@/server/auth'
 
 export default function Header() {
-  const [searchQuery, setSearchQuery] = React.useState('')
   const { setTheme } = useTheme()
   const { user } = useAuth()
   const logout = useServerFn(logoutFn)
@@ -32,19 +30,6 @@ export default function Header() {
                 DEEN <span className="font-bold">ELITE AUTO LTD</span>
               </Link>
             </h1>
-          </div>
-
-          <div className="flex flex-1 max-w-md items-center gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
-              <Input
-                type="text"
-                placeholder="Type Car name or Brand"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 w-full"
-              />
-            </div>
           </div>
 
           <div className="flex items-center gap-2">

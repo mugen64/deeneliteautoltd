@@ -36,6 +36,9 @@ import { Route as ApiCarsCarMakesIndexRouteImport } from './routes/api/cars/car-
 import { Route as ApiCarsBodyTypesIndexRouteImport } from './routes/api/cars/body-types/index'
 import { Route as AdminConsoleCarModelsIndexRouteImport } from './routes/admin/console/car-models/index'
 import { Route as AdminConsoleCarInventoryIndexRouteImport } from './routes/admin/console/car-inventory/index'
+import { Route as ApiCarsPublicListingsRouteImport } from './routes/api/cars/public/listings'
+import { Route as ApiCarsPublicFiltersRouteImport } from './routes/api/cars/public/filters'
+import { Route as ApiCarsPublicCarIdRouteImport } from './routes/api/cars/public/$carId'
 import { Route as ApiCarsModelsUpdateRouteImport } from './routes/api/cars/models/update'
 import { Route as ApiCarsModelsCreateRouteImport } from './routes/api/cars/models/create'
 import { Route as ApiCarsModelsByMakeRouteImport } from './routes/api/cars/models/by-make'
@@ -214,6 +217,21 @@ const AdminConsoleCarInventoryIndexRoute =
     path: '/car-inventory/',
     getParentRoute: () => AdminConsoleRouteRoute,
   } as any)
+const ApiCarsPublicListingsRoute = ApiCarsPublicListingsRouteImport.update({
+  id: '/api/cars/public/listings',
+  path: '/api/cars/public/listings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsPublicFiltersRoute = ApiCarsPublicFiltersRouteImport.update({
+  id: '/api/cars/public/filters',
+  path: '/api/cars/public/filters',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsPublicCarIdRoute = ApiCarsPublicCarIdRouteImport.update({
+  id: '/api/cars/public/$carId',
+  path: '/api/cars/public/$carId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCarsModelsUpdateRoute = ApiCarsModelsUpdateRouteImport.update({
   id: '/api/cars/models/update',
   path: '/api/cars/models/update',
@@ -469,6 +487,9 @@ export interface FileRoutesByFullPath {
   '/api/cars/models/by-make': typeof ApiCarsModelsByMakeRoute
   '/api/cars/models/create': typeof ApiCarsModelsCreateRoute
   '/api/cars/models/update': typeof ApiCarsModelsUpdateRoute
+  '/api/cars/public/$carId': typeof ApiCarsPublicCarIdRoute
+  '/api/cars/public/filters': typeof ApiCarsPublicFiltersRoute
+  '/api/cars/public/listings': typeof ApiCarsPublicListingsRoute
   '/admin/console/car-inventory/': typeof AdminConsoleCarInventoryIndexRoute
   '/admin/console/car-models/': typeof AdminConsoleCarModelsIndexRoute
   '/api/cars/body-types/': typeof ApiCarsBodyTypesIndexRoute
@@ -532,6 +553,9 @@ export interface FileRoutesByTo {
   '/api/cars/models/by-make': typeof ApiCarsModelsByMakeRoute
   '/api/cars/models/create': typeof ApiCarsModelsCreateRoute
   '/api/cars/models/update': typeof ApiCarsModelsUpdateRoute
+  '/api/cars/public/$carId': typeof ApiCarsPublicCarIdRoute
+  '/api/cars/public/filters': typeof ApiCarsPublicFiltersRoute
+  '/api/cars/public/listings': typeof ApiCarsPublicListingsRoute
   '/admin/console/car-inventory': typeof AdminConsoleCarInventoryIndexRoute
   '/admin/console/car-models': typeof AdminConsoleCarModelsIndexRoute
   '/api/cars/body-types': typeof ApiCarsBodyTypesIndexRoute
@@ -599,6 +623,9 @@ export interface FileRoutesById {
   '/api/cars/models/by-make': typeof ApiCarsModelsByMakeRoute
   '/api/cars/models/create': typeof ApiCarsModelsCreateRoute
   '/api/cars/models/update': typeof ApiCarsModelsUpdateRoute
+  '/api/cars/public/$carId': typeof ApiCarsPublicCarIdRoute
+  '/api/cars/public/filters': typeof ApiCarsPublicFiltersRoute
+  '/api/cars/public/listings': typeof ApiCarsPublicListingsRoute
   '/admin/console/car-inventory/': typeof AdminConsoleCarInventoryIndexRoute
   '/admin/console/car-models/': typeof AdminConsoleCarModelsIndexRoute
   '/api/cars/body-types/': typeof ApiCarsBodyTypesIndexRoute
@@ -667,6 +694,9 @@ export interface FileRouteTypes {
     | '/api/cars/models/by-make'
     | '/api/cars/models/create'
     | '/api/cars/models/update'
+    | '/api/cars/public/$carId'
+    | '/api/cars/public/filters'
+    | '/api/cars/public/listings'
     | '/admin/console/car-inventory/'
     | '/admin/console/car-models/'
     | '/api/cars/body-types/'
@@ -730,6 +760,9 @@ export interface FileRouteTypes {
     | '/api/cars/models/by-make'
     | '/api/cars/models/create'
     | '/api/cars/models/update'
+    | '/api/cars/public/$carId'
+    | '/api/cars/public/filters'
+    | '/api/cars/public/listings'
     | '/admin/console/car-inventory'
     | '/admin/console/car-models'
     | '/api/cars/body-types'
@@ -796,6 +829,9 @@ export interface FileRouteTypes {
     | '/api/cars/models/by-make'
     | '/api/cars/models/create'
     | '/api/cars/models/update'
+    | '/api/cars/public/$carId'
+    | '/api/cars/public/filters'
+    | '/api/cars/public/listings'
     | '/admin/console/car-inventory/'
     | '/admin/console/car-models/'
     | '/api/cars/body-types/'
@@ -848,6 +884,9 @@ export interface RootRouteChildren {
   ApiCarsModelsByMakeRoute: typeof ApiCarsModelsByMakeRoute
   ApiCarsModelsCreateRoute: typeof ApiCarsModelsCreateRoute
   ApiCarsModelsUpdateRoute: typeof ApiCarsModelsUpdateRoute
+  ApiCarsPublicCarIdRoute: typeof ApiCarsPublicCarIdRoute
+  ApiCarsPublicFiltersRoute: typeof ApiCarsPublicFiltersRoute
+  ApiCarsPublicListingsRoute: typeof ApiCarsPublicListingsRoute
   ApiCarsBodyTypesIndexRoute: typeof ApiCarsBodyTypesIndexRoute
   ApiCarsCarMakesIndexRoute: typeof ApiCarsCarMakesIndexRoute
   ApiCarsFeaturesIndexRoute: typeof ApiCarsFeaturesIndexRoute
@@ -1047,6 +1086,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/console/car-inventory/'
       preLoaderRoute: typeof AdminConsoleCarInventoryIndexRouteImport
       parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/api/cars/public/listings': {
+      id: '/api/cars/public/listings'
+      path: '/api/cars/public/listings'
+      fullPath: '/api/cars/public/listings'
+      preLoaderRoute: typeof ApiCarsPublicListingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/public/filters': {
+      id: '/api/cars/public/filters'
+      path: '/api/cars/public/filters'
+      fullPath: '/api/cars/public/filters'
+      preLoaderRoute: typeof ApiCarsPublicFiltersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/public/$carId': {
+      id: '/api/cars/public/$carId'
+      path: '/api/cars/public/$carId'
+      fullPath: '/api/cars/public/$carId'
+      preLoaderRoute: typeof ApiCarsPublicCarIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/cars/models/update': {
       id: '/api/cars/models/update'
@@ -1451,6 +1511,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCarsModelsByMakeRoute: ApiCarsModelsByMakeRoute,
   ApiCarsModelsCreateRoute: ApiCarsModelsCreateRoute,
   ApiCarsModelsUpdateRoute: ApiCarsModelsUpdateRoute,
+  ApiCarsPublicCarIdRoute: ApiCarsPublicCarIdRoute,
+  ApiCarsPublicFiltersRoute: ApiCarsPublicFiltersRoute,
+  ApiCarsPublicListingsRoute: ApiCarsPublicListingsRoute,
   ApiCarsBodyTypesIndexRoute: ApiCarsBodyTypesIndexRoute,
   ApiCarsCarMakesIndexRoute: ApiCarsCarMakesIndexRoute,
   ApiCarsFeaturesIndexRoute: ApiCarsFeaturesIndexRoute,

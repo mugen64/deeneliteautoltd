@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, like } from "drizzle-orm"
+import { and, asc, desc, eq, like, or, sql, ilike, gte, lte, inArray, count } from "drizzle-orm"
 import { db } from "./db"
 import {
     carBodyTypes,
@@ -354,6 +354,365 @@ async function getCarPhotos(carId: string) {
         .execute()
 }
 
+// Public car listings with filters and pagination
+type PublicCarListingFilters = {
+    search?: string
+    makeIds?: string[]
+    modelIds?: string[]
+    bodyTypeIds?: string[]
+    years?: number[]
+    minPrice?: number
+    maxPrice?: number
+    transmissions?: string[]
+    fuelTypes?: string[]
+    conditions?: string[]
+    colors?: string[]
+    minMileage?: number
+    maxMileage?: number
+    page?: number
+    limit?: number
+    sortBy?: 'price_asc' | 'price_desc' | 'year_asc' | 'year_desc' | 'mileage_asc' | 'mileage_desc' | 'featured'
+}
+
+async function getPublicCarListings(filters: PublicCarListingFilters = {}) {
+    const {
+        search,
+        makeIds,
+        modelIds,
+        bodyTypeIds,
+        years,
+        minPrice,
+        maxPrice,
+        transmissions,
+        fuelTypes,
+        conditions,
+        colors,
+        minMileage,
+        maxMileage,
+        page = 1,
+        limit = 12,
+        sortBy = 'featured'
+    } = filters
+
+    // Build where conditions
+    const conditions_list: any[] = [
+        eq(cars.listed, true),
+        eq(cars.sold, false)
+    ]
+
+    // Search in make, model, year, body type (prefix match)
+    if (search && search.trim()) {
+        const searchTerm = `${search.trim()}%`
+        conditions_list.push(
+            or(
+                ilike(carMakes.name, searchTerm),
+                ilike(carModels.name, searchTerm),
+                ilike(carBodyTypes.name, searchTerm),
+                sql`CAST(${cars.year} AS TEXT) ILIKE ${searchTerm}`
+            )
+        )
+    }
+
+    if (makeIds && makeIds.length > 0) {
+        conditions_list.push(inArray(carMakes.id, makeIds))
+    }
+
+    if (modelIds && modelIds.length > 0) {
+        conditions_list.push(inArray(cars.modelId, modelIds))
+    }
+
+    if (bodyTypeIds && bodyTypeIds.length > 0) {
+        conditions_list.push(inArray(cars.bodyTypeId, bodyTypeIds))
+    }
+
+    if (years && years.length > 0) {
+        conditions_list.push(inArray(cars.year, years))
+    }
+
+    if (minPrice !== undefined) {
+        conditions_list.push(gte(cars.price, minPrice.toString()))
+    }
+
+    if (maxPrice !== undefined) {
+        conditions_list.push(lte(cars.price, maxPrice.toString()))
+    }
+
+    if (transmissions && transmissions.length > 0) {
+        conditions_list.push(inArray(cars.transmission, transmissions))
+    }
+
+    if (fuelTypes && fuelTypes.length > 0) {
+        conditions_list.push(inArray(cars.fuelType, fuelTypes))
+    }
+
+    if (conditions && conditions.length > 0) {
+        conditions_list.push(inArray(cars.condition, conditions))
+    }
+
+    if (colors && colors.length > 0) {
+        conditions_list.push(inArray(cars.color, colors))
+    }
+
+    if (minMileage !== undefined) {
+        conditions_list.push(gte(cars.mileage, minMileage))
+    }
+
+    if (maxMileage !== undefined) {
+        conditions_list.push(lte(cars.mileage, maxMileage))
+    }
+
+    const whereClause = and(...conditions_list)
+
+    // Get total count
+    const [{ total }] = await db
+        .select({ total: count() })
+        .from(cars)
+        .innerJoin(carModels, eq(cars.modelId, carModels.id))
+        .innerJoin(carMakes, eq(carModels.makeId, carMakes.id))
+        .innerJoin(carBodyTypes, eq(cars.bodyTypeId, carBodyTypes.id))
+        .where(whereClause)
+        .execute()
+
+    // Determine sort order
+    const orderByClause = [] as Array<ReturnType<typeof asc> | ReturnType<typeof desc>>
+    switch (sortBy) {
+        case 'price_asc':
+            orderByClause.push(asc(cars.price))
+            break
+        case 'price_desc':
+            orderByClause.push(desc(cars.price))
+            break
+        case 'year_asc':
+            orderByClause.push(asc(cars.year))
+            break
+        case 'year_desc':
+            orderByClause.push(desc(cars.year))
+            break
+        case 'mileage_asc':
+            orderByClause.push(asc(cars.mileage))
+            break
+        case 'mileage_desc':
+            orderByClause.push(desc(cars.mileage))
+            break
+        case 'featured':
+            orderByClause.push(asc(cars.isFeatured), desc(cars.createdAt))
+            break
+        default:
+            orderByClause.push(desc(cars.createdAt))
+            break
+    }
+
+    // Get paginated results
+    const offset = (page - 1) * limit
+    const results = await db
+        .select({
+            id: cars.id,
+            sku: cars.sku,
+            year: cars.year,
+            price: cars.price,
+            color: cars.color,
+            transmission: cars.transmission,
+            fuelType: cars.fuelType,
+            mileage: cars.mileage,
+            condition: cars.condition,
+            isFeatured: cars.isFeatured,
+            listed: cars.listed,
+            sold: cars.sold,
+            createdAt: cars.createdAt,
+            make: {
+                id: carMakes.id,
+                name: carMakes.name,
+                slug: carMakes.slug,
+            },
+            model: {
+                id: carModels.id,
+                name: carModels.name,
+                slug: carModels.slug,
+            },
+            bodyType: {
+                id: carBodyTypes.id,
+                name: carBodyTypes.name,
+                slug: carBodyTypes.slug,
+            },
+            primaryImage: files.media_url,
+        })
+        .from(cars)
+        .innerJoin(carModels, eq(cars.modelId, carModels.id))
+        .innerJoin(carMakes, eq(carModels.makeId, carMakes.id))
+        .innerJoin(carBodyTypes, eq(cars.bodyTypeId, carBodyTypes.id))
+        .leftJoin(
+            carPhotos,
+            and(eq(cars.id, carPhotos.carId), eq(carPhotos.isPrimary, true))
+        )
+        .leftJoin(files, eq(carPhotos.photoId, files.id))
+        .where(whereClause)
+        .orderBy(...orderByClause)
+        .limit(limit)
+        .offset(offset)
+        .execute()
+
+    const carIds = results.map((car) => car.id)
+    const featureRows = carIds.length
+        ? await db
+            .select({
+                carId: carFeatures.carId,
+                features: sql<string[]>`array_agg(${carFeatureTypes.name} ORDER BY ${carFeatureTypes.name})`,
+            })
+            .from(carFeatures)
+            .innerJoin(carFeatureTypes, eq(carFeatures.featureTypeId, carFeatureTypes.id))
+            .where(inArray(carFeatures.carId, carIds))
+            .groupBy(carFeatures.carId)
+            .execute()
+        : []
+
+    const featuresByCarId = new Map(
+        featureRows.map((row) => [row.carId, row.features || []])
+    )
+
+    return {
+        data: results.map((car) => ({
+            ...car,
+            features: featuresByCarId.get(car.id) || [],
+        })),
+        pagination: {
+            page,
+            limit,
+            total: Number(total),
+            totalPages: Math.ceil(Number(total) / limit),
+        }
+    }
+}
+
+// Get car details with features and history
+async function getPublicCarDetails(carId: string) {
+    const carData = await db
+        .select()
+        .from(cars)
+        .innerJoin(carModels, eq(cars.modelId, carModels.id))
+        .innerJoin(carMakes, eq(carModels.makeId, carMakes.id))
+        .innerJoin(carBodyTypes, eq(cars.bodyTypeId, carBodyTypes.id))
+        .where(and(eq(cars.id, carId), eq(cars.listed, true), eq(cars.sold, false)))
+        .execute()
+
+    if (!carData.length) return null
+
+    // Get all photos
+    const photos = await db
+        .select({
+            id: carPhotos.id,
+            description: carPhotos.description,
+            isPrimary: carPhotos.isPrimary,
+            url: files.media_url,
+            publicId: files.public_id,
+        })
+        .from(carPhotos)
+        .innerJoin(files, eq(carPhotos.photoId, files.id))
+        .where(eq(carPhotos.carId, carId))
+        .orderBy(desc(carPhotos.isPrimary), asc(carPhotos.createdAt))
+        .execute()
+
+    // Get features
+    const features = await db
+        .select({
+            id: carFeatureTypes.id,
+            name: carFeatureTypes.name,
+            icon: carFeatureTypes.icon,
+        })
+        .from(carFeatures)
+        .innerJoin(carFeatureTypes, eq(carFeatures.featureTypeId, carFeatureTypes.id))
+        .where(eq(carFeatures.carId, carId))
+        .execute()
+
+    // Get history checklist
+    const history = await db
+        .select({
+            id: carHistoryChecklist.id,
+            description: carHistoryChecklist.description,
+            iconSvg: carHistoryChecklist.iconSvg,
+        })
+        .from(carHistory)
+        .innerJoin(carHistoryChecklist, eq(carHistory.checklistId, carHistoryChecklist.id))
+        .where(eq(carHistory.carId, carId))
+        .orderBy(asc(carHistoryChecklist.displayIndex))
+        .execute()
+
+    return {
+        ...carData[0],
+        photos,
+        features,
+        history,
+    }
+}
+
+// Get filter options for faceted search
+async function getCarFilterOptions() {
+    // Get all makes with car count
+    const makes = await db
+        .select({
+            id: carMakes.id,
+            name: carMakes.name,
+            count: count(cars.id),
+        })
+        .from(carMakes)
+        .innerJoin(carModels, eq(carMakes.id, carModels.makeId))
+        .innerJoin(cars, eq(carModels.id, cars.modelId))
+        .where(and(eq(cars.listed, true), eq(cars.sold, false)))
+        .groupBy(carMakes.id, carMakes.name)
+        .orderBy(asc(carMakes.name))
+        .execute()
+
+    // Get all body types with car count
+    const bodyTypes = await db
+        .select({
+            id: carBodyTypes.id,
+            name: carBodyTypes.name,
+            iconUrl: files.media_url,
+            count: count(cars.id),
+        })
+        .from(carBodyTypes)
+        .leftJoin(files, eq(carBodyTypes.iconId, files.id))
+        .innerJoin(cars, eq(carBodyTypes.id, cars.bodyTypeId))
+        .where(and(eq(cars.listed, true), eq(cars.sold, false)))
+        .groupBy(carBodyTypes.id, carBodyTypes.name, files.media_url)
+        .orderBy(asc(carBodyTypes.name))
+        .execute()
+
+    // Get unique values for other filters
+    const uniqueValues = await db
+        .select({
+            years: sql<number[]>`array_agg(DISTINCT ${cars.year} ORDER BY ${cars.year} DESC)`,
+            transmissions: sql<string[]>`array_agg(DISTINCT ${cars.transmission} ORDER BY ${cars.transmission})`,
+            fuelTypes: sql<string[]>`array_agg(DISTINCT ${cars.fuelType} ORDER BY ${cars.fuelType})`,
+            conditions: sql<string[]>`array_agg(DISTINCT ${cars.condition} ORDER BY ${cars.condition})`,
+            colors: sql<string[]>`array_agg(DISTINCT ${cars.color} ORDER BY ${cars.color})`,
+            minPrice: sql<string>`MIN(${cars.price})`,
+            maxPrice: sql<string>`MAX(${cars.price})`,
+            minMileage: sql<number>`MIN(${cars.mileage})`,
+            maxMileage: sql<number>`MAX(${cars.mileage})`,
+        })
+        .from(cars)
+        .where(and(eq(cars.listed, true), eq(cars.sold, false)))
+        .execute()
+
+    return {
+        makes,
+        bodyTypes,
+        years: uniqueValues[0]?.years || [],
+        transmissions: uniqueValues[0]?.transmissions || [],
+        fuelTypes: uniqueValues[0]?.fuelTypes || [],
+        conditions: uniqueValues[0]?.conditions || [],
+        colors: uniqueValues[0]?.colors || [],
+        priceRange: {
+            min: parseFloat(uniqueValues[0]?.minPrice || '0'),
+            max: parseFloat(uniqueValues[0]?.maxPrice || '0'),
+        },
+        mileageRange: {
+            min: uniqueValues[0]?.minMileage || 0,
+            max: uniqueValues[0]?.maxMileage || 0,
+        },
+    }
+}
+
 async function getPrimaryPhoto(carId: string) {
     const result = await db
         .select()
@@ -600,4 +959,7 @@ export const carStore = {
     deleteCar,
     generateSKUPrefix,
     generateSKU,
+    getPublicCarListings,
+    getPublicCarDetails,
+    getCarFilterOptions,
 }

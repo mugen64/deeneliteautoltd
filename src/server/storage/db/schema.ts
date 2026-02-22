@@ -103,10 +103,21 @@ export const cars = pgTable('cars', {
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ([
   index('cars_model_id_idx').on(table.modelId),
+  index('cars_year_idx').on(table.year),
+  index('cars_price_idx').on(table.price),
+  index('cars_transmission_idx').on(table.transmission),
+  index('cars_fuel_type_idx').on(table.fuelType),
+  index('cars_condition_idx').on(table.condition),
+  index('cars_color_idx').on(table.color),
+  index('cars_mileage_idx').on(table.mileage),
   index('cars_listed_idx').on(table.listed),
   index('cars_featured_idx').on(table.isFeatured),
   index('cars_sold_idx').on(table.sold),
   index('cars_sku_idx').on(table.sku),
+  index('cars_listed_sold_idx').on(table.listed, table.sold),
+  index('cars_listed_sold_year_idx').on(table.listed, table.sold, table.year),
+  index('cars_body_type_listed_idx').on(table.bodyTypeId, table.listed, table.sold),
+  index('cars_model_listed_idx').on(table.modelId, table.listed, table.sold),
 ]));
 
 export const carPhotos = pgTable('car_photos', {
