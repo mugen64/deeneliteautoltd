@@ -1,4 +1,4 @@
-import { eq, like } from "drizzle-orm"
+import { and, asc, desc, eq, like } from "drizzle-orm"
 import { db } from "./db"
 import { carBodyTypes, carMakes, carModels, files, cars, carPhotos } from "../schema"
 
@@ -178,7 +178,10 @@ async function getAllCars() {
         .innerJoin(carModels, eq(cars.modelId, carModels.id))
         .innerJoin(carMakes, eq(carModels.makeId, carMakes.id))
         .innerJoin(carBodyTypes, eq(cars.bodyTypeId, carBodyTypes.id))
-        .leftJoin(carPhotos, eq(cars.id, carPhotos.carId))
+        .leftJoin(
+            carPhotos,
+            and(eq(cars.id, carPhotos.carId), eq(carPhotos.isPrimary, true))
+        )
         .leftJoin(files, eq(carPhotos.photoId, files.id))
         .execute()
 }
@@ -215,7 +218,8 @@ async function getCarPhotos(carId: string) {
         .select()
         .from(carPhotos)
         .innerJoin(files, eq(carPhotos.photoId, files.id))
-        .where(eq(carPhotos.carId, carId))
+    .where(eq(carPhotos.carId, carId))
+    .orderBy(desc(carPhotos.isPrimary), asc(carPhotos.createdAt), asc(carPhotos.id))
         .execute()
 }
 

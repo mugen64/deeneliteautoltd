@@ -22,6 +22,10 @@ interface ImageCropUploadProps {
   } | null) => void
   folder?: string
   disabled?: boolean
+  outputSize?: number
+  outputWidth?: number
+  outputHeight?: number
+  aspectRatio?: number
   onUploadingChange?: (uploading: boolean) => void
 }
 
@@ -77,6 +81,10 @@ export function ImageCropUpload({
   onChange,
   folder = 'uploads',
   disabled = false,
+  outputSize = 200,
+  outputWidth,
+  outputHeight,
+  aspectRatio,
   onUploadingChange,
 }: ImageCropUploadProps) {
   const getUploadSignature = useServerFn(generateFileUploadSignature)
@@ -114,13 +122,21 @@ export function ImageCropUpload({
       return
     }
 
+    const width = outputWidth ?? outputSize
+    const height = outputHeight ?? outputSize
+
     setUploading(true)
     onUploadingChange?.(true)
     setUploadError(null)
 
     try {
       // Create cropped blob
-      const croppedBlob = await createCroppedImage(imageSrc, croppedAreaPixels)
+      const croppedBlob = await createCroppedImage(
+        imageSrc,
+        croppedAreaPixels,
+        width,
+        height,
+      )
 
       // Upload to Cloudinary
       const signatureData = await getUploadSignature({ data: { folder } })
@@ -225,7 +241,12 @@ export function ImageCropUpload({
                 image={imageSrc}
                 crop={crop}
                 zoom={zoom}
-                aspect={1}
+                aspect={
+                  aspectRatio ??
+                  (outputWidth && outputHeight
+                    ? outputWidth / outputHeight
+                    : 1)
+                }
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}

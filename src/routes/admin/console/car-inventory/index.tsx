@@ -10,7 +10,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Edit, Trash2 } from 'lucide-react'
+import { Plus, Edit, Trash2, Images } from 'lucide-react'
 import { toast } from 'sonner'
 export const Route = createFileRoute('/admin/console/car-inventory/')({
   component: RouteComponent,
@@ -33,6 +33,14 @@ function RouteComponent() {
 
 
   const handleToggleListed = async (carId: string, isListed: boolean) => {
+    // Check if car has a primary image
+    const carRows = allCars.filter((c: { cars: { id: string }; car_photos?: { isPrimary?: boolean } | null }) => c.cars.id === carId)
+    const hasPrimaryImage = carRows.some((row: { car_photos?: { isPrimary?: boolean } | null }) => row.car_photos?.isPrimary)
+    if (!isListed && !hasPrimaryImage) {
+      toast.error('Cannot list a car without a primary image. Please set a primary image first.')
+      return
+    }
+
     if (!confirm(`${isListed ? 'Unlist' : 'List'} this car? This action will ${isListed ? 'hide' : 'show'} the car from listings.`)) {
       return
     }
@@ -61,6 +69,13 @@ function RouteComponent() {
   }
 
   const handleToggleFeatured = async (carId: string, isFeatured: boolean) => {
+    // Check if car has images
+    const car = allCars.find((c: {cars: {id: string}, files: any[]}) => c.cars.id === carId)
+    if (!isFeatured && (!car?.files || car.files.length === 0)) {
+      toast.error('Cannot feature a car without images. Please add images first.')
+      return
+    }
+
     if (!confirm(`${isFeatured ? 'Unfeature' : 'Feature'} this car?`)) {
       return
     }
@@ -284,6 +299,19 @@ function RouteComponent() {
                     </div>
 
                     <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          navigate({
+                            to: '/admin/console/car-inventory/$id/images',
+                            params: { id: car.cars.id },
+                          })
+                        }}
+                        title="Manage images"
+                      >
+                        <Images className="size-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
