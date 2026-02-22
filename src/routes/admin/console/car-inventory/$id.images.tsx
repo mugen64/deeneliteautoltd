@@ -201,7 +201,7 @@ function CarImagesComponent() {
       <div className="container py-8">
         <div className="text-center">
           <p className="text-lg font-semibold">Car not found</p>
-          <Button onClick={() => navigate({ to: '/admin/console/car-inventory' })} className="mt-4">
+          <Button onClick={() => navigate({ to: '/admin/console/car-inventory', search: { tab: 'inventory' } })} className="mt-4">
             Back to Inventory
           </Button>
         </div>
@@ -218,7 +218,7 @@ function CarImagesComponent() {
   return (
     <div className="container py-8 px-8">
       <div className="mb-6">
-        <Button variant="ghost" onClick={() => navigate({ to: '/admin/console/car-inventory' })}>
+        <Button variant="ghost" onClick={() => navigate({ to: '/admin/console/car-inventory', search: { tab: 'inventory' } })}>
           <ArrowLeft className="size-4 mr-2" />
           Back to Inventory
         </Button>

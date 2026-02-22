@@ -273,7 +273,7 @@ function RouteComponent() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink render={<Link to="/admin/console/car-inventory" />}>
+              <BreadcrumbLink render={<Link to="/admin/console/car-inventory" search={{ tab: 'inventory' }} />}>
                 Car Inventory
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -288,6 +288,7 @@ function RouteComponent() {
           <h1 className="text-3xl font-bold">Edit Car</h1>
           <Link
             to="/admin/console/car-inventory"
+            search={{ tab: 'inventory' }}
             className={buttonVariants({ variant: 'outline', size: 'sm' })}
           >
             Back to Inventory

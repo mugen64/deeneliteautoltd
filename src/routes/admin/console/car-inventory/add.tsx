@@ -124,8 +124,7 @@ function RouteComponent() {
         toast.success('Car created successfully')
 
         navigate({
-          to: '/admin/console/car-inventory',
-          replace: true,
+          to: '/admin/console/car-inventory',          search: { tab: 'inventory' },          replace: true,
         })
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to create car'
@@ -146,7 +145,7 @@ function RouteComponent() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink render={<Link to="/admin/console/car-inventory" />}>
+              <BreadcrumbLink render={<Link to="/admin/console/car-inventory" search={{ tab: 'inventory' }} />}>
                 Car Inventory
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -161,6 +160,7 @@ function RouteComponent() {
           <h1 className="text-3xl font-bold">Add New Car</h1>
           <Link
             to="/admin/console/car-inventory"
+            search={{ tab: 'inventory' }}
             className={buttonVariants({ variant: 'outline', size: 'sm' })}
           >
             Back to Inventory

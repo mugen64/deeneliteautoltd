@@ -14,15 +14,17 @@ import { Route as SellCarRouteImport } from './routes/sell-car'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as AdminUserManagementRouteImport } from './routes/admin/user-management'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminConsoleRouteRouteImport } from './routes/admin/console/route'
+import { Route as ApiUsersIndexRouteImport } from './routes/api/users/index'
 import { Route as ApiCarsIndexRouteImport } from './routes/api/cars/index'
 import { Route as AdminConsoleIndexRouteImport } from './routes/admin/console/index'
+import { Route as ApiDashboardStatsRouteImport } from './routes/api/dashboard/stats'
 import { Route as ApiCarsUpdateRouteImport } from './routes/api/cars/update'
 import { Route as ApiCarsCreateRouteImport } from './routes/api/cars/create'
 import { Route as ApiCarsIdRouteImport } from './routes/api/cars/$id'
+import { Route as AdminConsoleUserManagementRouteImport } from './routes/admin/console/user-management'
 import { Route as AdminConsoleContentRouteImport } from './routes/admin/console/content'
 import { Route as AdminConsoleContactFormsRouteImport } from './routes/admin/console/contact-forms'
 import { Route as AdminConsoleAnalyticsRouteImport } from './routes/admin/console/analytics'
@@ -97,11 +99,6 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminUserManagementRoute = AdminUserManagementRouteImport.update({
-  id: '/user-management',
-  path: '/user-management',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -117,6 +114,11 @@ const AdminConsoleRouteRoute = AdminConsoleRouteRouteImport.update({
   path: '/console',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const ApiUsersIndexRoute = ApiUsersIndexRouteImport.update({
+  id: '/api/users/',
+  path: '/api/users/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCarsIndexRoute = ApiCarsIndexRouteImport.update({
   id: '/api/cars/',
   path: '/api/cars/',
@@ -126,6 +128,11 @@ const AdminConsoleIndexRoute = AdminConsoleIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminConsoleRouteRoute,
+} as any)
+const ApiDashboardStatsRoute = ApiDashboardStatsRouteImport.update({
+  id: '/api/dashboard/stats',
+  path: '/api/dashboard/stats',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCarsUpdateRoute = ApiCarsUpdateRouteImport.update({
   id: '/api/cars/update',
@@ -142,6 +149,12 @@ const ApiCarsIdRoute = ApiCarsIdRouteImport.update({
   path: '/api/cars/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminConsoleUserManagementRoute =
+  AdminConsoleUserManagementRouteImport.update({
+    id: '/user-management',
+    path: '/user-management',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
 const AdminConsoleContentRoute = AdminConsoleContentRouteImport.update({
   id: '/content',
   path: '/content',
@@ -417,16 +430,18 @@ export interface FileRoutesByFullPath {
   '/admin/console': typeof AdminConsoleRouteRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/admin/user-management': typeof AdminUserManagementRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/console/analytics': typeof AdminConsoleAnalyticsRoute
   '/admin/console/contact-forms': typeof AdminConsoleContactFormsRoute
   '/admin/console/content': typeof AdminConsoleContentRoute
+  '/admin/console/user-management': typeof AdminConsoleUserManagementRoute
   '/api/cars/$id': typeof ApiCarsIdRoute
   '/api/cars/create': typeof ApiCarsCreateRoute
   '/api/cars/update': typeof ApiCarsUpdateRoute
+  '/api/dashboard/stats': typeof ApiDashboardStatsRoute
   '/admin/console/': typeof AdminConsoleIndexRoute
   '/api/cars/': typeof ApiCarsIndexRoute
+  '/api/users/': typeof ApiUsersIndexRoute
   '/admin/console/car-inventory/$id': typeof AdminConsoleCarInventoryIdRouteWithChildren
   '/admin/console/car-inventory/add': typeof AdminConsoleCarInventoryAddRoute
   '/admin/console/car-models/add-body-type': typeof AdminConsoleCarModelsAddBodyTypeRoute
@@ -479,16 +494,18 @@ export interface FileRoutesByTo {
   '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/admin/user-management': typeof AdminUserManagementRoute
   '/admin': typeof AdminIndexRoute
   '/admin/console/analytics': typeof AdminConsoleAnalyticsRoute
   '/admin/console/contact-forms': typeof AdminConsoleContactFormsRoute
   '/admin/console/content': typeof AdminConsoleContentRoute
+  '/admin/console/user-management': typeof AdminConsoleUserManagementRoute
   '/api/cars/$id': typeof ApiCarsIdRoute
   '/api/cars/create': typeof ApiCarsCreateRoute
   '/api/cars/update': typeof ApiCarsUpdateRoute
+  '/api/dashboard/stats': typeof ApiDashboardStatsRoute
   '/admin/console': typeof AdminConsoleIndexRoute
   '/api/cars': typeof ApiCarsIndexRoute
+  '/api/users': typeof ApiUsersIndexRoute
   '/admin/console/car-inventory/add': typeof AdminConsoleCarInventoryAddRoute
   '/admin/console/car-models/add-body-type': typeof AdminConsoleCarModelsAddBodyTypeRoute
   '/admin/console/car-models/add-make': typeof AdminConsoleCarModelsAddMakeRoute
@@ -543,16 +560,18 @@ export interface FileRoutesById {
   '/admin/console': typeof AdminConsoleRouteRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/admin/user-management': typeof AdminUserManagementRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/console/analytics': typeof AdminConsoleAnalyticsRoute
   '/admin/console/contact-forms': typeof AdminConsoleContactFormsRoute
   '/admin/console/content': typeof AdminConsoleContentRoute
+  '/admin/console/user-management': typeof AdminConsoleUserManagementRoute
   '/api/cars/$id': typeof ApiCarsIdRoute
   '/api/cars/create': typeof ApiCarsCreateRoute
   '/api/cars/update': typeof ApiCarsUpdateRoute
+  '/api/dashboard/stats': typeof ApiDashboardStatsRoute
   '/admin/console/': typeof AdminConsoleIndexRoute
   '/api/cars/': typeof ApiCarsIndexRoute
+  '/api/users/': typeof ApiUsersIndexRoute
   '/admin/console/car-inventory/$id': typeof AdminConsoleCarInventoryIdRouteWithChildren
   '/admin/console/car-inventory/add': typeof AdminConsoleCarInventoryAddRoute
   '/admin/console/car-models/add-body-type': typeof AdminConsoleCarModelsAddBodyTypeRoute
@@ -609,16 +628,18 @@ export interface FileRouteTypes {
     | '/admin/console'
     | '/admin/login'
     | '/admin/settings'
-    | '/admin/user-management'
     | '/admin/'
     | '/admin/console/analytics'
     | '/admin/console/contact-forms'
     | '/admin/console/content'
+    | '/admin/console/user-management'
     | '/api/cars/$id'
     | '/api/cars/create'
     | '/api/cars/update'
+    | '/api/dashboard/stats'
     | '/admin/console/'
     | '/api/cars/'
+    | '/api/users/'
     | '/admin/console/car-inventory/$id'
     | '/admin/console/car-inventory/add'
     | '/admin/console/car-models/add-body-type'
@@ -671,16 +692,18 @@ export interface FileRouteTypes {
     | '/submit-enquiry'
     | '/admin/login'
     | '/admin/settings'
-    | '/admin/user-management'
     | '/admin'
     | '/admin/console/analytics'
     | '/admin/console/contact-forms'
     | '/admin/console/content'
+    | '/admin/console/user-management'
     | '/api/cars/$id'
     | '/api/cars/create'
     | '/api/cars/update'
+    | '/api/dashboard/stats'
     | '/admin/console'
     | '/api/cars'
+    | '/api/users'
     | '/admin/console/car-inventory/add'
     | '/admin/console/car-models/add-body-type'
     | '/admin/console/car-models/add-make'
@@ -734,16 +757,18 @@ export interface FileRouteTypes {
     | '/admin/console'
     | '/admin/login'
     | '/admin/settings'
-    | '/admin/user-management'
     | '/admin/'
     | '/admin/console/analytics'
     | '/admin/console/contact-forms'
     | '/admin/console/content'
+    | '/admin/console/user-management'
     | '/api/cars/$id'
     | '/api/cars/create'
     | '/api/cars/update'
+    | '/api/dashboard/stats'
     | '/admin/console/'
     | '/api/cars/'
+    | '/api/users/'
     | '/admin/console/car-inventory/$id'
     | '/admin/console/car-inventory/add'
     | '/admin/console/car-models/add-body-type'
@@ -799,7 +824,9 @@ export interface RootRouteChildren {
   ApiCarsIdRoute: typeof ApiCarsIdRoute
   ApiCarsCreateRoute: typeof ApiCarsCreateRoute
   ApiCarsUpdateRoute: typeof ApiCarsUpdateRoute
+  ApiDashboardStatsRoute: typeof ApiDashboardStatsRoute
   ApiCarsIndexRoute: typeof ApiCarsIndexRoute
+  ApiUsersIndexRoute: typeof ApiUsersIndexRoute
   ApiCarsBodyTypesIdRoute: typeof ApiCarsBodyTypesIdRoute
   ApiCarsBodyTypesCreateRoute: typeof ApiCarsBodyTypesCreateRoute
   ApiCarsBodyTypesUpdateRoute: typeof ApiCarsBodyTypesUpdateRoute
@@ -867,13 +894,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/user-management': {
-      id: '/admin/user-management'
-      path: '/user-management'
-      fullPath: '/admin/user-management'
-      preLoaderRoute: typeof AdminUserManagementRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/settings': {
       id: '/admin/settings'
       path: '/settings'
@@ -895,6 +915,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminConsoleRouteRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/api/users/': {
+      id: '/api/users/'
+      path: '/api/users'
+      fullPath: '/api/users/'
+      preLoaderRoute: typeof ApiUsersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/cars/': {
       id: '/api/cars/'
       path: '/api/cars'
@@ -908,6 +935,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/console/'
       preLoaderRoute: typeof AdminConsoleIndexRouteImport
       parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/api/dashboard/stats': {
+      id: '/api/dashboard/stats'
+      path: '/api/dashboard/stats'
+      fullPath: '/api/dashboard/stats'
+      preLoaderRoute: typeof ApiDashboardStatsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/cars/update': {
       id: '/api/cars/update'
@@ -929,6 +963,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/cars/$id'
       preLoaderRoute: typeof ApiCarsIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/console/user-management': {
+      id: '/admin/console/user-management'
+      path: '/user-management'
+      fullPath: '/admin/console/user-management'
+      preLoaderRoute: typeof AdminConsoleUserManagementRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
     }
     '/admin/console/content': {
       id: '/admin/console/content'
@@ -1290,6 +1331,7 @@ interface AdminConsoleRouteRouteChildren {
   AdminConsoleAnalyticsRoute: typeof AdminConsoleAnalyticsRoute
   AdminConsoleContactFormsRoute: typeof AdminConsoleContactFormsRoute
   AdminConsoleContentRoute: typeof AdminConsoleContentRoute
+  AdminConsoleUserManagementRoute: typeof AdminConsoleUserManagementRoute
   AdminConsoleIndexRoute: typeof AdminConsoleIndexRoute
   AdminConsoleCarInventoryIdRoute: typeof AdminConsoleCarInventoryIdRouteWithChildren
   AdminConsoleCarInventoryAddRoute: typeof AdminConsoleCarInventoryAddRoute
@@ -1308,6 +1350,7 @@ const AdminConsoleRouteRouteChildren: AdminConsoleRouteRouteChildren = {
   AdminConsoleAnalyticsRoute: AdminConsoleAnalyticsRoute,
   AdminConsoleContactFormsRoute: AdminConsoleContactFormsRoute,
   AdminConsoleContentRoute: AdminConsoleContentRoute,
+  AdminConsoleUserManagementRoute: AdminConsoleUserManagementRoute,
   AdminConsoleIndexRoute: AdminConsoleIndexRoute,
   AdminConsoleCarInventoryIdRoute: AdminConsoleCarInventoryIdRouteWithChildren,
   AdminConsoleCarInventoryAddRoute: AdminConsoleCarInventoryAddRoute,
@@ -1332,7 +1375,6 @@ interface AdminRouteRouteChildren {
   AdminConsoleRouteRoute: typeof AdminConsoleRouteRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
-  AdminUserManagementRoute: typeof AdminUserManagementRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -1340,7 +1382,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminConsoleRouteRoute: AdminConsoleRouteRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
   AdminSettingsRoute: AdminSettingsRoute,
-  AdminUserManagementRoute: AdminUserManagementRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -1386,7 +1427,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCarsIdRoute: ApiCarsIdRoute,
   ApiCarsCreateRoute: ApiCarsCreateRoute,
   ApiCarsUpdateRoute: ApiCarsUpdateRoute,
+  ApiDashboardStatsRoute: ApiDashboardStatsRoute,
   ApiCarsIndexRoute: ApiCarsIndexRoute,
+  ApiUsersIndexRoute: ApiUsersIndexRoute,
   ApiCarsBodyTypesIdRoute: ApiCarsBodyTypesIdRoute,
   ApiCarsBodyTypesCreateRoute: ApiCarsBodyTypesCreateRoute,
   ApiCarsBodyTypesUpdateRoute: ApiCarsBodyTypesUpdateRoute,

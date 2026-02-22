@@ -23,8 +23,24 @@ async function createUser(data: { email: string; password: string; name: string,
     return user;
 }
 
+async function getAllUsers() {
+    return db
+        .select({
+            id: users.id,
+            email: users.email,
+            phone: users.phone,
+            name: users.name,
+            role: users.role,
+            createdAt: users.createdAt,
+            updatedAt: users.updatedAt,
+        })
+        .from(users)
+        .execute()
+}
+
 export const userStore = {
     getUserById,
     getUserByEmail,
     createUser,
+    getAllUsers,
 }
