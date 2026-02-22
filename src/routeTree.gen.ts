@@ -11,9 +11,38 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitEnquiryRouteImport } from './routes/submit-enquiry'
 import { Route as SellCarRouteImport } from './routes/sell-car'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminUserManagementRouteImport } from './routes/admin/user-management'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminConsoleRouteRouteImport } from './routes/admin/console/route'
+import { Route as ApiCarsIndexRouteImport } from './routes/api/cars/index'
+import { Route as AdminConsoleIndexRouteImport } from './routes/admin/console/index'
+import { Route as ApiCarsUpdateRouteImport } from './routes/api/cars/update'
+import { Route as ApiCarsCreateRouteImport } from './routes/api/cars/create'
+import { Route as ApiCarsIdRouteImport } from './routes/api/cars/$id'
+import { Route as AdminConsoleContentRouteImport } from './routes/admin/console/content'
+import { Route as AdminConsoleContactFormsRouteImport } from './routes/admin/console/contact-forms'
+import { Route as AdminConsoleAnalyticsRouteImport } from './routes/admin/console/analytics'
+import { Route as ApiCarsModelsIndexRouteImport } from './routes/api/cars/models/index'
+import { Route as ApiCarsInventoryIndexRouteImport } from './routes/api/cars/inventory/index'
+import { Route as AdminConsoleCarModelsIndexRouteImport } from './routes/admin/console/car-models/index'
+import { Route as AdminConsoleCarInventoryIndexRouteImport } from './routes/admin/console/car-inventory/index'
+import { Route as ApiCarsModelsUpdateRouteImport } from './routes/api/cars/models/update'
+import { Route as ApiCarsModelsCreateRouteImport } from './routes/api/cars/models/create'
+import { Route as ApiCarsModelsByMakeRouteImport } from './routes/api/cars/models/by-make'
+import { Route as ApiCarsModelsIdRouteImport } from './routes/api/cars/models/$id'
+import { Route as ApiCarsInventoryCreateRouteImport } from './routes/api/cars/inventory/create'
+import { Route as ApiCarsInventoryIdRouteImport } from './routes/api/cars/inventory/$id'
+import { Route as AdminConsoleCarModelsMakesRouteImport } from './routes/admin/console/car-models/makes'
+import { Route as AdminConsoleCarModelsAddModelRouteImport } from './routes/admin/console/car-models/add-model'
+import { Route as AdminConsoleCarModelsAddMakeRouteImport } from './routes/admin/console/car-models/add-make'
+import { Route as AdminConsoleCarInventoryAddRouteImport } from './routes/admin/console/car-inventory/add'
+import { Route as AdminConsoleCarInventoryIdRouteImport } from './routes/admin/console/car-inventory/$id'
+import { Route as AdminConsoleCarModelsEditModelModelIdRouteImport } from './routes/admin/console/car-models/edit-model/$modelId'
+import { Route as AdminConsoleCarModelsEditMakeMakeIdRouteImport } from './routes/admin/console/car-models/edit-make/$makeId'
 
 const SubmitEnquiryRoute = SubmitEnquiryRouteImport.update({
   id: '/submit-enquiry',
@@ -25,64 +54,410 @@ const SellCarRoute = SellCarRouteImport.update({
   path: '/sell-car',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminUserManagementRoute = AdminUserManagementRouteImport.update({
+  id: '/user-management',
+  path: '/user-management',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin/login',
-  path: '/admin/login',
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminConsoleRouteRoute = AdminConsoleRouteRouteImport.update({
+  id: '/console',
+  path: '/console',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const ApiCarsIndexRoute = ApiCarsIndexRouteImport.update({
+  id: '/api/cars/',
+  path: '/api/cars/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminConsoleIndexRoute = AdminConsoleIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminConsoleRouteRoute,
+} as any)
+const ApiCarsUpdateRoute = ApiCarsUpdateRouteImport.update({
+  id: '/api/cars/update',
+  path: '/api/cars/update',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsCreateRoute = ApiCarsCreateRouteImport.update({
+  id: '/api/cars/create',
+  path: '/api/cars/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsIdRoute = ApiCarsIdRouteImport.update({
+  id: '/api/cars/$id',
+  path: '/api/cars/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConsoleContentRoute = AdminConsoleContentRouteImport.update({
+  id: '/content',
+  path: '/content',
+  getParentRoute: () => AdminConsoleRouteRoute,
+} as any)
+const AdminConsoleContactFormsRoute =
+  AdminConsoleContactFormsRouteImport.update({
+    id: '/contact-forms',
+    path: '/contact-forms',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
+const AdminConsoleAnalyticsRoute = AdminConsoleAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminConsoleRouteRoute,
+} as any)
+const ApiCarsModelsIndexRoute = ApiCarsModelsIndexRouteImport.update({
+  id: '/api/cars/models/',
+  path: '/api/cars/models/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsInventoryIndexRoute = ApiCarsInventoryIndexRouteImport.update({
+  id: '/api/cars/inventory/',
+  path: '/api/cars/inventory/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConsoleCarModelsIndexRoute =
+  AdminConsoleCarModelsIndexRouteImport.update({
+    id: '/car-models/',
+    path: '/car-models/',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
+const AdminConsoleCarInventoryIndexRoute =
+  AdminConsoleCarInventoryIndexRouteImport.update({
+    id: '/car-inventory/',
+    path: '/car-inventory/',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
+const ApiCarsModelsUpdateRoute = ApiCarsModelsUpdateRouteImport.update({
+  id: '/api/cars/models/update',
+  path: '/api/cars/models/update',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsModelsCreateRoute = ApiCarsModelsCreateRouteImport.update({
+  id: '/api/cars/models/create',
+  path: '/api/cars/models/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsModelsByMakeRoute = ApiCarsModelsByMakeRouteImport.update({
+  id: '/api/cars/models/by-make',
+  path: '/api/cars/models/by-make',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsModelsIdRoute = ApiCarsModelsIdRouteImport.update({
+  id: '/api/cars/models/$id',
+  path: '/api/cars/models/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsInventoryCreateRoute = ApiCarsInventoryCreateRouteImport.update({
+  id: '/api/cars/inventory/create',
+  path: '/api/cars/inventory/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCarsInventoryIdRoute = ApiCarsInventoryIdRouteImport.update({
+  id: '/api/cars/inventory/$id',
+  path: '/api/cars/inventory/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConsoleCarModelsMakesRoute =
+  AdminConsoleCarModelsMakesRouteImport.update({
+    id: '/car-models/makes',
+    path: '/car-models/makes',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
+const AdminConsoleCarModelsAddModelRoute =
+  AdminConsoleCarModelsAddModelRouteImport.update({
+    id: '/car-models/add-model',
+    path: '/car-models/add-model',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
+const AdminConsoleCarModelsAddMakeRoute =
+  AdminConsoleCarModelsAddMakeRouteImport.update({
+    id: '/car-models/add-make',
+    path: '/car-models/add-make',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
+const AdminConsoleCarInventoryAddRoute =
+  AdminConsoleCarInventoryAddRouteImport.update({
+    id: '/car-inventory/add',
+    path: '/car-inventory/add',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
+const AdminConsoleCarInventoryIdRoute =
+  AdminConsoleCarInventoryIdRouteImport.update({
+    id: '/car-inventory/$id',
+    path: '/car-inventory/$id',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
+const AdminConsoleCarModelsEditModelModelIdRoute =
+  AdminConsoleCarModelsEditModelModelIdRouteImport.update({
+    id: '/car-models/edit-model/$modelId',
+    path: '/car-models/edit-model/$modelId',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
+const AdminConsoleCarModelsEditMakeMakeIdRoute =
+  AdminConsoleCarModelsEditMakeMakeIdRouteImport.update({
+    id: '/car-models/edit-make/$makeId',
+    path: '/car-models/edit-make/$makeId',
+    getParentRoute: () => AdminConsoleRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/sell-car': typeof SellCarRoute
   '/submit-enquiry': typeof SubmitEnquiryRoute
+  '/admin/console': typeof AdminConsoleRouteRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/user-management': typeof AdminUserManagementRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/console/analytics': typeof AdminConsoleAnalyticsRoute
+  '/admin/console/contact-forms': typeof AdminConsoleContactFormsRoute
+  '/admin/console/content': typeof AdminConsoleContentRoute
+  '/api/cars/$id': typeof ApiCarsIdRoute
+  '/api/cars/create': typeof ApiCarsCreateRoute
+  '/api/cars/update': typeof ApiCarsUpdateRoute
+  '/admin/console/': typeof AdminConsoleIndexRoute
+  '/api/cars/': typeof ApiCarsIndexRoute
+  '/admin/console/car-inventory/$id': typeof AdminConsoleCarInventoryIdRoute
+  '/admin/console/car-inventory/add': typeof AdminConsoleCarInventoryAddRoute
+  '/admin/console/car-models/add-make': typeof AdminConsoleCarModelsAddMakeRoute
+  '/admin/console/car-models/add-model': typeof AdminConsoleCarModelsAddModelRoute
+  '/admin/console/car-models/makes': typeof AdminConsoleCarModelsMakesRoute
+  '/api/cars/inventory/$id': typeof ApiCarsInventoryIdRoute
+  '/api/cars/inventory/create': typeof ApiCarsInventoryCreateRoute
+  '/api/cars/models/$id': typeof ApiCarsModelsIdRoute
+  '/api/cars/models/by-make': typeof ApiCarsModelsByMakeRoute
+  '/api/cars/models/create': typeof ApiCarsModelsCreateRoute
+  '/api/cars/models/update': typeof ApiCarsModelsUpdateRoute
+  '/admin/console/car-inventory/': typeof AdminConsoleCarInventoryIndexRoute
+  '/admin/console/car-models/': typeof AdminConsoleCarModelsIndexRoute
+  '/api/cars/inventory/': typeof ApiCarsInventoryIndexRoute
+  '/api/cars/models/': typeof ApiCarsModelsIndexRoute
+  '/admin/console/car-models/edit-make/$makeId': typeof AdminConsoleCarModelsEditMakeMakeIdRoute
+  '/admin/console/car-models/edit-model/$modelId': typeof AdminConsoleCarModelsEditModelModelIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sell-car': typeof SellCarRoute
   '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/user-management': typeof AdminUserManagementRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/console/analytics': typeof AdminConsoleAnalyticsRoute
+  '/admin/console/contact-forms': typeof AdminConsoleContactFormsRoute
+  '/admin/console/content': typeof AdminConsoleContentRoute
+  '/api/cars/$id': typeof ApiCarsIdRoute
+  '/api/cars/create': typeof ApiCarsCreateRoute
+  '/api/cars/update': typeof ApiCarsUpdateRoute
+  '/admin/console': typeof AdminConsoleIndexRoute
+  '/api/cars': typeof ApiCarsIndexRoute
+  '/admin/console/car-inventory/$id': typeof AdminConsoleCarInventoryIdRoute
+  '/admin/console/car-inventory/add': typeof AdminConsoleCarInventoryAddRoute
+  '/admin/console/car-models/add-make': typeof AdminConsoleCarModelsAddMakeRoute
+  '/admin/console/car-models/add-model': typeof AdminConsoleCarModelsAddModelRoute
+  '/admin/console/car-models/makes': typeof AdminConsoleCarModelsMakesRoute
+  '/api/cars/inventory/$id': typeof ApiCarsInventoryIdRoute
+  '/api/cars/inventory/create': typeof ApiCarsInventoryCreateRoute
+  '/api/cars/models/$id': typeof ApiCarsModelsIdRoute
+  '/api/cars/models/by-make': typeof ApiCarsModelsByMakeRoute
+  '/api/cars/models/create': typeof ApiCarsModelsCreateRoute
+  '/api/cars/models/update': typeof ApiCarsModelsUpdateRoute
+  '/admin/console/car-inventory': typeof AdminConsoleCarInventoryIndexRoute
+  '/admin/console/car-models': typeof AdminConsoleCarModelsIndexRoute
+  '/api/cars/inventory': typeof ApiCarsInventoryIndexRoute
+  '/api/cars/models': typeof ApiCarsModelsIndexRoute
+  '/admin/console/car-models/edit-make/$makeId': typeof AdminConsoleCarModelsEditMakeMakeIdRoute
+  '/admin/console/car-models/edit-model/$modelId': typeof AdminConsoleCarModelsEditModelModelIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/sell-car': typeof SellCarRoute
   '/submit-enquiry': typeof SubmitEnquiryRoute
+  '/admin/console': typeof AdminConsoleRouteRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/user-management': typeof AdminUserManagementRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/console/analytics': typeof AdminConsoleAnalyticsRoute
+  '/admin/console/contact-forms': typeof AdminConsoleContactFormsRoute
+  '/admin/console/content': typeof AdminConsoleContentRoute
+  '/api/cars/$id': typeof ApiCarsIdRoute
+  '/api/cars/create': typeof ApiCarsCreateRoute
+  '/api/cars/update': typeof ApiCarsUpdateRoute
+  '/admin/console/': typeof AdminConsoleIndexRoute
+  '/api/cars/': typeof ApiCarsIndexRoute
+  '/admin/console/car-inventory/$id': typeof AdminConsoleCarInventoryIdRoute
+  '/admin/console/car-inventory/add': typeof AdminConsoleCarInventoryAddRoute
+  '/admin/console/car-models/add-make': typeof AdminConsoleCarModelsAddMakeRoute
+  '/admin/console/car-models/add-model': typeof AdminConsoleCarModelsAddModelRoute
+  '/admin/console/car-models/makes': typeof AdminConsoleCarModelsMakesRoute
+  '/api/cars/inventory/$id': typeof ApiCarsInventoryIdRoute
+  '/api/cars/inventory/create': typeof ApiCarsInventoryCreateRoute
+  '/api/cars/models/$id': typeof ApiCarsModelsIdRoute
+  '/api/cars/models/by-make': typeof ApiCarsModelsByMakeRoute
+  '/api/cars/models/create': typeof ApiCarsModelsCreateRoute
+  '/api/cars/models/update': typeof ApiCarsModelsUpdateRoute
+  '/admin/console/car-inventory/': typeof AdminConsoleCarInventoryIndexRoute
+  '/admin/console/car-models/': typeof AdminConsoleCarModelsIndexRoute
+  '/api/cars/inventory/': typeof ApiCarsInventoryIndexRoute
+  '/api/cars/models/': typeof ApiCarsModelsIndexRoute
+  '/admin/console/car-models/edit-make/$makeId': typeof AdminConsoleCarModelsEditMakeMakeIdRoute
+  '/admin/console/car-models/edit-model/$modelId': typeof AdminConsoleCarModelsEditModelModelIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sell-car' | '/submit-enquiry' | '/admin/login' | '/admin/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/sell-car'
+    | '/submit-enquiry'
+    | '/admin/console'
+    | '/admin/login'
+    | '/admin/settings'
+    | '/admin/user-management'
+    | '/admin/'
+    | '/admin/console/analytics'
+    | '/admin/console/contact-forms'
+    | '/admin/console/content'
+    | '/api/cars/$id'
+    | '/api/cars/create'
+    | '/api/cars/update'
+    | '/admin/console/'
+    | '/api/cars/'
+    | '/admin/console/car-inventory/$id'
+    | '/admin/console/car-inventory/add'
+    | '/admin/console/car-models/add-make'
+    | '/admin/console/car-models/add-model'
+    | '/admin/console/car-models/makes'
+    | '/api/cars/inventory/$id'
+    | '/api/cars/inventory/create'
+    | '/api/cars/models/$id'
+    | '/api/cars/models/by-make'
+    | '/api/cars/models/create'
+    | '/api/cars/models/update'
+    | '/admin/console/car-inventory/'
+    | '/admin/console/car-models/'
+    | '/api/cars/inventory/'
+    | '/api/cars/models/'
+    | '/admin/console/car-models/edit-make/$makeId'
+    | '/admin/console/car-models/edit-model/$modelId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sell-car' | '/submit-enquiry' | '/admin/login' | '/admin'
-  id:
-    | '__root__'
+  to:
     | '/'
     | '/sell-car'
     | '/submit-enquiry'
     | '/admin/login'
+    | '/admin/settings'
+    | '/admin/user-management'
+    | '/admin'
+    | '/admin/console/analytics'
+    | '/admin/console/contact-forms'
+    | '/admin/console/content'
+    | '/api/cars/$id'
+    | '/api/cars/create'
+    | '/api/cars/update'
+    | '/admin/console'
+    | '/api/cars'
+    | '/admin/console/car-inventory/$id'
+    | '/admin/console/car-inventory/add'
+    | '/admin/console/car-models/add-make'
+    | '/admin/console/car-models/add-model'
+    | '/admin/console/car-models/makes'
+    | '/api/cars/inventory/$id'
+    | '/api/cars/inventory/create'
+    | '/api/cars/models/$id'
+    | '/api/cars/models/by-make'
+    | '/api/cars/models/create'
+    | '/api/cars/models/update'
+    | '/admin/console/car-inventory'
+    | '/admin/console/car-models'
+    | '/api/cars/inventory'
+    | '/api/cars/models'
+    | '/admin/console/car-models/edit-make/$makeId'
+    | '/admin/console/car-models/edit-model/$modelId'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/sell-car'
+    | '/submit-enquiry'
+    | '/admin/console'
+    | '/admin/login'
+    | '/admin/settings'
+    | '/admin/user-management'
     | '/admin/'
+    | '/admin/console/analytics'
+    | '/admin/console/contact-forms'
+    | '/admin/console/content'
+    | '/api/cars/$id'
+    | '/api/cars/create'
+    | '/api/cars/update'
+    | '/admin/console/'
+    | '/api/cars/'
+    | '/admin/console/car-inventory/$id'
+    | '/admin/console/car-inventory/add'
+    | '/admin/console/car-models/add-make'
+    | '/admin/console/car-models/add-model'
+    | '/admin/console/car-models/makes'
+    | '/api/cars/inventory/$id'
+    | '/api/cars/inventory/create'
+    | '/api/cars/models/$id'
+    | '/api/cars/models/by-make'
+    | '/api/cars/models/create'
+    | '/api/cars/models/update'
+    | '/admin/console/car-inventory/'
+    | '/admin/console/car-models/'
+    | '/api/cars/inventory/'
+    | '/api/cars/models/'
+    | '/admin/console/car-models/edit-make/$makeId'
+    | '/admin/console/car-models/edit-model/$modelId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SellCarRoute: typeof SellCarRoute
   SubmitEnquiryRoute: typeof SubmitEnquiryRoute
-  AdminLoginRoute: typeof AdminLoginRoute
-  AdminIndexRoute: typeof AdminIndexRoute
+  ApiCarsIdRoute: typeof ApiCarsIdRoute
+  ApiCarsCreateRoute: typeof ApiCarsCreateRoute
+  ApiCarsUpdateRoute: typeof ApiCarsUpdateRoute
+  ApiCarsIndexRoute: typeof ApiCarsIndexRoute
+  ApiCarsInventoryIdRoute: typeof ApiCarsInventoryIdRoute
+  ApiCarsInventoryCreateRoute: typeof ApiCarsInventoryCreateRoute
+  ApiCarsModelsIdRoute: typeof ApiCarsModelsIdRoute
+  ApiCarsModelsByMakeRoute: typeof ApiCarsModelsByMakeRoute
+  ApiCarsModelsCreateRoute: typeof ApiCarsModelsCreateRoute
+  ApiCarsModelsUpdateRoute: typeof ApiCarsModelsUpdateRoute
+  ApiCarsInventoryIndexRoute: typeof ApiCarsInventoryIndexRoute
+  ApiCarsModelsIndexRoute: typeof ApiCarsModelsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -101,6 +476,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SellCarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -110,27 +492,291 @@ declare module '@tanstack/react-router' {
     }
     '/admin/': {
       id: '/admin/'
-      path: '/admin'
+      path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/user-management': {
+      id: '/admin/user-management'
+      path: '/user-management'
+      fullPath: '/admin/user-management'
+      preLoaderRoute: typeof AdminUserManagementRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/admin/login': {
       id: '/admin/login'
-      path: '/admin/login'
+      path: '/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/console': {
+      id: '/admin/console'
+      path: '/console'
+      fullPath: '/admin/console'
+      preLoaderRoute: typeof AdminConsoleRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/api/cars/': {
+      id: '/api/cars/'
+      path: '/api/cars'
+      fullPath: '/api/cars/'
+      preLoaderRoute: typeof ApiCarsIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/console/': {
+      id: '/admin/console/'
+      path: '/'
+      fullPath: '/admin/console/'
+      preLoaderRoute: typeof AdminConsoleIndexRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/api/cars/update': {
+      id: '/api/cars/update'
+      path: '/api/cars/update'
+      fullPath: '/api/cars/update'
+      preLoaderRoute: typeof ApiCarsUpdateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/create': {
+      id: '/api/cars/create'
+      path: '/api/cars/create'
+      fullPath: '/api/cars/create'
+      preLoaderRoute: typeof ApiCarsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/$id': {
+      id: '/api/cars/$id'
+      path: '/api/cars/$id'
+      fullPath: '/api/cars/$id'
+      preLoaderRoute: typeof ApiCarsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/console/content': {
+      id: '/admin/console/content'
+      path: '/content'
+      fullPath: '/admin/console/content'
+      preLoaderRoute: typeof AdminConsoleContentRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/admin/console/contact-forms': {
+      id: '/admin/console/contact-forms'
+      path: '/contact-forms'
+      fullPath: '/admin/console/contact-forms'
+      preLoaderRoute: typeof AdminConsoleContactFormsRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/admin/console/analytics': {
+      id: '/admin/console/analytics'
+      path: '/analytics'
+      fullPath: '/admin/console/analytics'
+      preLoaderRoute: typeof AdminConsoleAnalyticsRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/api/cars/models/': {
+      id: '/api/cars/models/'
+      path: '/api/cars/models'
+      fullPath: '/api/cars/models/'
+      preLoaderRoute: typeof ApiCarsModelsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/inventory/': {
+      id: '/api/cars/inventory/'
+      path: '/api/cars/inventory'
+      fullPath: '/api/cars/inventory/'
+      preLoaderRoute: typeof ApiCarsInventoryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/console/car-models/': {
+      id: '/admin/console/car-models/'
+      path: '/car-models'
+      fullPath: '/admin/console/car-models/'
+      preLoaderRoute: typeof AdminConsoleCarModelsIndexRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/admin/console/car-inventory/': {
+      id: '/admin/console/car-inventory/'
+      path: '/car-inventory'
+      fullPath: '/admin/console/car-inventory/'
+      preLoaderRoute: typeof AdminConsoleCarInventoryIndexRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/api/cars/models/update': {
+      id: '/api/cars/models/update'
+      path: '/api/cars/models/update'
+      fullPath: '/api/cars/models/update'
+      preLoaderRoute: typeof ApiCarsModelsUpdateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/models/create': {
+      id: '/api/cars/models/create'
+      path: '/api/cars/models/create'
+      fullPath: '/api/cars/models/create'
+      preLoaderRoute: typeof ApiCarsModelsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/models/by-make': {
+      id: '/api/cars/models/by-make'
+      path: '/api/cars/models/by-make'
+      fullPath: '/api/cars/models/by-make'
+      preLoaderRoute: typeof ApiCarsModelsByMakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/models/$id': {
+      id: '/api/cars/models/$id'
+      path: '/api/cars/models/$id'
+      fullPath: '/api/cars/models/$id'
+      preLoaderRoute: typeof ApiCarsModelsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/inventory/create': {
+      id: '/api/cars/inventory/create'
+      path: '/api/cars/inventory/create'
+      fullPath: '/api/cars/inventory/create'
+      preLoaderRoute: typeof ApiCarsInventoryCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cars/inventory/$id': {
+      id: '/api/cars/inventory/$id'
+      path: '/api/cars/inventory/$id'
+      fullPath: '/api/cars/inventory/$id'
+      preLoaderRoute: typeof ApiCarsInventoryIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/console/car-models/makes': {
+      id: '/admin/console/car-models/makes'
+      path: '/car-models/makes'
+      fullPath: '/admin/console/car-models/makes'
+      preLoaderRoute: typeof AdminConsoleCarModelsMakesRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/admin/console/car-models/add-model': {
+      id: '/admin/console/car-models/add-model'
+      path: '/car-models/add-model'
+      fullPath: '/admin/console/car-models/add-model'
+      preLoaderRoute: typeof AdminConsoleCarModelsAddModelRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/admin/console/car-models/add-make': {
+      id: '/admin/console/car-models/add-make'
+      path: '/car-models/add-make'
+      fullPath: '/admin/console/car-models/add-make'
+      preLoaderRoute: typeof AdminConsoleCarModelsAddMakeRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/admin/console/car-inventory/add': {
+      id: '/admin/console/car-inventory/add'
+      path: '/car-inventory/add'
+      fullPath: '/admin/console/car-inventory/add'
+      preLoaderRoute: typeof AdminConsoleCarInventoryAddRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/admin/console/car-inventory/$id': {
+      id: '/admin/console/car-inventory/$id'
+      path: '/car-inventory/$id'
+      fullPath: '/admin/console/car-inventory/$id'
+      preLoaderRoute: typeof AdminConsoleCarInventoryIdRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/admin/console/car-models/edit-model/$modelId': {
+      id: '/admin/console/car-models/edit-model/$modelId'
+      path: '/car-models/edit-model/$modelId'
+      fullPath: '/admin/console/car-models/edit-model/$modelId'
+      preLoaderRoute: typeof AdminConsoleCarModelsEditModelModelIdRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/admin/console/car-models/edit-make/$makeId': {
+      id: '/admin/console/car-models/edit-make/$makeId'
+      path: '/car-models/edit-make/$makeId'
+      fullPath: '/admin/console/car-models/edit-make/$makeId'
+      preLoaderRoute: typeof AdminConsoleCarModelsEditMakeMakeIdRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
     }
   }
 }
 
+interface AdminConsoleRouteRouteChildren {
+  AdminConsoleAnalyticsRoute: typeof AdminConsoleAnalyticsRoute
+  AdminConsoleContactFormsRoute: typeof AdminConsoleContactFormsRoute
+  AdminConsoleContentRoute: typeof AdminConsoleContentRoute
+  AdminConsoleIndexRoute: typeof AdminConsoleIndexRoute
+  AdminConsoleCarInventoryIdRoute: typeof AdminConsoleCarInventoryIdRoute
+  AdminConsoleCarInventoryAddRoute: typeof AdminConsoleCarInventoryAddRoute
+  AdminConsoleCarModelsAddMakeRoute: typeof AdminConsoleCarModelsAddMakeRoute
+  AdminConsoleCarModelsAddModelRoute: typeof AdminConsoleCarModelsAddModelRoute
+  AdminConsoleCarModelsMakesRoute: typeof AdminConsoleCarModelsMakesRoute
+  AdminConsoleCarInventoryIndexRoute: typeof AdminConsoleCarInventoryIndexRoute
+  AdminConsoleCarModelsIndexRoute: typeof AdminConsoleCarModelsIndexRoute
+  AdminConsoleCarModelsEditMakeMakeIdRoute: typeof AdminConsoleCarModelsEditMakeMakeIdRoute
+  AdminConsoleCarModelsEditModelModelIdRoute: typeof AdminConsoleCarModelsEditModelModelIdRoute
+}
+
+const AdminConsoleRouteRouteChildren: AdminConsoleRouteRouteChildren = {
+  AdminConsoleAnalyticsRoute: AdminConsoleAnalyticsRoute,
+  AdminConsoleContactFormsRoute: AdminConsoleContactFormsRoute,
+  AdminConsoleContentRoute: AdminConsoleContentRoute,
+  AdminConsoleIndexRoute: AdminConsoleIndexRoute,
+  AdminConsoleCarInventoryIdRoute: AdminConsoleCarInventoryIdRoute,
+  AdminConsoleCarInventoryAddRoute: AdminConsoleCarInventoryAddRoute,
+  AdminConsoleCarModelsAddMakeRoute: AdminConsoleCarModelsAddMakeRoute,
+  AdminConsoleCarModelsAddModelRoute: AdminConsoleCarModelsAddModelRoute,
+  AdminConsoleCarModelsMakesRoute: AdminConsoleCarModelsMakesRoute,
+  AdminConsoleCarInventoryIndexRoute: AdminConsoleCarInventoryIndexRoute,
+  AdminConsoleCarModelsIndexRoute: AdminConsoleCarModelsIndexRoute,
+  AdminConsoleCarModelsEditMakeMakeIdRoute:
+    AdminConsoleCarModelsEditMakeMakeIdRoute,
+  AdminConsoleCarModelsEditModelModelIdRoute:
+    AdminConsoleCarModelsEditModelModelIdRoute,
+}
+
+const AdminConsoleRouteRouteWithChildren =
+  AdminConsoleRouteRoute._addFileChildren(AdminConsoleRouteRouteChildren)
+
+interface AdminRouteRouteChildren {
+  AdminConsoleRouteRoute: typeof AdminConsoleRouteRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminUserManagementRoute: typeof AdminUserManagementRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminConsoleRouteRoute: AdminConsoleRouteRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminUserManagementRoute: AdminUserManagementRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   SellCarRoute: SellCarRoute,
   SubmitEnquiryRoute: SubmitEnquiryRoute,
-  AdminLoginRoute: AdminLoginRoute,
-  AdminIndexRoute: AdminIndexRoute,
+  ApiCarsIdRoute: ApiCarsIdRoute,
+  ApiCarsCreateRoute: ApiCarsCreateRoute,
+  ApiCarsUpdateRoute: ApiCarsUpdateRoute,
+  ApiCarsIndexRoute: ApiCarsIndexRoute,
+  ApiCarsInventoryIdRoute: ApiCarsInventoryIdRoute,
+  ApiCarsInventoryCreateRoute: ApiCarsInventoryCreateRoute,
+  ApiCarsModelsIdRoute: ApiCarsModelsIdRoute,
+  ApiCarsModelsByMakeRoute: ApiCarsModelsByMakeRoute,
+  ApiCarsModelsCreateRoute: ApiCarsModelsCreateRoute,
+  ApiCarsModelsUpdateRoute: ApiCarsModelsUpdateRoute,
+  ApiCarsInventoryIndexRoute: ApiCarsInventoryIndexRoute,
+  ApiCarsModelsIndexRoute: ApiCarsModelsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
