@@ -1,6 +1,5 @@
-import { carStore } from "@/server/storage/db/cars"
+import { carStore } from "@/server/storage/db/queries/cars"
 import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
 
 export const Route = createFileRoute('/api/cars/models/by-make')({
   server: {
@@ -8,10 +7,10 @@ export const Route = createFileRoute('/api/cars/models/by-make')({
       GET: async () => {
         try {
           const modelsByMake = await carStore.getModelsByMake()
-          return json(modelsByMake)
+          return Response.json(modelsByMake)
         } catch (error) {
           console.error('Error fetching models by make:', error)
-          return json({ error: 'Failed to fetch models by make' }, { status: 500 })
+          return Response.json({ error: 'Failed to fetch models by make' }, { status: 500 })
         }
       },
     },

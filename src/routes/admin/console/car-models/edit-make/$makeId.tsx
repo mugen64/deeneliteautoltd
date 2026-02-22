@@ -39,7 +39,7 @@ function RouteComponent() {
   const { data: carMakeData, isLoading } = useQuery({
     queryKey: ['carMake', params.makeId],
     queryFn: async () => {
-      const response = await fetch(`/api/cars/${params.makeId}`);
+      const response = await fetch(`/api/cars/car-makes/${params.makeId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch car make');
       }
@@ -58,7 +58,7 @@ function RouteComponent() {
     },
     onSubmit: async ({ value }) => {
       try {
-        const response = await fetch('/api/cars/update', {
+        const response = await fetch('/api/cars/car-makes/update', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ function RouteComponent() {
           return;
         }
 
-        const response = await fetch('/api/cars/update', {
+        const response = await fetch('/api/cars/car-makes/update', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

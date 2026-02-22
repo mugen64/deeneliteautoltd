@@ -54,7 +54,7 @@ function RouteComponent() {
   const { data: carMakes = [] } = useQuery({
     queryKey: ['carMakes'],
     queryFn: async () => {
-      const response = await fetch('/api/cars');
+      const response = await fetch('/api/cars/car-makes');
       if (!response.ok) {
         throw new Error('Failed to fetch car makes');
       }

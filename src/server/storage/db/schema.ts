@@ -34,21 +34,41 @@ export const files = pgTable('files', {
 export const carMakes = pgTable('car_makes', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 120 }).notNull().unique(),
+  slug: varchar('slug', { length: 160 }).notNull().unique(),
   logoId: uuid('logo_id').notNull().references(() => files.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-});
+}, (table) => ([
+  index('car_makes_name_idx').on(table.name),
+  index('car_makes_slug_idx').on(table.slug),
+]));
 
 export const carModels = pgTable('car_models', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 120 }).notNull(),
+  slug: varchar('slug', { length: 160 }).notNull(),
   makeId: uuid('make_id').notNull().references(() => carMakes.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ([
   index('car_models_make_id_idx').on(table.makeId),
+  index('car_models_name_idx').on(table.name),
+  index('car_models_slug_idx').on(table.slug),
   index('car_models_make_name_idx').on(table.makeId, table.name),
   unique('car_models_make_name_unique_idx').on(table.makeId, table.name),
+  unique('car_models_make_slug_unique_idx').on(table.makeId, table.slug),
+]));
+
+export const carBodyTypes = pgTable('car_body_types', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 120 }).notNull().unique(),
+  slug: varchar('slug', { length: 160 }).notNull().unique(),
+  iconId: uuid('icon_id').notNull().references(() => files.id),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ([
+  index('car_body_types_name_idx').on(table.name),
+  index('car_body_types_slug_idx').on(table.slug),
 ]));
 
 export const cars = pgTable('cars', {

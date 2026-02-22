@@ -28,7 +28,7 @@ function RouteComponent() {
     queryKey: ['carMake', id],
     queryFn: async () => {
       if (!id) throw new Error('No ID provided')
-      const response = await fetch(`/api/cars/${id}`)
+      const response = await fetch(`/api/cars/car-makes/${id}`)
       if (!response.ok) {
         throw new Error('Failed to fetch car make')
       }

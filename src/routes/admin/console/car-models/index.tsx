@@ -28,7 +28,7 @@ export const Route = createFileRoute('/admin/console/car-models/')({
   validateSearch: (search) => {
     const active =
       typeof search.active === 'string' &&
-        (search.active === 'makes' || search.active === 'models')
+        (search.active === 'makes' || search.active === 'models' || search.active === 'body-types')
         ? search.active
         : 'makes'
     return { active }
@@ -42,7 +42,7 @@ function RouteComponent() {
   const { data: carMakes = [], isLoading } = useQuery({
     queryKey: ['carMakes'],
     queryFn: async () => {
-      const response = await fetch('/api/cars');
+      const response = await fetch('/api/cars/car-makes');
       if (!response.ok) {
         throw new Error('Failed to fetch car makes');
       }
@@ -70,8 +70,8 @@ function RouteComponent() {
         <div className="flex flex-col gap-4">
           <h1 className="text-3xl">Car Models Management</h1>
           <p className="text-muted-foreground">
-            Manage car makes and models. Use the tabs below to switch between
-            makes and models.
+            Manage car makes, models, and body types. Use the tabs below to switch between
+            sections.
           </p>
         </div>
       </div>
@@ -80,7 +80,7 @@ function RouteComponent() {
         value={active}
         onValueChange={(value) =>
           navigate({
-            search: { active: value as 'makes' | 'models' },
+            search: { active: value as 'makes' | 'models' | 'body-types' },
             replace: true,
           })
         }
@@ -89,12 +89,16 @@ function RouteComponent() {
         <TabsList>
           <TabsTrigger value="makes">Makes</TabsTrigger>
           <TabsTrigger value="models">Models</TabsTrigger>
+          <TabsTrigger value="body-types">Body Types</TabsTrigger>
         </TabsList>
         <TabsContent value="makes">
           <MakesTab carMakes={carMakes} isLoading={isLoading} />
         </TabsContent>
         <TabsContent value="models">
           <ModelsTab />
+        </TabsContent>
+        <TabsContent value="body-types">
+          <BodyTypesTab />
         </TabsContent>
       </Tabs>
     </div>
@@ -118,7 +122,7 @@ function MakesTab({ carMakes, isLoading }: { carMakes: unknown; isLoading: boole
     }
     
     try {
-      const response = await fetch(`/api/cars/${makeId}`, {
+      const response = await fetch(`/api/cars/car-makes/${makeId}`, {
         method: 'DELETE',
       })
       
@@ -363,6 +367,168 @@ function ModelsTab() {
       )}
     </div>
   )
+}
+
+function BodyTypesTab() {
+  const navigate = Route.useNavigate()
+  const queryClient = useQueryClient()
+  const [selectedBodyType, setSelectedBodyType] = useState<string | null>(null)
+
+  const { data: bodyTypes = [], isLoading } = useQuery({
+    queryKey: ['carBodyTypes'],
+    queryFn: async () => {
+      const response = await fetch('/api/cars/body-types');
+      if (!response.ok) {
+        throw new Error('Failed to fetch car body types');
+      }
+      return response.json();
+    },
+  })
+
+  const bodyTypeList = Array.isArray(bodyTypes)
+    ? bodyTypes
+        .map((item) => getBodyTypeData(item))
+        .filter((bodyType): bodyType is { id: string; name: string; iconUrl: string } => Boolean(bodyType))
+    : []
+
+  const handleDelete = async (bodyTypeId: string) => {
+    if (!confirm('Are you sure you want to delete this body type?')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/cars/body-types/${bodyTypeId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const error = await response.json();
+        toast.error(error.error || 'Failed to delete car body type');
+        return;
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['carBodyTypes'] })
+      setSelectedBodyType(null)
+      toast.success('Car body type deleted successfully');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to delete car body type';
+      toast.error(message);
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader className="flex-row items-center justify-between">
+        <CardTitle>Body Types</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-right mb-4">
+          <Link
+            to="/admin/console/car-models/add-body-type"
+            className={buttonVariants({ size: 'sm' })}
+          >
+            <Plus className="size-4 mr-2" />
+            Add Body Type
+          </Link>
+        </p>
+        {isLoading ? (
+          <div className="text-sm text-muted-foreground">
+            Loading body types...
+          </div>
+        ) : bodyTypeList.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12"></TableHead>
+                <TableHead className="w-20">Icon</TableHead>
+                <TableHead>Name</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {bodyTypeList.map((bodyType) => (
+                <TableRow
+                  key={bodyType.id}
+                  className={selectedBodyType === bodyType.id ? 'bg-muted' : 'cursor-pointer'}
+                  onClick={() => setSelectedBodyType(bodyType.id)}
+                >
+                  <TableCell>
+                    <input
+                      type="radio"
+                      checked={selectedBodyType === bodyType.id}
+                      onChange={() => setSelectedBodyType(bodyType.id)}
+                      className="cursor-pointer"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <img
+                      src={bodyType.iconUrl}
+                      alt={`${bodyType.name} icon`}
+                      className="w-10 h-10 rounded border border-border object-contain"
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">{bodyType.name}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="text-sm text-muted-foreground">
+            No body types loaded yet.
+          </div>
+        )}
+      </CardContent>
+      {selectedBodyType && (
+        <CardFooter className="flex gap-2 justify-end border-t bg-muted/50 py-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              navigate({
+                to: '/admin/console/car-models/edit-body-type/$bodyTypeId',
+                params: { bodyTypeId: selectedBodyType },
+              })
+            }}
+            className="gap-2"
+          >
+            <Edit className="w-4 h-4" />
+            Edit
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => handleDelete(selectedBodyType)}
+            className="gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete
+          </Button>
+        </CardFooter>
+      )}
+    </Card>
+  )
+}
+
+function getBodyTypeData(item: unknown): { id: string; name: string; iconUrl: string } | null {
+  if (!item || typeof item !== 'object') {
+    return null
+  }
+
+  const record = item as Record<string, unknown>
+  
+  // Try joined structure from database
+  const bodyTypeData = record.car_body_types
+  const fileData = record.files
+  
+  if (bodyTypeData && typeof bodyTypeData === 'object' && fileData && typeof fileData === 'object') {
+    const typeRecord = bodyTypeData as Record<string, unknown>
+    const fileRecord = fileData as Record<string, unknown>
+    
+    if (typeof typeRecord.id === 'string' && typeof typeRecord.name === 'string' && typeof fileRecord.media_url === 'string') {
+      return { id: typeRecord.id, name: typeRecord.name, iconUrl: fileRecord.media_url }
+    }
+  }
+
+  return null
 }
 
 function getMakeData(item: unknown): { id: string; name: string; logoUrl: string } | null {

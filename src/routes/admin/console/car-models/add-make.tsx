@@ -46,7 +46,7 @@ function RouteComponent() {
           return;
         }
 
-        const response = await fetch('/api/cars/create', {
+        const response = await fetch('/api/cars/car-makes/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

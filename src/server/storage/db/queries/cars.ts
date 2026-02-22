@@ -1,6 +1,14 @@
 import { eq } from "drizzle-orm"
 import { db } from "./db"
-import { carMakes, carModels, files, cars } from "./schema"
+import { carBodyTypes, carMakes, carModels, files, cars } from "../schema"
+
+function slugify(value: string) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+}
 
 
 async function getCarMakes() {
@@ -15,13 +23,18 @@ async function getCarMakeById(id: string) {
 async function createCarMake(data: { name: string; logoId: string }) {
     const [carMake] = await db.insert(carMakes).values({
         name: data.name,
+        slug: slugify(data.name),
         logoId: data.logoId,
     }).returning()
     return carMake
 }
 
 async function updateCarMake(id: string, data: { name?: string; logoId?: string }) {
-    const [carMake] = await db.update(carMakes).set(data).where(eq(carMakes.id, id)).returning()
+    const updateData: { name?: string; logoId?: string; slug?: string } = { ...data }
+    if (data.name) {
+        updateData.slug = slugify(data.name)
+    }
+    const [carMake] = await db.update(carMakes).set(updateData).where(eq(carMakes.id, id)).returning()
     return carMake
 }
 
@@ -43,19 +56,57 @@ async function getCarModelById(id: string) {
 async function createCarModel(data: { name: string; makeId: string }) {
     const [carModel] = await db.insert(carModels).values({
         name: data.name,
+        slug: slugify(data.name),
         makeId: data.makeId,
     }).returning()
     return carModel
 }
 
 async function updateCarModel(id: string, data: { name?: string; makeId?: string }) {
-    const [carModel] = await db.update(carModels).set(data).where(eq(carModels.id, id)).returning()
+    const updateData: { name?: string; makeId?: string; slug?: string } = { ...data }
+    if (data.name) {
+        updateData.slug = slugify(data.name)
+    }
+    const [carModel] = await db.update(carModels).set(updateData).where(eq(carModels.id, id)).returning()
     return carModel
 }
 
 async function deleteCarModel(id: string) {
     const [carModel] = await db.delete(carModels).where(eq(carModels.id, id)).returning()
     return carModel
+}
+
+// Car Body Types functions
+async function getCarBodyTypes() {
+    return db.select().from(carBodyTypes).innerJoin(files, eq(carBodyTypes.iconId, files.id)).execute()
+}
+
+async function getCarBodyTypeById(id: string) {
+    const result = await db.select().from(carBodyTypes).innerJoin(files, eq(carBodyTypes.iconId, files.id)).where(eq(carBodyTypes.id, id)).execute()
+    return result[0] || null
+}
+
+async function createCarBodyType(data: { name: string; iconId: string }) {
+    const [carBodyType] = await db.insert(carBodyTypes).values({
+        name: data.name,
+        slug: slugify(data.name),
+        iconId: data.iconId,
+    }).returning()
+    return carBodyType
+}
+
+async function updateCarBodyType(id: string, data: { name?: string; iconId?: string }) {
+    const updateData: { name?: string; slug?: string; iconId?: string } = { ...data }
+    if (data.name) {
+        updateData.slug = slugify(data.name)
+    }
+    const [carBodyType] = await db.update(carBodyTypes).set(updateData).where(eq(carBodyTypes.id, id)).returning()
+    return carBodyType
+}
+
+async function deleteCarBodyType(id: string) {
+    const [carBodyType] = await db.delete(carBodyTypes).where(eq(carBodyTypes.id, id)).returning()
+    return carBodyType
 }
 
 async function getModelsByMake() {
@@ -190,6 +241,11 @@ export const carStore = {
     createCarModel,
     updateCarModel,
     deleteCarModel,
+    getCarBodyTypes,
+    getCarBodyTypeById,
+    createCarBodyType,
+    updateCarBodyType,
+    deleteCarBodyType,
     getModelsByMake,
     getAllCars,
     getCarById,

@@ -1,7 +1,6 @@
-import { carStore } from "@/server/storage/db/cars"
-import { fileStore } from "@/server/storage/db/files"
+import { carStore } from "@/server/storage/db/queries/cars"
+import { fileStore } from "@/server/storage/db/queries/files"
 import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
 import { useAppSession } from "@/server/session"
 
 export const Route = createFileRoute('/api/cars/inventory/create')({
@@ -11,13 +10,13 @@ export const Route = createFileRoute('/api/cars/inventory/create')({
         try {
           const session = await useAppSession()
           if (!session.data.userId) {
-            return json({ error: 'Not authenticated' }, { status: 401 })
+            return Response.json({ error: 'Not authenticated' }, { status: 401 })
           }
 
           const data = await request.json()
 
           if (!data.year || !data.makeId || !data.modelId || !data.price || !data.bodyType || data.mileage === undefined || !data.condition) {
-            return json({ error: 'Missing required fields' }, { status: 400 })
+            return Response.json({ error: 'Missing required fields' }, { status: 400 })
           }
 
           let photoId = undefined
@@ -45,10 +44,10 @@ export const Route = createFileRoute('/api/cars/inventory/create')({
             photoId,
           })
 
-          return json({ car }, { status: 201 })
+          return Response.json({ car }, { status: 201 })
         } catch (error) {
           console.error('Error creating car:', error)
-          return json({ error: 'Failed to create car' }, { status: 500 })
+          return Response.json({ error: 'Failed to create car' }, { status: 500 })
         }
       },
     },

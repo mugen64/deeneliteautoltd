@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import { createServerFn } from '@tanstack/react-start'
 import { redirect } from '@tanstack/react-router'
 import { useAppSession } from './session';
-import { userStore } from '@/storage/db/users';
+import { userStore } from '@/server/storage/db/queries/users';
 
 // User registration
 export const registerFn = createServerFn({ method: 'POST' })

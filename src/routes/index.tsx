@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { getServerVersion } from '@/storage/db/data'
+import { getServerVersion } from '@/server/storage/db/queries/data'
 
 export const Route = createFileRoute('/')({
   component: App,

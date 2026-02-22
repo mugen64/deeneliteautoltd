@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { users } from "./schema";
+import { users } from "../schema";
 
 async function getUserById(userId: string) {
     return db.query.users.findFirst({

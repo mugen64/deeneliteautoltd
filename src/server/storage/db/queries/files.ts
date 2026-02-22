@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "./db";
-import { files } from "./schema";
+import { files } from "../schema";
 
 export const fileStore = {
     async saveFile(fileData: { userId: string; public_id: string; media_url: string; resource_type: string, description?: string }) {

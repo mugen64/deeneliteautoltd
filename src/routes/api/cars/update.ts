@@ -1,7 +1,6 @@
-import { carStore } from "@/server/storage/db/cars";
-import { fileStore } from "@/server/storage/db/files";
+import { carStore } from "@/server/storage/db/queries/cars";
+import { fileStore } from "@/server/storage/db/queries/files";
 import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
 import { useAppSession } from "@/server/session";
 
 export const Route = createFileRoute('/api/cars/update')({
@@ -12,18 +11,18 @@ export const Route = createFileRoute('/api/cars/update')({
           const data = await request.json();
 
           if (!data.id) {
-            return json({ error: 'Car make ID is required' }, { status: 400 });
+            return Response.json({ error: 'Car make ID is required' }, { status: 400 });
           }
 
           const existingMake = await carStore.getCarMakeById(data.id);
           if (!existingMake) {
-            return json({ error: 'Car make not found' }, { status: 404 });
+            return Response.json({ error: 'Car make not found' }, { status: 404 });
           }
 
           const session = await useAppSession();
           const userId = session.data.userId;
           if (!userId) {
-            return json({ error: 'Not authenticated' }, { status: 401 });
+            return Response.json({ error: 'Not authenticated' }, { status: 401 });
           }
 
           let logoId = existingMake.car_makes.logoId;
@@ -49,10 +48,10 @@ export const Route = createFileRoute('/api/cars/update')({
 
           const carMake = await carStore.updateCarMake(data.id, updateData);
 
-          return json({ carMake });
+          return Response.json({ carMake });
         } catch (error) {
           console.error('Error updating car make:', error);
-          return json({ error: 'Failed to update car make' }, { status: 500 });
+          return Response.json({ error: 'Failed to update car make' }, { status: 500 });
         }
       },
     },

@@ -1,4 +1,4 @@
-import { carStore } from "@/server/storage/db/cars"
+import { carStore } from "@/server/storage/db/queries/cars"
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/api/cars/inventory/')({

@@ -1,6 +1,5 @@
-import { carStore } from "@/server/storage/db/cars";
+import { carStore } from "@/server/storage/db/queries/cars";
 import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
 
 export const Route = createFileRoute('/api/cars/')({
   server: {
@@ -9,10 +8,10 @@ export const Route = createFileRoute('/api/cars/')({
         console.log('Fetching car makes...') // Debug log
         try {
           const carMakes = await carStore.getCarMakes();
-          return json(carMakes);
+          return Response.json(carMakes);
         } catch (error) {
           console.error('Error fetching car makes:', error);
-          return json({ error: 'Failed to fetch car makes' }, { status: 500 });
+          return Response.json({ error: 'Failed to fetch car makes' }, { status: 500 });
         }
       },
     },

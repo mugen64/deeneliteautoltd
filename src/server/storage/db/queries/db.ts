@@ -1,7 +1,7 @@
 import { env } from "@/env/server";
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
-import * as schema from "./schema"; // your drizzle schema file
+import * as schema from "../schema"; // your drizzle schema file
 import { createServerOnlyFn } from "@tanstack/react-start";
 
 
