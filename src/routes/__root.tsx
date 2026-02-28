@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
 
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 import { ThemeProvider } from '../lib/theme'
 import { AuthProvider } from '../contexts/auth'
 
@@ -81,6 +82,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <ThemeProvider defaultTheme="system" storageKey="deeneliteauto-theme">
               <Header />
               {children}
+              <Footer />
               <Toaster richColors closeButton />
               <TanStackDevtools
                 config={{
