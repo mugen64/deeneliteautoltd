@@ -1,10 +1,12 @@
-import { and, count, desc, eq, inArray } from 'drizzle-orm'
+import { and, count, desc, eq } from 'drizzle-orm'
 import { db } from './db'
 import { contactForms, contactFormVehicles, cars, carModels, carMakes } from '../schema'
 
 export type ContactFormStatus = 'incoming' | 'read' | 'responded' | 'closed'
+export type ContactFormType = 'contact-form' | 'sell-car'
 
 export type ContactFormInput = {
+  type?: ContactFormType
   firstName: string
   lastName: string
   email: string
@@ -18,15 +20,21 @@ export type ContactFormInput = {
 export type ContactFormWithVehicles = Awaited<ReturnType<typeof getContactForms>>[0]
 
 const validStatuses: ContactFormStatus[] = ['incoming', 'read', 'responded', 'closed']
+const validTypes: ContactFormType[] = ['contact-form', 'sell-car']
 
 function isValidStatus(status: string): status is ContactFormStatus {
   return validStatuses.includes(status as ContactFormStatus)
+}
+
+function isValidType(type: string): type is ContactFormType {
+  return validTypes.includes(type as ContactFormType)
 }
 
 async function createContactForm(input: ContactFormInput) {
   const [created] = await db
     .insert(contactForms)
     .values({
+      type: input.type || 'contact-form',
       firstName: input.firstName,
       lastName: input.lastName,
       email: input.email,
@@ -54,8 +62,11 @@ async function createContactForm(input: ContactFormInput) {
   return created
 }
 
-async function getContactForms(status?: ContactFormStatus) {
-  const conditions = status ? [eq(contactForms.status, status)] : []
+async function getContactForms(status?: ContactFormStatus, type?: ContactFormType) {
+  const conditions = [
+    ...(status ? [eq(contactForms.status, status)] : []),
+    ...(type ? [eq(contactForms.type, type)] : []),
+  ]
 
   const forms = await db
     .select()
@@ -97,34 +108,72 @@ async function getContactForms(status?: ContactFormStatus) {
   return formsWithVehicles
 }
 
-async function getContactFormStats() {
+async function getContactFormStats(type?: ContactFormType) {
+  const incomingConditions = [
+    eq(contactForms.status, 'incoming' as ContactFormStatus),
+    ...(type ? [eq(contactForms.type, type)] : []),
+  ]
   const [incoming] = await db
     .select({ count: count() })
     .from(contactForms)
-    .where(eq(contactForms.status, 'incoming'))
+    .where(and(...incomingConditions))
     .execute()
 
+  const readConditions = [
+    eq(contactForms.status, 'read' as ContactFormStatus),
+    ...(type ? [eq(contactForms.type, type)] : []),
+  ]
   const [read] = await db
     .select({ count: count() })
     .from(contactForms)
-    .where(eq(contactForms.status, 'read'))
+    .where(and(...readConditions))
     .execute()
 
+  const respondedConditions = [
+    eq(contactForms.status, 'responded' as ContactFormStatus),
+    ...(type ? [eq(contactForms.type, type)] : []),
+  ]
   const [responded] = await db
     .select({ count: count() })
     .from(contactForms)
-    .where(eq(contactForms.status, 'responded'))
+    .where(and(...respondedConditions))
     .execute()
 
+  const closedConditions = [
+    eq(contactForms.status, 'closed' as ContactFormStatus),
+    ...(type ? [eq(contactForms.type, type)] : []),
+  ]
   const [closed] = await db
     .select({ count: count() })
     .from(contactForms)
-    .where(eq(contactForms.status, 'closed'))
+    .where(and(...closedConditions))
     .execute()
 
+  const totalConditions = type ? [eq(contactForms.type, type)] : []
   const [total] = await db
     .select({ count: count() })
     .from(contactForms)
+    .where(totalConditions.length ? and(...totalConditions) : undefined)
+    .execute()
+
+  const contactFormConditions = [
+    eq(contactForms.type, 'contact-form' as ContactFormType),
+    ...(type ? [eq(contactForms.type, type)] : []),
+  ]
+  const [contactForm] = await db
+    .select({ count: count() })
+    .from(contactForms)
+    .where(and(...contactFormConditions))
+    .execute()
+
+  const sellCarConditions = [
+    eq(contactForms.type, 'sell-car' as ContactFormType),
+    ...(type ? [eq(contactForms.type, type)] : []),
+  ]
+  const [sellCar] = await db
+    .select({ count: count() })
+    .from(contactForms)
+    .where(and(...sellCarConditions))
     .execute()
 
   return {
@@ -133,6 +182,8 @@ async function getContactFormStats() {
     responded: responded.count,
     closed: closed.count,
     total: total.count,
+    contactForm: contactForm.count,
+    sellCar: sellCar.count,
   }
 }
 
@@ -175,4 +226,5 @@ export const contactFormsStore = {
   getContactFormStats,
   updateContactFormStatus,
   isValidStatus,
+  isValidType,
 }

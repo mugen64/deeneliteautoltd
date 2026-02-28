@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useAppSession } from '@/server/session'
-import { contactFormsStore, type ContactFormStatus } from '@/server/storage/db/queries/contactForms'
+import { contactFormsStore, type ContactFormStatus, type ContactFormType } from '@/server/storage/db/queries/contactForms'
+
+const validContactFormTypes: ContactFormType[] = ['contact-form', 'sell-car']
 
 export const Route = createFileRoute('/api/contact-forms/')({
   server: {
@@ -15,6 +17,10 @@ export const Route = createFileRoute('/api/contact-forms/')({
           const phone = body?.phone?.trim()
           const subject = body?.subject?.trim()
           const message = body?.message?.trim()
+          const incomingType = body?.type
+          const type: ContactFormType = validContactFormTypes.includes(incomingType)
+            ? incomingType
+            : 'contact-form'
           const interestedInVehicles = Boolean(body?.interestedInVehicles)
           const selectedCars = Array.isArray(body?.selectedCars) ? body.selectedCars.filter(Boolean) : []
 
@@ -27,6 +33,7 @@ export const Route = createFileRoute('/api/contact-forms/')({
           }
 
           const created = await contactFormsStore.createContactForm({
+            type,
             firstName,
             lastName,
             email,
@@ -54,14 +61,23 @@ export const Route = createFileRoute('/api/contact-forms/')({
           const url = new URL(request.url)
           const statusParam = url.searchParams.get('status')
           const status = statusParam || undefined
+          const typeParam = url.searchParams.get('type')
+          const type = typeParam || undefined
 
           if (status && !contactFormsStore.isValidStatus(status)) {
             return Response.json({ error: 'Invalid status filter' }, { status: 400 })
           }
 
+          if (type && !contactFormsStore.isValidType(type)) {
+            return Response.json({ error: 'Invalid type filter' }, { status: 400 })
+          }
+
           const [forms, stats] = await Promise.all([
-            contactFormsStore.getContactForms(status as ContactFormStatus | undefined),
-            contactFormsStore.getContactFormStats(),
+            contactFormsStore.getContactForms(
+              status as ContactFormStatus | undefined,
+              type as ContactFormType | undefined,
+            ),
+            contactFormsStore.getContactFormStats(type as ContactFormType | undefined),
           ])
 
           return Response.json({ forms, stats })

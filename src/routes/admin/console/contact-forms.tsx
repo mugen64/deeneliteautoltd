@@ -12,6 +12,8 @@ export const Route = createFileRoute('/admin/console/contact-forms')({
 })
 
 type ContactFormStatus = 'incoming' | 'read' | 'responded' | 'closed'
+type ContactFormType = 'contact-form' | 'sell-car'
+type ContactFormTypeFilter = 'all' | ContactFormType
 
 type ContactFormVehicle = {
   id: string
@@ -28,6 +30,7 @@ type ContactFormVehicle = {
 
 type ContactFormRecord = {
   id: string
+  type: ContactFormType
   firstName: string
   lastName: string
   email: string
@@ -61,11 +64,18 @@ const statusTabs: Array<{ key: ContactFormStatus; label: string }> = [
 function RouteComponent() {
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<ContactFormStatus>('incoming')
+  const [activeType, setActiveType] = useState<ContactFormTypeFilter>('all')
 
   const { data, isLoading } = useQuery<ContactFormsResponse>({
-    queryKey: ['contactForms', activeTab],
+    queryKey: ['contactForms', activeTab, activeType],
     queryFn: async () => {
-      const response = await fetch(`/api/contact-forms/?status=${activeTab}`)
+      const params = new URLSearchParams()
+      params.set('status', activeTab)
+      if (activeType !== 'all') {
+        params.set('type', activeType)
+      }
+
+      const response = await fetch(`/api/contact-forms/?${params.toString()}`)
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error?.error || 'Failed to fetch contact forms')
@@ -172,9 +182,34 @@ function RouteComponent() {
             </div>
           </CardContent>
         </Card>
+
       </div>
 
       <div className="space-y-4">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={activeType === 'all' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setActiveType('all')}
+          >
+            All Types
+          </Button>
+          <Button
+            variant={activeType === 'contact-form' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setActiveType('contact-form')}
+          >
+            Contact
+          </Button>
+          <Button
+            variant={activeType === 'sell-car' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setActiveType('sell-car')}
+          >
+            Sell Car
+          </Button>
+        </div>
+
         <div className="flex flex-wrap gap-2 rounded-lg bg-muted p-1 w-fit">
           {statusTabs.map((tab) => {
             const count = stats[tab.key]
@@ -209,8 +244,13 @@ function RouteComponent() {
                 {forms.map((form) => (
                   <div key={form.id} className="border border-border rounded-lg p-4 space-y-4">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-lg">{form.firstName} {form.lastName}</p>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-lg">{form.firstName} {form.lastName}</p>
+                          <Badge variant={form.type === 'sell-car' ? 'default' : 'secondary'}>
+                            {form.type === 'sell-car' ? 'Sell Car' : 'Contact'}
+                          </Badge>
+                        </div>
                         <p className="text-sm text-muted-foreground">{form.email} {form.phone ? `• ${form.phone}` : ''}</p>
                         <p className="text-xs text-muted-foreground mt-1">{formatDate(form.createdAt)}</p>
                       </div>

@@ -173,6 +173,7 @@ export const settings = pgTable('settings', {
 
 export const contactForms = pgTable('contact_forms', {
   id: uuid('id').primaryKey().defaultRandom(),
+  type: varchar('type', { length: 50 }).notNull().default('contact-form'),
   firstName: varchar('first_name', { length: 120 }).notNull(),
   lastName: varchar('last_name', { length: 120 }).notNull(),
   email: varchar('email', { length: 255 }).notNull(),
@@ -190,6 +191,7 @@ export const contactForms = pgTable('contact_forms', {
   index('contact_forms_status_idx').on(table.status),
   index('contact_forms_email_idx').on(table.email),
   index('contact_forms_created_at_idx').on(table.createdAt),
+  index('contact_forms_type_idx').on(table.type),
 ]));
 
 export const contactFormVehicles = pgTable('contact_form_vehicles', {
