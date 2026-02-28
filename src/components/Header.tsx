@@ -25,7 +25,7 @@ export default function Header() {
       <header className="border-b border-border bg-card">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-4">
           <div className="flex items-center gap-8">
-            <h1 className="text-2xl font-black">
+            <h1 className="text-mds font-black">
               <Link to="/">
                 DEEN <span className="font-bold">ELITE AUTO LTD</span>
               </Link>
