@@ -9,6 +9,7 @@ import Footer from '../components/Footer'
 import { ThemeProvider } from '../lib/theme'
 import { AuthProvider } from '../contexts/auth'
 import { SettingsProvider, type SiteSettings } from '../contexts/settings'
+import { PageViewTracker } from '../components/PageViewTracker'
 
 import appCss from '../styles.css?url'
 import { getSessionUserFn } from '@/server/auth'
@@ -84,6 +85,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <AuthProvider>
             <SettingsProvider>
               <ThemeProvider defaultTheme="system" storageKey="deeneliteauto-theme">
+                <PageViewTracker />
                 <Header />
                 {children}
                 <Footer />

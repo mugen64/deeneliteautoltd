@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { IconPreview } from '@/components/IconPreview'
 import { useState, useEffect } from 'react'
 import { useSettings } from '@/contexts/settings'
+import { trackCarView } from '@/lib/analytics'
 
 type SimilarVehicle = {
   id: string
@@ -106,6 +107,16 @@ function CarDetailsPage() {
       setSelectedPhotoIndex(primaryIndex >= 0 ? primaryIndex : 0)
     }
   }, [carDetails])
+
+  // Track car view (non-intrusive, fails silently)
+  useEffect(() => {
+    if (carDetails?.car?.id) {
+      // Track in next tick to avoid blocking render
+      setTimeout(() => {
+        trackCarView(carDetails.car.id)
+      }, 0)
+    }
+  }, [carDetails?.car?.id])
 
   if (isLoading) {
     return (

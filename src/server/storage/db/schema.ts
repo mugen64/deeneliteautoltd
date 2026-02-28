@@ -202,3 +202,21 @@ export const contactFormVehicles = pgTable('contact_form_vehicles', {
   index('contact_form_vehicles_car_id_idx').on(table.carId),
   unique('contact_form_vehicles_unique_idx').on(table.contactFormId, table.carId),
 ]));
+
+export const pageViews = pgTable('page_views', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  pagePath: varchar('page_path', { length: 255 }).notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => ([
+  index('page_views_page_path_idx').on(table.pagePath),
+  index('page_views_created_at_idx').on(table.createdAt),
+]));
+
+export const carViews = pgTable('car_views', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  carId: uuid('car_id').notNull().references(() => cars.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => ([
+  index('car_views_car_id_idx').on(table.carId),
+  index('car_views_created_at_idx').on(table.createdAt),
+]));

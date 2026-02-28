@@ -26,10 +26,13 @@ import { Route as ApiSettingsSeoRouteImport } from './routes/api/settings/seo'
 import { Route as ApiSettingsLocationContactRouteImport } from './routes/api/settings/location-contact'
 import { Route as ApiSettingsCompanyRouteImport } from './routes/api/settings/company'
 import { Route as ApiDashboardStatsRouteImport } from './routes/api/dashboard/stats'
+import { Route as ApiDashboardAnalyticsRouteImport } from './routes/api/dashboard/analytics'
 import { Route as ApiCarsUpdateRouteImport } from './routes/api/cars/update'
 import { Route as ApiCarsStatisticsRouteImport } from './routes/api/cars/statistics'
 import { Route as ApiCarsCreateRouteImport } from './routes/api/cars/create'
 import { Route as ApiCarsIdRouteImport } from './routes/api/cars/$id'
+import { Route as ApiAnalyticsPageViewRouteImport } from './routes/api/analytics/page-view'
+import { Route as ApiAnalyticsCarViewRouteImport } from './routes/api/analytics/car-view'
 import { Route as AdminConsoleUserManagementRouteImport } from './routes/admin/console/user-management'
 import { Route as AdminConsoleSettingsRouteImport } from './routes/admin/console/settings'
 import { Route as AdminConsoleContentRouteImport } from './routes/admin/console/content'
@@ -173,6 +176,11 @@ const ApiDashboardStatsRoute = ApiDashboardStatsRouteImport.update({
   path: '/api/dashboard/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDashboardAnalyticsRoute = ApiDashboardAnalyticsRouteImport.update({
+  id: '/api/dashboard/analytics',
+  path: '/api/dashboard/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCarsUpdateRoute = ApiCarsUpdateRouteImport.update({
   id: '/api/cars/update',
   path: '/api/cars/update',
@@ -191,6 +199,16 @@ const ApiCarsCreateRoute = ApiCarsCreateRouteImport.update({
 const ApiCarsIdRoute = ApiCarsIdRouteImport.update({
   id: '/api/cars/$id',
   path: '/api/cars/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAnalyticsPageViewRoute = ApiAnalyticsPageViewRouteImport.update({
+  id: '/api/analytics/page-view',
+  path: '/api/analytics/page-view',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAnalyticsCarViewRoute = ApiAnalyticsCarViewRouteImport.update({
+  id: '/api/analytics/car-view',
+  path: '/api/analytics/car-view',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminConsoleUserManagementRoute =
@@ -515,10 +533,13 @@ export interface FileRoutesByFullPath {
   '/admin/console/content': typeof AdminConsoleContentRoute
   '/admin/console/settings': typeof AdminConsoleSettingsRoute
   '/admin/console/user-management': typeof AdminConsoleUserManagementRoute
+  '/api/analytics/car-view': typeof ApiAnalyticsCarViewRoute
+  '/api/analytics/page-view': typeof ApiAnalyticsPageViewRoute
   '/api/cars/$id': typeof ApiCarsIdRoute
   '/api/cars/create': typeof ApiCarsCreateRoute
   '/api/cars/statistics': typeof ApiCarsStatisticsRoute
   '/api/cars/update': typeof ApiCarsUpdateRoute
+  '/api/dashboard/analytics': typeof ApiDashboardAnalyticsRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
   '/api/settings/company': typeof ApiSettingsCompanyRoute
   '/api/settings/location-contact': typeof ApiSettingsLocationContactRoute
@@ -592,10 +613,13 @@ export interface FileRoutesByTo {
   '/admin/console/content': typeof AdminConsoleContentRoute
   '/admin/console/settings': typeof AdminConsoleSettingsRoute
   '/admin/console/user-management': typeof AdminConsoleUserManagementRoute
+  '/api/analytics/car-view': typeof ApiAnalyticsCarViewRoute
+  '/api/analytics/page-view': typeof ApiAnalyticsPageViewRoute
   '/api/cars/$id': typeof ApiCarsIdRoute
   '/api/cars/create': typeof ApiCarsCreateRoute
   '/api/cars/statistics': typeof ApiCarsStatisticsRoute
   '/api/cars/update': typeof ApiCarsUpdateRoute
+  '/api/dashboard/analytics': typeof ApiDashboardAnalyticsRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
   '/api/settings/company': typeof ApiSettingsCompanyRoute
   '/api/settings/location-contact': typeof ApiSettingsLocationContactRoute
@@ -671,10 +695,13 @@ export interface FileRoutesById {
   '/admin/console/content': typeof AdminConsoleContentRoute
   '/admin/console/settings': typeof AdminConsoleSettingsRoute
   '/admin/console/user-management': typeof AdminConsoleUserManagementRoute
+  '/api/analytics/car-view': typeof ApiAnalyticsCarViewRoute
+  '/api/analytics/page-view': typeof ApiAnalyticsPageViewRoute
   '/api/cars/$id': typeof ApiCarsIdRoute
   '/api/cars/create': typeof ApiCarsCreateRoute
   '/api/cars/statistics': typeof ApiCarsStatisticsRoute
   '/api/cars/update': typeof ApiCarsUpdateRoute
+  '/api/dashboard/analytics': typeof ApiDashboardAnalyticsRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
   '/api/settings/company': typeof ApiSettingsCompanyRoute
   '/api/settings/location-contact': typeof ApiSettingsLocationContactRoute
@@ -752,10 +779,13 @@ export interface FileRouteTypes {
     | '/admin/console/content'
     | '/admin/console/settings'
     | '/admin/console/user-management'
+    | '/api/analytics/car-view'
+    | '/api/analytics/page-view'
     | '/api/cars/$id'
     | '/api/cars/create'
     | '/api/cars/statistics'
     | '/api/cars/update'
+    | '/api/dashboard/analytics'
     | '/api/dashboard/stats'
     | '/api/settings/company'
     | '/api/settings/location-contact'
@@ -829,10 +859,13 @@ export interface FileRouteTypes {
     | '/admin/console/content'
     | '/admin/console/settings'
     | '/admin/console/user-management'
+    | '/api/analytics/car-view'
+    | '/api/analytics/page-view'
     | '/api/cars/$id'
     | '/api/cars/create'
     | '/api/cars/statistics'
     | '/api/cars/update'
+    | '/api/dashboard/analytics'
     | '/api/dashboard/stats'
     | '/api/settings/company'
     | '/api/settings/location-contact'
@@ -907,10 +940,13 @@ export interface FileRouteTypes {
     | '/admin/console/content'
     | '/admin/console/settings'
     | '/admin/console/user-management'
+    | '/api/analytics/car-view'
+    | '/api/analytics/page-view'
     | '/api/cars/$id'
     | '/api/cars/create'
     | '/api/cars/statistics'
     | '/api/cars/update'
+    | '/api/dashboard/analytics'
     | '/api/dashboard/stats'
     | '/api/settings/company'
     | '/api/settings/location-contact'
@@ -979,10 +1015,13 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SellCarRoute: typeof SellCarRoute
   SubmitEnquiryRoute: typeof SubmitEnquiryRoute
+  ApiAnalyticsCarViewRoute: typeof ApiAnalyticsCarViewRoute
+  ApiAnalyticsPageViewRoute: typeof ApiAnalyticsPageViewRoute
   ApiCarsIdRoute: typeof ApiCarsIdRoute
   ApiCarsCreateRoute: typeof ApiCarsCreateRoute
   ApiCarsStatisticsRoute: typeof ApiCarsStatisticsRoute
   ApiCarsUpdateRoute: typeof ApiCarsUpdateRoute
+  ApiDashboardAnalyticsRoute: typeof ApiDashboardAnalyticsRoute
   ApiDashboardStatsRoute: typeof ApiDashboardStatsRoute
   ApiSettingsCompanyRoute: typeof ApiSettingsCompanyRoute
   ApiSettingsLocationContactRoute: typeof ApiSettingsLocationContactRoute
@@ -1149,6 +1188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDashboardStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/dashboard/analytics': {
+      id: '/api/dashboard/analytics'
+      path: '/api/dashboard/analytics'
+      fullPath: '/api/dashboard/analytics'
+      preLoaderRoute: typeof ApiDashboardAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/cars/update': {
       id: '/api/cars/update'
       path: '/api/cars/update'
@@ -1175,6 +1221,20 @@ declare module '@tanstack/react-router' {
       path: '/api/cars/$id'
       fullPath: '/api/cars/$id'
       preLoaderRoute: typeof ApiCarsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/analytics/page-view': {
+      id: '/api/analytics/page-view'
+      path: '/api/analytics/page-view'
+      fullPath: '/api/analytics/page-view'
+      preLoaderRoute: typeof ApiAnalyticsPageViewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/analytics/car-view': {
+      id: '/api/analytics/car-view'
+      path: '/api/analytics/car-view'
+      fullPath: '/api/analytics/car-view'
+      preLoaderRoute: typeof ApiAnalyticsCarViewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/console/user-management': {
@@ -1686,10 +1746,13 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SellCarRoute: SellCarRoute,
   SubmitEnquiryRoute: SubmitEnquiryRoute,
+  ApiAnalyticsCarViewRoute: ApiAnalyticsCarViewRoute,
+  ApiAnalyticsPageViewRoute: ApiAnalyticsPageViewRoute,
   ApiCarsIdRoute: ApiCarsIdRoute,
   ApiCarsCreateRoute: ApiCarsCreateRoute,
   ApiCarsStatisticsRoute: ApiCarsStatisticsRoute,
   ApiCarsUpdateRoute: ApiCarsUpdateRoute,
+  ApiDashboardAnalyticsRoute: ApiDashboardAnalyticsRoute,
   ApiDashboardStatsRoute: ApiDashboardStatsRoute,
   ApiSettingsCompanyRoute: ApiSettingsCompanyRoute,
   ApiSettingsLocationContactRoute: ApiSettingsLocationContactRoute,
