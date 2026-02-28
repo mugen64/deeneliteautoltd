@@ -51,7 +51,7 @@ function RouteComponent() {
   })
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6">
       <div className="space-y-3">
         <Breadcrumb>
           <BreadcrumbList>
@@ -68,7 +68,7 @@ function RouteComponent() {
         </Breadcrumb>
 
         <div className="flex flex-col gap-4">
-          <h1 className="text-3xl">Car Models Management</h1>
+          <h1 className="text-2xl md:text-3xl">Car Models Management</h1>
           <p className="text-muted-foreground">
             Manage car makes, models, and body types. Use the tabs below to switch between
             sections.
@@ -86,7 +86,7 @@ function RouteComponent() {
         }
         className="space-y-4"
       >
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="makes">Makes</TabsTrigger>
           <TabsTrigger value="models">Models</TabsTrigger>
           <TabsTrigger value="body-types">Body Types</TabsTrigger>
@@ -162,41 +162,43 @@ function MakesTab({ carMakes, isLoading }: { carMakes: unknown; isLoading: boole
             Loading makes...
           </div>
         ) : makes.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12"></TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="w-32">Logo</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {makes.map((make) => (
-                <TableRow 
-                  key={make.id}
-                  className={selectedMake === make.id ? 'bg-muted' : 'cursor-pointer'}
-                  onClick={() => setSelectedMake(make.id)}
-                >
-                  <TableCell>
-                    <input
-                      type="radio"
-                      checked={selectedMake === make.id}
-                      onChange={() => setSelectedMake(make.id)}
-                      className="cursor-pointer"
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{make.name}</TableCell>
-                  <TableCell>
-                    <img
-                      src={make.logoUrl}
-                      alt={`${make.name} logo`}
-                      className="object-contain rounded border border-border"
-                    />
-                  </TableCell>
+          <div className="w-full overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12"></TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead className="w-32">Logo</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {makes.map((make) => (
+                  <TableRow 
+                    key={make.id}
+                    className={selectedMake === make.id ? 'bg-muted' : 'cursor-pointer'}
+                    onClick={() => setSelectedMake(make.id)}
+                  >
+                    <TableCell>
+                      <input
+                        type="radio"
+                        checked={selectedMake === make.id}
+                        onChange={() => setSelectedMake(make.id)}
+                        className="cursor-pointer"
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium whitespace-nowrap">{make.name}</TableCell>
+                    <TableCell>
+                      <img
+                        src={make.logoUrl}
+                        alt={`${make.name} logo`}
+                        className="object-contain rounded border border-border"
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         ) : (
           <div className="text-sm text-muted-foreground">
             No makes loaded yet.
@@ -436,41 +438,43 @@ function BodyTypesTab() {
             Loading body types...
           </div>
         ) : bodyTypeList.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12"></TableHead>
-                <TableHead className="w-20">Icon</TableHead>
-                <TableHead>Name</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {bodyTypeList.map((bodyType) => (
-                <TableRow
-                  key={bodyType.id}
-                  className={selectedBodyType === bodyType.id ? 'bg-muted' : 'cursor-pointer'}
-                  onClick={() => setSelectedBodyType(bodyType.id)}
-                >
-                  <TableCell>
-                    <input
-                      type="radio"
-                      checked={selectedBodyType === bodyType.id}
-                      onChange={() => setSelectedBodyType(bodyType.id)}
-                      className="cursor-pointer"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <img
-                      src={bodyType.iconUrl}
-                      alt={`${bodyType.name} icon`}
-                      className="w-10 h-10 rounded border border-border object-contain"
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{bodyType.name}</TableCell>
+          <div className="w-full overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12"></TableHead>
+                  <TableHead className="w-20">Icon</TableHead>
+                  <TableHead>Name</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {bodyTypeList.map((bodyType) => (
+                  <TableRow
+                    key={bodyType.id}
+                    className={selectedBodyType === bodyType.id ? 'bg-muted' : 'cursor-pointer'}
+                    onClick={() => setSelectedBodyType(bodyType.id)}
+                  >
+                    <TableCell>
+                      <input
+                        type="radio"
+                        checked={selectedBodyType === bodyType.id}
+                        onChange={() => setSelectedBodyType(bodyType.id)}
+                        className="cursor-pointer"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <img
+                        src={bodyType.iconUrl}
+                        alt={`${bodyType.name} icon`}
+                        className="w-10 h-10 rounded border border-border object-contain"
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium whitespace-nowrap">{bodyType.name}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         ) : (
           <div className="text-sm text-muted-foreground">
             No body types loaded yet.

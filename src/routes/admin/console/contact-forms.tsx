@@ -128,9 +128,9 @@ function RouteComponent() {
   }
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6">
       <div>
-        <h1 className="text-4xl font-bold">Contact Forms</h1>
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">Contact Forms</h1>
         <p className="text-muted-foreground mt-2">Manage customer inquiries and contact form submissions</p>
       </div>
 

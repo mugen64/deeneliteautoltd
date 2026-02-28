@@ -94,18 +94,18 @@ function RouteComponent() {
   }
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 md:p-6 lg:p-8 space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-start">
+      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-start">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
           {user && (
             <p className="text-muted-foreground mt-2">
               Welcome back, {user.name}. Last login: {formatDate(new Date())}
             </p>
           )}
           {user && (
-            <div className="flex gap-4 mt-2 text-sm">
+            <div className="flex flex-wrap gap-3 mt-2 text-sm">
               <div>
                 Role: <span className="inline-flex items-center rounded-full bg-green-50 dark:bg-green-900/20 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">{user.role}</span>
               </div>
@@ -117,7 +117,7 @@ function RouteComponent() {
         </div>
 
         {/* Year Filter */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <label className="text-sm font-medium">Filter by year:</label>
           <Select value={selectedYear} onValueChange={(value) => setSelectedYear(value)}>
             <SelectTrigger className="w-32">
@@ -258,7 +258,7 @@ function RouteComponent() {
             <p className="text-sm text-muted-foreground">
               Manage your car listings, add new vehicles, update pricing, and control which cars are featured.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Link to="/admin/console/car-inventory">
                 <Button>
                   <EditIcon className="h-4 w-4 mr-2" />
@@ -287,7 +287,7 @@ function RouteComponent() {
             <p className="text-sm text-muted-foreground">
               Manage available car models and makes for your inventory.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Link to="/admin/console/car-models">
                 <Button>
                   <EditIcon className="h-4 w-4 mr-2" />

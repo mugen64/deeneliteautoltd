@@ -1,5 +1,5 @@
 
-import { User, Moon, Sun, Monitor } from 'lucide-react'
+import { User, Moon, Sun, Monitor, Menu } from 'lucide-react'
 import React from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { Button } from './ui/button'
@@ -28,15 +28,15 @@ export default function Header() {
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-4">
-          <div className="flex items-center gap-8">
-            <h1 className="text-mds font-black">
+          <div className="min-w-0 flex items-center gap-8">
+            <h1 className="text-mds font-black truncate">
               <Link to="/">
                 {companyName}
               </Link>
             </h1>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2">
             <Link to="/">
               <Button variant="ghost">Inventory</Button>
             </Link>
@@ -105,6 +105,66 @@ export default function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
+          </div>
+
+          <div className="flex items-center gap-2 md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
+                <Menu className="size-4" />
+                <span className="sr-only">Open menu</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem>
+                  <Link to="/" className="w-full">
+                    Inventory
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/sell-car" className="w-full">
+                    Sell Your Car
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/submit-enquiry" className="w-full">
+                    Submit Your Enquiry
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('light')}>
+                  <Sun className="size-4 mr-2" />
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('dark')}>
+                  <Moon className="size-4 mr-2" />
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('system')}>
+                  <Monitor className="size-4 mr-2" />
+                  System
+                </DropdownMenuItem>
+
+                {user ? (
+                  <>
+                    <DropdownMenuItem>
+                      <Link to="/admin" className="w-full">
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={async () => {
+                        try {
+                          await logout()
+                          location.href = '/admin'
+                        } catch (err) {
+                          throw err
+                        }
+                      }}
+                    >
+                      Logout
+                    </DropdownMenuItem>
+                  </>
+                ) : null}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

@@ -29,7 +29,7 @@ function RouteComponent() {
   const navigate = Route.useNavigate()
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6">
       <div className="space-y-3">
         <Breadcrumb>
           <BreadcrumbList>
@@ -55,7 +55,7 @@ function RouteComponent() {
           })
         }
       >
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="inventory">Inventory</TabsTrigger>
           <TabsTrigger value="features">Features</TabsTrigger>
           <TabsTrigger value="history">History Checklist</TabsTrigger>

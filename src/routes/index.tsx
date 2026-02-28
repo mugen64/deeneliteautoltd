@@ -102,6 +102,7 @@ function App() {
   const [selectedYears, setSelectedYears] = useState<string[]>(
     searchParams.years ? searchParams.years.split(',').filter(Boolean) : []
   )
+  const [showMobileFilters, setShowMobileFilters] = useState(false)
 
   useEffect(() => {
     setSearchText(searchParams.search)
@@ -278,13 +279,13 @@ function App() {
       {/* Body Type Filter */}
       <div className="border-b border-border bg-background">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-end gap-2 overflow-x-auto py-4">
+          <div className="flex items-center justify-start gap-2 overflow-x-auto py-4">
             {filterOptions?.bodyTypes.map((type) => {
               return (
                 <button
                   key={type.id}
                   onClick={() => handleBodyTypeClick(type.id)}
-                  className={`flex flex-col items-center gap-2 px-6 py-3 rounded-lg border-2 transition-all min-w-25 ${
+                  className={`flex flex-col items-center gap-2 px-4 py-3 sm:px-6 rounded-lg border-2 transition-all min-w-22 ${
                     selectedBodyTypeId === type.id
                       ? 'border-primary bg-primary/10'
                       : 'border-border bg-card hover:border-primary/50'
@@ -326,10 +327,27 @@ function App() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
-        <div className="flex gap-6">
+        <div className="mb-4 lg:hidden">
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => setShowMobileFilters((prev) => !prev)}
+          >
+            {showMobileFilters ? 'Hide Filters' : 'Show Filters'}
+          </Button>
+        </div>
+
+        <div className="flex flex-col gap-6 lg:flex-row">
           {/* Filters Sidebar */}
-          <aside className="w-80 shrink-0">
-            <div className="sticky top-6 space-y-6">
+          <aside className={`${showMobileFilters ? 'block' : 'hidden'} w-full lg:block lg:w-80 lg:shrink-0`}>
+            <div className="space-y-6 lg:sticky lg:top-6">
+              <div className="flex items-center justify-between lg:hidden">
+                <h3 className="font-semibold">Filters</h3>
+                <Button variant="ghost" size="sm" onClick={() => setShowMobileFilters(false)}>
+                  Close
+                </Button>
+              </div>
+
               {/* Make and Model Filter */}
               <div className="bg-card border border-border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-4">
@@ -638,10 +656,10 @@ function App() {
           </aside>
 
           {/* Car Listings */}
-          <main className="flex-1">
+          <main className="min-w-0 flex-1">
             <div className="mb-4 space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-1 items-center gap-2">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex w-full items-center gap-2">
                   <Input
                     value={searchText}
                     onChange={(event) => setSearchText(event.target.value)}
@@ -651,13 +669,13 @@ function App() {
                       }
                     }}
                     placeholder="Type Car name or Brand"
-                    className="max-w-sm"
+                    className="w-full sm:max-w-sm"
                   />
                   <Button size="sm" onClick={applySearch}>
                     Search
                   </Button>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 self-start sm:self-auto">
                   <span className="text-sm text-muted-foreground">Sort by:</span>
                   <Select
                     value={searchParams.sortBy || 'year_desc'}
@@ -671,7 +689,7 @@ function App() {
                       })
                     }
                   >
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="w-40 sm:w-44">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -694,7 +712,7 @@ function App() {
             </div>
 
             {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <Card key={`listing-skeleton-${index}`} className="overflow-hidden h-full animate-pulse">
                     <div className="aspect-4/3 bg-muted" />
@@ -728,7 +746,7 @@ function App() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                   {listingsData.data.map((car) => (
                     <Link
                       key={car.id}

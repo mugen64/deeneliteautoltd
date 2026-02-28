@@ -9,9 +9,16 @@ import {
   FileStack, 
   BarChart3, 
   Settings, 
-  LogOut 
+  LogOut,
+  Menu,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export const Route = createFileRoute('/admin/console')({
   // Optional: protect the whole dashboard
@@ -47,8 +54,32 @@ function DashboardLayout() {
 
   return (
     <div className="flex min-h-[calc(100vh-68px)]">
+      {/* Mobile floating menu button */}
+      <div className="fixed left-4 bottom-4 z-20 lg:hidden">
+        <DropdownMenu>
+          <DropdownMenuTrigger render={<Button size="icon" className="h-12 w-12 rounded-full shadow-lg" />}>
+            <Menu className="w-6 h-6" />
+            <span className="sr-only">Open admin menu</span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" align="end" className="w-56">
+            {navItems.map((item) => (
+              <DropdownMenuItem key={item.to}>
+                <Link to={item.to} className="w-full flex items-center gap-2">
+                  <item.icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </Link>
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       {/* Sidebar */}
-      <aside className="w-64 flex flex-col border-r">
+      <aside className="hidden w-64 shrink-0 flex-col border-r lg:flex">
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => (
@@ -80,7 +111,7 @@ function DashboardLayout() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 ">
+      <main className="min-w-0 flex-1 overflow-x-auto">
         <Outlet />
       </main>
     </div>
