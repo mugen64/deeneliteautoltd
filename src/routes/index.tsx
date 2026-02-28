@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -709,88 +709,96 @@ function App() {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {listingsData.data.map((car) => (
-                    <Card
+                    <Link
                       key={car.id}
-                      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                      to="/cars/$makeSlug/$modelSlug/$id"
+                      params={{
+                        makeSlug: car.make.slug,
+                        modelSlug: car.model.slug,
+                        id: car.id,
+                      }}
+                      className="block"
                     >
-                      <div className="relative aspect-4/3 overflow-hidden bg-muted">
-                        {car.primaryImage ? (
-                          <img
-                            src={car.primaryImage}
-                            alt={`${car.make.name} ${car.model.name}`}
-                            className="object-cover w-full h-full"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center w-full h-full">
-                            <Car className="size-16 text-muted-foreground" />
+                      <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
+                        <div className="relative aspect-4/3 overflow-hidden bg-muted">
+                          {car.primaryImage ? (
+                            <img
+                              src={car.primaryImage}
+                              alt={`${car.make.name} ${car.model.name}`}
+                              className="object-cover w-full h-full"
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center w-full h-full">
+                              <Car className="size-16 text-muted-foreground" />
+                            </div>
+                          )}
+                          {car.isFeatured && (
+                            <Badge className="absolute top-2 right-2">Featured</Badge>
+                          )}
+                        </div>
+                        <CardContent className="space-y-3 pt-4">
+                          <div>
+                            <h3 className="font-semibold text-base">
+                              {car.make.name} {car.model.name}
+                            </h3>
+                            <p className="text-xs text-muted-foreground uppercase">
+                              {car.bodyType.name}
+                            </p>
                           </div>
-                        )}
-                        {car.isFeatured && (
-                          <Badge className="absolute top-2 right-2">Featured</Badge>
-                        )}
-                      </div>
-                      <CardContent className="space-y-3 pt-4">
-                        <div>
-                          <h3 className="font-semibold text-base">
-                            {car.make.name} {car.model.name}
-                          </h3>
-                          <p className="text-xs text-muted-foreground uppercase">
-                            {car.bodyType.name}
-                          </p>
-                        </div>
 
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Badge variant="outline" className="gap-1">
-                            <Calendar className="size-3" />
-                            {car.year}
-                          </Badge>
-                          <Badge variant="outline" className="gap-1">
-                            <Fuel className="size-3" />
-                            {car.fuelType}
-                          </Badge>
-                          <Badge variant="outline" className="gap-1">
-                            <Gauge className="size-3" />
-                            {car.mileage.toLocaleString()} km
-                          </Badge>
-                          <Badge variant="outline" className="gap-1">
-                            {car.transmission}
-                          </Badge>
-                          <Badge variant="outline" className="gap-1">
-                            {car.color}
-                          </Badge>
-                        </div>
-
-                        {car.features.length > 0 && (
                           <div className="flex items-center gap-2 flex-wrap">
-                            {car.features.slice(0, 4).map((feature) => (
-                              <Badge key={feature} variant="secondary">
-                                {feature}
-                              </Badge>
-                            ))}
-                            {car.features.length > 4 && (
-                              <Badge variant="secondary">+{car.features.length - 4} more</Badge>
-                            )}
+                            <Badge variant="outline" className="gap-1">
+                              <Calendar className="size-3" />
+                              {car.year}
+                            </Badge>
+                            <Badge variant="outline" className="gap-1">
+                              <Fuel className="size-3" />
+                              {car.fuelType}
+                            </Badge>
+                            <Badge variant="outline" className="gap-1">
+                              <Gauge className="size-3" />
+                              {car.mileage.toLocaleString()} km
+                            </Badge>
+                            <Badge variant="outline" className="gap-1">
+                              {car.transmission}
+                            </Badge>
+                            <Badge variant="outline" className="gap-1">
+                              {car.color}
+                            </Badge>
                           </div>
-                        )}
 
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-bold text-base">
-                            ${Number(car.price).toLocaleString()}
-                          </span>
-                          <Badge
-                            variant="secondary"
-                            className={
-                              car.condition === 'new'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                            }
-                          >
-                            {car.condition}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">SKU {car.sku}</span>
-                        </div>
-                      </CardContent>
-                    </Card>
+                          {car.features.length > 0 && (
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {car.features.slice(0, 4).map((feature) => (
+                                <Badge key={feature} variant="secondary">
+                                  {feature}
+                                </Badge>
+                              ))}
+                              {car.features.length > 4 && (
+                                <Badge variant="secondary">+{car.features.length - 4} more</Badge>
+                              )}
+                            </div>
+                          )}
+
+                          <div className="flex items-baseline gap-2">
+                            <span className="font-bold text-base">
+                              ${Number(car.price).toLocaleString()}
+                            </span>
+                            <Badge
+                              variant="secondary"
+                              className={
+                                car.condition === 'new'
+                                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                              }
+                            >
+                              {car.condition}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">SKU {car.sku}</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   ))}
                 </div>
 

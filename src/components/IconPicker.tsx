@@ -1,8 +1,8 @@
-import * as React from 'react'
 import {
   FEATURE_ICON_OPTIONS,
   HISTORY_ICON_OPTIONS,
 } from '@/lib/icon-names'
+import { IconPreview } from '@/components/IconPreview'
 import {
   Select,
   SelectContent,
@@ -11,84 +11,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
-import {
-  AirVent,
-  AlertTriangle,
-  BadgeCheck,
-  Battery,
-  Bluetooth,
-  Calendar,
-  CalendarCheck,
-  Camera,
-  Car,
-  CheckCircle,
-  ClipboardCheck,
-  ClipboardList,
-  Clock,
-  FileCheck,
-  FileText,
-  Fuel,
-  Gauge,
-  History,
-  Key,
-  MapPin,
-  Moon,
-  Navigation,
-  PaintBucket,
-  Radio,
-  Receipt,
-  Shield,
-  ShieldCheck,
-  Snowflake,
-  Sparkles,
-  Speaker,
-  Tag,
-  Users,
-  Wrench,
-  XCircle,
-  Zap,
-  HelpCircle,
-} from 'lucide-react'
-
-const ICON_COMPONENTS: Record<string, React.ComponentType<{ className?: string }>> = {
-  AirVent,
-  AlertTriangle,
-  BadgeCheck,
-  Battery,
-  Bluetooth,
-  Calendar,
-  CalendarCheck,
-  Camera,
-  Car,
-  CheckCircle,
-  ClipboardCheck,
-  ClipboardList,
-  Clock,
-  FileCheck,
-  FileText,
-  Fuel,
-  Gauge,
-  History,
-  Key,
-  MapPin,
-  Moon,
-  Navigation,
-  PaintBucket,
-  Radio,
-  Receipt,
-  Shield,
-  ShieldCheck,
-  Snowflake,
-  Sparkles,
-  Speaker,
-  Tag,
-  Users,
-  Wrench,
-  XCircle,
-  Zap,
-}
-
-const getIconComponent = (name: string) => ICON_COMPONENTS[name] ?? HelpCircle
 
 type IconPickerProps = {
   type: 'feature' | 'history'
@@ -101,8 +23,7 @@ type IconPickerProps = {
 }
 
 export function IconDisplay({ name, className }: { name: string; className?: string }) {
-  const Icon = getIconComponent(name)
-  return <Icon className={cn('size-4', className)} />
+  return <IconPreview name={name} className={cn('size-4', className)} />
 }
 
 export function IconPicker({

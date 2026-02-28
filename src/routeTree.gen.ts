@@ -36,6 +36,7 @@ import { Route as ApiCarsCarMakesIndexRouteImport } from './routes/api/cars/car-
 import { Route as ApiCarsBodyTypesIndexRouteImport } from './routes/api/cars/body-types/index'
 import { Route as AdminConsoleCarModelsIndexRouteImport } from './routes/admin/console/car-models/index'
 import { Route as AdminConsoleCarInventoryIndexRouteImport } from './routes/admin/console/car-inventory/index'
+import { Route as CarsMakeSlugModelSlugIdRouteImport } from './routes/cars/$makeSlug/$modelSlug/$id'
 import { Route as ApiCarsPublicListingsRouteImport } from './routes/api/cars/public/listings'
 import { Route as ApiCarsPublicFiltersRouteImport } from './routes/api/cars/public/filters'
 import { Route as ApiCarsPublicCarIdRouteImport } from './routes/api/cars/public/$carId'
@@ -217,6 +218,11 @@ const AdminConsoleCarInventoryIndexRoute =
     path: '/car-inventory/',
     getParentRoute: () => AdminConsoleRouteRoute,
   } as any)
+const CarsMakeSlugModelSlugIdRoute = CarsMakeSlugModelSlugIdRouteImport.update({
+  id: '/cars/$makeSlug/$modelSlug/$id',
+  path: '/cars/$makeSlug/$modelSlug/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCarsPublicListingsRoute = ApiCarsPublicListingsRouteImport.update({
   id: '/api/cars/public/listings',
   path: '/api/cars/public/listings',
@@ -490,6 +496,7 @@ export interface FileRoutesByFullPath {
   '/api/cars/public/$carId': typeof ApiCarsPublicCarIdRoute
   '/api/cars/public/filters': typeof ApiCarsPublicFiltersRoute
   '/api/cars/public/listings': typeof ApiCarsPublicListingsRoute
+  '/cars/$makeSlug/$modelSlug/$id': typeof CarsMakeSlugModelSlugIdRoute
   '/admin/console/car-inventory/': typeof AdminConsoleCarInventoryIndexRoute
   '/admin/console/car-models/': typeof AdminConsoleCarModelsIndexRoute
   '/api/cars/body-types/': typeof ApiCarsBodyTypesIndexRoute
@@ -556,6 +563,7 @@ export interface FileRoutesByTo {
   '/api/cars/public/$carId': typeof ApiCarsPublicCarIdRoute
   '/api/cars/public/filters': typeof ApiCarsPublicFiltersRoute
   '/api/cars/public/listings': typeof ApiCarsPublicListingsRoute
+  '/cars/$makeSlug/$modelSlug/$id': typeof CarsMakeSlugModelSlugIdRoute
   '/admin/console/car-inventory': typeof AdminConsoleCarInventoryIndexRoute
   '/admin/console/car-models': typeof AdminConsoleCarModelsIndexRoute
   '/api/cars/body-types': typeof ApiCarsBodyTypesIndexRoute
@@ -626,6 +634,7 @@ export interface FileRoutesById {
   '/api/cars/public/$carId': typeof ApiCarsPublicCarIdRoute
   '/api/cars/public/filters': typeof ApiCarsPublicFiltersRoute
   '/api/cars/public/listings': typeof ApiCarsPublicListingsRoute
+  '/cars/$makeSlug/$modelSlug/$id': typeof CarsMakeSlugModelSlugIdRoute
   '/admin/console/car-inventory/': typeof AdminConsoleCarInventoryIndexRoute
   '/admin/console/car-models/': typeof AdminConsoleCarModelsIndexRoute
   '/api/cars/body-types/': typeof ApiCarsBodyTypesIndexRoute
@@ -697,6 +706,7 @@ export interface FileRouteTypes {
     | '/api/cars/public/$carId'
     | '/api/cars/public/filters'
     | '/api/cars/public/listings'
+    | '/cars/$makeSlug/$modelSlug/$id'
     | '/admin/console/car-inventory/'
     | '/admin/console/car-models/'
     | '/api/cars/body-types/'
@@ -763,6 +773,7 @@ export interface FileRouteTypes {
     | '/api/cars/public/$carId'
     | '/api/cars/public/filters'
     | '/api/cars/public/listings'
+    | '/cars/$makeSlug/$modelSlug/$id'
     | '/admin/console/car-inventory'
     | '/admin/console/car-models'
     | '/api/cars/body-types'
@@ -832,6 +843,7 @@ export interface FileRouteTypes {
     | '/api/cars/public/$carId'
     | '/api/cars/public/filters'
     | '/api/cars/public/listings'
+    | '/cars/$makeSlug/$modelSlug/$id'
     | '/admin/console/car-inventory/'
     | '/admin/console/car-models/'
     | '/api/cars/body-types/'
@@ -887,6 +899,7 @@ export interface RootRouteChildren {
   ApiCarsPublicCarIdRoute: typeof ApiCarsPublicCarIdRoute
   ApiCarsPublicFiltersRoute: typeof ApiCarsPublicFiltersRoute
   ApiCarsPublicListingsRoute: typeof ApiCarsPublicListingsRoute
+  CarsMakeSlugModelSlugIdRoute: typeof CarsMakeSlugModelSlugIdRoute
   ApiCarsBodyTypesIndexRoute: typeof ApiCarsBodyTypesIndexRoute
   ApiCarsCarMakesIndexRoute: typeof ApiCarsCarMakesIndexRoute
   ApiCarsFeaturesIndexRoute: typeof ApiCarsFeaturesIndexRoute
@@ -1086,6 +1099,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/console/car-inventory/'
       preLoaderRoute: typeof AdminConsoleCarInventoryIndexRouteImport
       parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/cars/$makeSlug/$modelSlug/$id': {
+      id: '/cars/$makeSlug/$modelSlug/$id'
+      path: '/cars/$makeSlug/$modelSlug/$id'
+      fullPath: '/cars/$makeSlug/$modelSlug/$id'
+      preLoaderRoute: typeof CarsMakeSlugModelSlugIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/cars/public/listings': {
       id: '/api/cars/public/listings'
@@ -1514,6 +1534,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCarsPublicCarIdRoute: ApiCarsPublicCarIdRoute,
   ApiCarsPublicFiltersRoute: ApiCarsPublicFiltersRoute,
   ApiCarsPublicListingsRoute: ApiCarsPublicListingsRoute,
+  CarsMakeSlugModelSlugIdRoute: CarsMakeSlugModelSlugIdRoute,
   ApiCarsBodyTypesIndexRoute: ApiCarsBodyTypesIndexRoute,
   ApiCarsCarMakesIndexRoute: ApiCarsCarMakesIndexRoute,
   ApiCarsFeaturesIndexRoute: ApiCarsFeaturesIndexRoute,
