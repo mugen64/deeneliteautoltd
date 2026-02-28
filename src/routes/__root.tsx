@@ -15,6 +15,7 @@ import appCss from '../styles.css?url'
 import { getSessionUserFn } from '@/server/auth'
 
 const queryClient = new QueryClient()
+const showDevtools = import.meta.env.DEV
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
@@ -90,17 +91,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 {children}
                 <Footer />
                 <Toaster richColors closeButton />
-                <TanStackDevtools
-                  config={{
-                    position: 'bottom-right',
-                  }}
-                  plugins={[
-                    {
-                      name: 'Deen Elite Auto Ltd Router Devtools',
-                      render: <TanStackRouterDevtoolsPanel />,
-                    },
-                  ]}
-                />
+                {showDevtools ? (
+                  <TanStackDevtools
+                    config={{
+                      position: 'bottom-right',
+                    }}
+                    plugins={[
+                      {
+                        name: 'Deen Elite Auto Ltd Router Devtools',
+                        render: <TanStackRouterDevtoolsPanel />,
+                      },
+                    ]}
+                  />
+                ) : null}
               </ThemeProvider>
             </SettingsProvider>
           </AuthProvider>

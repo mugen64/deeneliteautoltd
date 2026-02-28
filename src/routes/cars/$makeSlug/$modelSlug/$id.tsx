@@ -106,15 +106,18 @@ function CarDetailsPage() {
       const primaryIndex = carDetails.photos.findIndex((p: any) => p.isPrimary)
       setSelectedPhotoIndex(primaryIndex >= 0 ? primaryIndex : 0)
     }
-  }, [carDetails])
+  }, [carDetails?.photos])
 
   // Track car view (non-intrusive, fails silently)
   useEffect(() => {
     if (carDetails?.car?.id) {
-      // Track in next tick to avoid blocking render
-      setTimeout(() => {
+      const timeoutId = window.setTimeout(() => {
         trackCarView(carDetails.car.id)
       }, 0)
+
+      return () => {
+        window.clearTimeout(timeoutId)
+      }
     }
   }, [carDetails?.car?.id])
 

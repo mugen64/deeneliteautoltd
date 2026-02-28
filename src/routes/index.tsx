@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   ChevronRight,
@@ -107,6 +107,22 @@ function App() {
     setSearchText(searchParams.search)
   }, [searchParams.search])
 
+  useEffect(() => {
+    setSelectedBodyTypeId(searchParams.bodyTypeId)
+    setSelectedMakeIds(searchParams.makeIds ? searchParams.makeIds.split(',').filter(Boolean) : [])
+    setSelectedFuelTypes(searchParams.fuelTypes ? searchParams.fuelTypes.split(',').filter(Boolean) : [])
+    setSelectedTransmissions(
+      searchParams.transmissions ? searchParams.transmissions.split(',').filter(Boolean) : []
+    )
+    setSelectedYears(searchParams.years ? searchParams.years.split(',').filter(Boolean) : [])
+  }, [
+    searchParams.bodyTypeId,
+    searchParams.makeIds,
+    searchParams.fuelTypes,
+    searchParams.transmissions,
+    searchParams.years,
+  ])
+
   // Fetch filter options
   const { data: filterOptions } = useQuery<FilterOptions>({
     queryKey: ['carFilters'],
@@ -115,10 +131,10 @@ function App() {
       if (!response.ok) throw new Error('Failed to fetch filters')
       return response.json()
     },
+    staleTime: 10 * 60 * 1000,
   })
 
-  // Build query params for API
-  const buildQueryParams = () => {
+  const listingQueryParams = useMemo(() => {
     const params = new URLSearchParams()
     params.set('page', searchParams.page.toString())
     params.set('limit', '12')
@@ -134,7 +150,20 @@ function App() {
     if (searchParams.minMileage) params.set('minMileage', searchParams.minMileage.toString())
     if (searchParams.maxMileage) params.set('maxMileage', searchParams.maxMileage.toString())
     return params.toString()
-  }
+  }, [
+    searchParams.page,
+    searchParams.search,
+    searchParams.sortBy,
+    searchParams.minPrice,
+    searchParams.maxPrice,
+    searchParams.minMileage,
+    searchParams.maxMileage,
+    selectedBodyTypeId,
+    selectedMakeIds,
+    selectedFuelTypes,
+    selectedTransmissions,
+    selectedYears,
+  ])
 
   // Fetch car listings
   const {
@@ -142,26 +171,13 @@ function App() {
     isLoading,
     error,
   } = useQuery<CarListingResponse>({
-    queryKey: [
-      'carListings',
-      searchParams.search,
-      searchParams.page,
-      searchParams.sortBy,
-      selectedBodyTypeId,
-      selectedMakeIds,
-      selectedFuelTypes,
-      selectedTransmissions,
-      selectedYears,
-      searchParams.minPrice,
-      searchParams.maxPrice,
-      searchParams.minMileage,
-      searchParams.maxMileage,
-    ],
+    queryKey: ['carListings', listingQueryParams],
     queryFn: async () => {
-      const response = await fetch(`/api/cars/public/listings?${buildQueryParams()}`)
+      const response = await fetch(`/api/cars/public/listings?${listingQueryParams}`)
       if (!response.ok) throw new Error('Failed to fetch car listings')
       return response.json()
     },
+    staleTime: 30 * 1000,
   })
 
   const priceRange = filterOptions?.priceRange || { min: 0, max: 100000 }
@@ -169,7 +185,6 @@ function App() {
 
   const removeMake = (makeId: string) => {
     const newMakes = selectedMakeIds.filter((id) => id !== makeId)
-    setSelectedMakeIds(newMakes)
     navigate({
       search: (prev) => ({
         ...prev,
@@ -183,7 +198,6 @@ function App() {
     const newFuels = selectedFuelTypes.includes(value)
       ? selectedFuelTypes.filter((v) => v !== value)
       : [...selectedFuelTypes, value]
-    setSelectedFuelTypes(newFuels)
     navigate({
       search: (prev) => ({
         ...prev,
@@ -197,7 +211,6 @@ function App() {
     const newTrans = selectedTransmissions.includes(value)
       ? selectedTransmissions.filter((v) => v !== value)
       : [...selectedTransmissions, value]
-    setSelectedTransmissions(newTrans)
     navigate({
       search: (prev) => ({
         ...prev,
@@ -211,7 +224,6 @@ function App() {
     const newYears = selectedYears.includes(year)
       ? selectedYears.filter((y) => y !== year)
       : [...selectedYears, year]
-    setSelectedYears(newYears)
     navigate({
       search: (prev) => ({
         ...prev,
@@ -222,11 +234,6 @@ function App() {
   }
 
   const resetFilters = () => {
-    setSelectedMakeIds([])
-    setSelectedFuelTypes([])
-    setSelectedTransmissions([])
-    setSelectedYears([])
-    setSelectedBodyTypeId('')
     navigate({
       search: {
         page: 1,
@@ -256,8 +263,7 @@ function App() {
   }
 
   const handleBodyTypeClick = (bodyTypeId: string) => {
-    const newBodyTypeId = selectedBodyTypeId === bodyTypeId ? '' : bodyTypeId
-    setSelectedBodyTypeId(newBodyTypeId)
+    const newBodyTypeId = searchParams.bodyTypeId === bodyTypeId ? '' : bodyTypeId
     navigate({
       search: (prev) => ({
         ...prev,

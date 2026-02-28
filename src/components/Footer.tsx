@@ -28,6 +28,7 @@ export default function Footer() {
       if (!response.ok) throw new Error('Failed to fetch filters')
       return response.json()
     },
+    staleTime: 10 * 60 * 1000,
   })
 
   const { data: statistics } = useQuery<CarStatistics>({
@@ -37,6 +38,7 @@ export default function Footer() {
       if (!response.ok) throw new Error('Failed to fetch statistics')
       return response.json()
     },
+    staleTime: 2 * 60 * 1000,
   })
 
   const companyName = settings?.companyName || 'Deen Elite Auto Ltd'

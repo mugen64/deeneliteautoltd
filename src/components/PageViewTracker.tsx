@@ -27,10 +27,13 @@ export function PageViewTracker() {
       return
     }
 
-    // Track in next tick to avoid blocking render
-    setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       trackPageView(path)
     }, 0)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
   }, [location.pathname])
 
   // This component renders nothing

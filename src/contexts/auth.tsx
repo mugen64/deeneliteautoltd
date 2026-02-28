@@ -1,5 +1,5 @@
 // contexts/auth.tsx
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { getCurrentUserFn } from '@/server/auth'
 import { useQuery } from '@tanstack/react-query'
@@ -30,8 +30,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     staleTime: Infinity, // User data doesn't change often
   })
 
+  const contextValue = useMemo(
+    () => ({ user, isLoading, refetch }),
+    [user, isLoading, refetch],
+  )
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, refetch }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   )

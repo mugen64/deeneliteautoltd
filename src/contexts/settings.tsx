@@ -40,25 +40,38 @@ export function SettingsProvider({ children, initialSettings = null }: SettingsP
   React.useEffect(() => {
     if (initialSettings) return
 
+    const controller = new AbortController()
+
     const fetchSettings = async () => {
       try {
-        const response = await fetch('/api/settings/')
+        const response = await fetch('/api/settings/', { signal: controller.signal })
         if (response.ok) {
           const data = await response.json()
           setSettings(data)
         }
       } catch (error) {
-        console.error('Failed to fetch settings:', error)
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          console.error('Failed to fetch settings:', error)
+        }
       } finally {
         setLoading(false)
       }
     }
 
     fetchSettings()
+
+    return () => {
+      controller.abort()
+    }
   }, [initialSettings])
 
+  const contextValue = React.useMemo(
+    () => ({ settings, loading }),
+    [settings, loading],
+  )
+
   return (
-    <SettingsContext.Provider value={{ settings, loading }}>
+    <SettingsContext.Provider value={contextValue}>
       {children}
     </SettingsContext.Provider>
   )
