@@ -694,8 +694,26 @@ function App() {
             </div>
 
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-muted-foreground">Loading cars...</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <Card key={`listing-skeleton-${index}`} className="overflow-hidden h-full animate-pulse">
+                    <div className="aspect-4/3 bg-muted" />
+                    <CardContent className="space-y-3 pt-4">
+                      <div className="space-y-2">
+                        <div className="h-5 w-3/4 rounded bg-muted" />
+                        <div className="h-3 w-1/3 rounded bg-muted" />
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 w-16 rounded bg-muted" />
+                        <div className="h-6 w-20 rounded bg-muted" />
+                        <div className="h-6 w-14 rounded bg-muted" />
+                      </div>
+
+                      <div className="h-6 w-1/2 rounded bg-muted" />
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             ) : error ? (
               <div className="flex items-center justify-center py-12">

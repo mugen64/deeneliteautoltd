@@ -123,8 +123,64 @@ function CarDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-muted-foreground">Loading...</div>
+      <div className="min-h-screen bg-background animate-pulse">
+        <div className="bg-card border-b border-border sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="h-9 w-36 rounded bg-muted" />
+            <div className="flex items-center gap-4">
+              <div className="h-9 w-24 rounded bg-muted" />
+              <div className="h-9 w-28 rounded bg-muted" />
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 space-y-4">
+              <div className="aspect-4/3 rounded-lg bg-muted" />
+
+              <div className="grid grid-cols-6 gap-2">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={`car-photo-skeleton-${index}`} className="aspect-square rounded-md bg-muted" />
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                <div className="h-7 w-2/3 rounded bg-muted" />
+                <div className="h-4 w-1/3 rounded bg-muted" />
+                <div className="h-6 w-1/4 rounded bg-muted" />
+              </div>
+
+              <div className="grid grid-cols-4 gap-3">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div key={`car-spec-skeleton-${index}`} className="rounded-lg border border-border p-4 space-y-2">
+                    <div className="h-3 w-1/2 rounded bg-muted" />
+                    <div className="h-4 w-2/3 rounded bg-muted" />
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                <div className="h-10 w-full rounded bg-muted" />
+                <div className="h-20 w-full rounded bg-muted" />
+              </div>
+            </div>
+
+            <div className="md:col-span-1 space-y-4">
+              <div className="rounded-lg border border-border p-5 space-y-3">
+                <div className="h-5 w-1/2 rounded bg-muted" />
+                <div className="h-9 w-full rounded bg-muted" />
+                <div className="h-9 w-full rounded bg-muted" />
+              </div>
+
+              <div className="rounded-lg border border-border p-5 space-y-3">
+                <div className="h-5 w-1/3 rounded bg-muted" />
+                <div className="h-4 w-2/3 rounded bg-muted" />
+                <div className="h-4 w-1/2 rounded bg-muted" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -146,8 +202,8 @@ function CarDetailsPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-card border-b border-border sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="">
+        <div className="max-w-7xl mx-auto py-2 flex items-center justify-between">
           <Button 
             variant="ghost" 
             size="sm"
@@ -157,10 +213,6 @@ function CarDetailsPage() {
             <ChevronLeft className="size-4" />
             Back to Listings
           </Button>
-          <div className="flex items-center gap-4">
-            <Button variant="outline">Call Dealer</Button>
-            <Button>View Inventory</Button>
-          </div>
         </div>
       </div>
 
