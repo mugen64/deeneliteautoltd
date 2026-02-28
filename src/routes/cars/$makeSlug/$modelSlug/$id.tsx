@@ -34,7 +34,7 @@ export const Route = createFileRoute('/cars/$makeSlug/$modelSlug/$id')({
   head: ({ params }) => ({
     meta: [
       {
-        title: `${params.makeSlug} ${params.modelSlug} - Used Car Details | Deen Elite Auto Ltd`,
+        title: `${params.makeSlug} ${params.modelSlug} - Car Details | Deen Elite Auto Ltd`,
       },
       {
         name: 'description',
@@ -42,7 +42,7 @@ export const Route = createFileRoute('/cars/$makeSlug/$modelSlug/$id')({
       },
       {
         property: 'og:title',
-        content: `${params.makeSlug} ${params.modelSlug} - Used Car Details | Deen Elite Auto Ltd`,
+        content: `${params.makeSlug} ${params.modelSlug} - Car Details | Deen Elite Auto Ltd`,
       },
       {
         property: 'og:description',
@@ -54,7 +54,7 @@ export const Route = createFileRoute('/cars/$makeSlug/$modelSlug/$id')({
       },
       {
         name: 'twitter:title',
-        content: `${params.makeSlug} ${params.modelSlug} - Used Car Details`,
+        content: `${params.makeSlug} ${params.modelSlug} - Car Details | Deen Elite Auto Ltd`,
       },
       {
         name: 'twitter:description',

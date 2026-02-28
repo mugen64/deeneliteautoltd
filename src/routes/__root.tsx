@@ -3,6 +3,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
+import { Analytics } from '@vercel/analytics/react'
 
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -114,7 +115,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               name: 'Deen Elite Auto Ltd',
               url: 'https://deeneliteauto.com',
               logo: 'https://deeneliteauto.com/logo.png',
-              description: 'Premium used car dealership offering quality vehicles and excellent customer service',
+              description: 'Premium car dealership offering quality vehicles and excellent customer service',
               sameAs: [
                 'https://www.facebook.com/deeneliteauto',
                 'https://www.twitter.com/deeneliteauto',
@@ -134,6 +135,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 {children}
                 <Footer />
                 <Toaster richColors closeButton />
+                <Analytics />
                 {showDevtools ? (
                   <TanStackDevtools
                     config={{
