@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Phone, Mail, MapPin, Clock, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useSettings } from '@/contexts/settings'
 import { RecentlySoldCars } from '@/components/RecentlySoldCars'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/submit-enquiry')({
   component: SubmitEnquiryPage,
@@ -75,20 +76,33 @@ function SubmitEnquiryPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
-    
+
     try {
-      // TODO: Submit form to API endpoint
-      console.log({
-        firstName,
-        lastName,
-        email,
-        phone,
-        subject,
-        message,
-        interestedInVehicles,
-        selectedCars,
+      const response = await fetch('/api/contact-forms/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          phone,
+          subject,
+          message,
+          interestedInVehicles,
+          selectedCars,
+        }),
       })
-      // Reset form on success
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result?.error || 'Failed to submit enquiry')
+      }
+
+      toast.success('Enquiry submitted successfully. We will contact you soon.')
+
       setFirstName('')
       setLastName('')
       setEmail('')
@@ -97,7 +111,11 @@ function SubmitEnquiryPage() {
       setMessage('')
       setInterestedInVehicles(false)
       setSelectedCars([])
+      setSearchQuery('')
+      setShowSuggestions(false)
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to submit form'
+      toast.error(message)
       console.error('Failed to submit form:', error)
     } finally {
       setSubmitting(false)

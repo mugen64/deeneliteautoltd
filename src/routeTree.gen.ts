@@ -18,6 +18,7 @@ import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminConsoleRouteRouteImport } from './routes/admin/console/route'
 import { Route as ApiUsersIndexRouteImport } from './routes/api/users/index'
 import { Route as ApiSettingsIndexRouteImport } from './routes/api/settings/index'
+import { Route as ApiContactFormsIndexRouteImport } from './routes/api/contact-forms/index'
 import { Route as ApiCarsIndexRouteImport } from './routes/api/cars/index'
 import { Route as AdminConsoleIndexRouteImport } from './routes/admin/console/index'
 import { Route as ApiSettingsSocialMediaRouteImport } from './routes/api/settings/social-media'
@@ -43,6 +44,7 @@ import { Route as ApiCarsBodyTypesIndexRouteImport } from './routes/api/cars/bod
 import { Route as AdminConsoleCarModelsIndexRouteImport } from './routes/admin/console/car-models/index'
 import { Route as AdminConsoleCarInventoryIndexRouteImport } from './routes/admin/console/car-inventory/index'
 import { Route as CarsMakeSlugModelSlugIdRouteImport } from './routes/cars/$makeSlug/$modelSlug/$id'
+import { Route as ApiContactFormsIdStatusRouteImport } from './routes/api/contact-forms/$id.status'
 import { Route as ApiCarsPublicRecentlySoldRouteImport } from './routes/api/cars/public/recently-sold'
 import { Route as ApiCarsPublicListingsRouteImport } from './routes/api/cars/public/listings'
 import { Route as ApiCarsPublicFiltersRouteImport } from './routes/api/cars/public/filters'
@@ -128,6 +130,11 @@ const ApiUsersIndexRoute = ApiUsersIndexRouteImport.update({
 const ApiSettingsIndexRoute = ApiSettingsIndexRouteImport.update({
   id: '/api/settings/',
   path: '/api/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiContactFormsIndexRoute = ApiContactFormsIndexRouteImport.update({
+  id: '/api/contact-forms/',
+  path: '/api/contact-forms/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCarsIndexRoute = ApiCarsIndexRouteImport.update({
@@ -259,6 +266,11 @@ const AdminConsoleCarInventoryIndexRoute =
 const CarsMakeSlugModelSlugIdRoute = CarsMakeSlugModelSlugIdRouteImport.update({
   id: '/cars/$makeSlug/$modelSlug/$id',
   path: '/cars/$makeSlug/$modelSlug/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiContactFormsIdStatusRoute = ApiContactFormsIdStatusRouteImport.update({
+  id: '/api/contact-forms/$id/status',
+  path: '/api/contact-forms/$id/status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCarsPublicRecentlySoldRoute =
@@ -514,6 +526,7 @@ export interface FileRoutesByFullPath {
   '/api/settings/social-media': typeof ApiSettingsSocialMediaRoute
   '/admin/console/': typeof AdminConsoleIndexRoute
   '/api/cars/': typeof ApiCarsIndexRoute
+  '/api/contact-forms/': typeof ApiContactFormsIndexRoute
   '/api/settings/': typeof ApiSettingsIndexRoute
   '/api/users/': typeof ApiUsersIndexRoute
   '/admin/console/car-inventory/$id': typeof AdminConsoleCarInventoryIdRouteWithChildren
@@ -547,6 +560,7 @@ export interface FileRoutesByFullPath {
   '/api/cars/public/filters': typeof ApiCarsPublicFiltersRoute
   '/api/cars/public/listings': typeof ApiCarsPublicListingsRoute
   '/api/cars/public/recently-sold': typeof ApiCarsPublicRecentlySoldRoute
+  '/api/contact-forms/$id/status': typeof ApiContactFormsIdStatusRoute
   '/cars/$makeSlug/$modelSlug/$id': typeof CarsMakeSlugModelSlugIdRoute
   '/admin/console/car-inventory/': typeof AdminConsoleCarInventoryIndexRoute
   '/admin/console/car-models/': typeof AdminConsoleCarModelsIndexRoute
@@ -589,6 +603,7 @@ export interface FileRoutesByTo {
   '/api/settings/social-media': typeof ApiSettingsSocialMediaRoute
   '/admin/console': typeof AdminConsoleIndexRoute
   '/api/cars': typeof ApiCarsIndexRoute
+  '/api/contact-forms': typeof ApiContactFormsIndexRoute
   '/api/settings': typeof ApiSettingsIndexRoute
   '/api/users': typeof ApiUsersIndexRoute
   '/admin/console/car-inventory/add': typeof AdminConsoleCarInventoryAddRoute
@@ -621,6 +636,7 @@ export interface FileRoutesByTo {
   '/api/cars/public/filters': typeof ApiCarsPublicFiltersRoute
   '/api/cars/public/listings': typeof ApiCarsPublicListingsRoute
   '/api/cars/public/recently-sold': typeof ApiCarsPublicRecentlySoldRoute
+  '/api/contact-forms/$id/status': typeof ApiContactFormsIdStatusRoute
   '/cars/$makeSlug/$modelSlug/$id': typeof CarsMakeSlugModelSlugIdRoute
   '/admin/console/car-inventory': typeof AdminConsoleCarInventoryIndexRoute
   '/admin/console/car-models': typeof AdminConsoleCarModelsIndexRoute
@@ -666,6 +682,7 @@ export interface FileRoutesById {
   '/api/settings/social-media': typeof ApiSettingsSocialMediaRoute
   '/admin/console/': typeof AdminConsoleIndexRoute
   '/api/cars/': typeof ApiCarsIndexRoute
+  '/api/contact-forms/': typeof ApiContactFormsIndexRoute
   '/api/settings/': typeof ApiSettingsIndexRoute
   '/api/users/': typeof ApiUsersIndexRoute
   '/admin/console/car-inventory/$id': typeof AdminConsoleCarInventoryIdRouteWithChildren
@@ -699,6 +716,7 @@ export interface FileRoutesById {
   '/api/cars/public/filters': typeof ApiCarsPublicFiltersRoute
   '/api/cars/public/listings': typeof ApiCarsPublicListingsRoute
   '/api/cars/public/recently-sold': typeof ApiCarsPublicRecentlySoldRoute
+  '/api/contact-forms/$id/status': typeof ApiContactFormsIdStatusRoute
   '/cars/$makeSlug/$modelSlug/$id': typeof CarsMakeSlugModelSlugIdRoute
   '/admin/console/car-inventory/': typeof AdminConsoleCarInventoryIndexRoute
   '/admin/console/car-models/': typeof AdminConsoleCarModelsIndexRoute
@@ -745,6 +763,7 @@ export interface FileRouteTypes {
     | '/api/settings/social-media'
     | '/admin/console/'
     | '/api/cars/'
+    | '/api/contact-forms/'
     | '/api/settings/'
     | '/api/users/'
     | '/admin/console/car-inventory/$id'
@@ -778,6 +797,7 @@ export interface FileRouteTypes {
     | '/api/cars/public/filters'
     | '/api/cars/public/listings'
     | '/api/cars/public/recently-sold'
+    | '/api/contact-forms/$id/status'
     | '/cars/$makeSlug/$modelSlug/$id'
     | '/admin/console/car-inventory/'
     | '/admin/console/car-models/'
@@ -820,6 +840,7 @@ export interface FileRouteTypes {
     | '/api/settings/social-media'
     | '/admin/console'
     | '/api/cars'
+    | '/api/contact-forms'
     | '/api/settings'
     | '/api/users'
     | '/admin/console/car-inventory/add'
@@ -852,6 +873,7 @@ export interface FileRouteTypes {
     | '/api/cars/public/filters'
     | '/api/cars/public/listings'
     | '/api/cars/public/recently-sold'
+    | '/api/contact-forms/$id/status'
     | '/cars/$makeSlug/$modelSlug/$id'
     | '/admin/console/car-inventory'
     | '/admin/console/car-models'
@@ -896,6 +918,7 @@ export interface FileRouteTypes {
     | '/api/settings/social-media'
     | '/admin/console/'
     | '/api/cars/'
+    | '/api/contact-forms/'
     | '/api/settings/'
     | '/api/users/'
     | '/admin/console/car-inventory/$id'
@@ -929,6 +952,7 @@ export interface FileRouteTypes {
     | '/api/cars/public/filters'
     | '/api/cars/public/listings'
     | '/api/cars/public/recently-sold'
+    | '/api/contact-forms/$id/status'
     | '/cars/$makeSlug/$modelSlug/$id'
     | '/admin/console/car-inventory/'
     | '/admin/console/car-models/'
@@ -965,6 +989,7 @@ export interface RootRouteChildren {
   ApiSettingsSeoRoute: typeof ApiSettingsSeoRoute
   ApiSettingsSocialMediaRoute: typeof ApiSettingsSocialMediaRoute
   ApiCarsIndexRoute: typeof ApiCarsIndexRoute
+  ApiContactFormsIndexRoute: typeof ApiContactFormsIndexRoute
   ApiSettingsIndexRoute: typeof ApiSettingsIndexRoute
   ApiUsersIndexRoute: typeof ApiUsersIndexRoute
   ApiCarsBodyTypesIdRoute: typeof ApiCarsBodyTypesIdRoute
@@ -992,6 +1017,7 @@ export interface RootRouteChildren {
   ApiCarsPublicFiltersRoute: typeof ApiCarsPublicFiltersRoute
   ApiCarsPublicListingsRoute: typeof ApiCarsPublicListingsRoute
   ApiCarsPublicRecentlySoldRoute: typeof ApiCarsPublicRecentlySoldRoute
+  ApiContactFormsIdStatusRoute: typeof ApiContactFormsIdStatusRoute
   CarsMakeSlugModelSlugIdRoute: typeof CarsMakeSlugModelSlugIdRoute
   ApiCarsBodyTypesIndexRoute: typeof ApiCarsBodyTypesIndexRoute
   ApiCarsCarMakesIndexRoute: typeof ApiCarsCarMakesIndexRoute
@@ -1065,6 +1091,13 @@ declare module '@tanstack/react-router' {
       path: '/api/settings'
       fullPath: '/api/settings/'
       preLoaderRoute: typeof ApiSettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/contact-forms/': {
+      id: '/api/contact-forms/'
+      path: '/api/contact-forms'
+      fullPath: '/api/contact-forms/'
+      preLoaderRoute: typeof ApiContactFormsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/cars/': {
@@ -1240,6 +1273,13 @@ declare module '@tanstack/react-router' {
       path: '/cars/$makeSlug/$modelSlug/$id'
       fullPath: '/cars/$makeSlug/$modelSlug/$id'
       preLoaderRoute: typeof CarsMakeSlugModelSlugIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/contact-forms/$id/status': {
+      id: '/api/contact-forms/$id/status'
+      path: '/api/contact-forms/$id/status'
+      fullPath: '/api/contact-forms/$id/status'
+      preLoaderRoute: typeof ApiContactFormsIdStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/cars/public/recently-sold': {
@@ -1656,6 +1696,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSettingsSeoRoute: ApiSettingsSeoRoute,
   ApiSettingsSocialMediaRoute: ApiSettingsSocialMediaRoute,
   ApiCarsIndexRoute: ApiCarsIndexRoute,
+  ApiContactFormsIndexRoute: ApiContactFormsIndexRoute,
   ApiSettingsIndexRoute: ApiSettingsIndexRoute,
   ApiUsersIndexRoute: ApiUsersIndexRoute,
   ApiCarsBodyTypesIdRoute: ApiCarsBodyTypesIdRoute,
@@ -1683,6 +1724,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCarsPublicFiltersRoute: ApiCarsPublicFiltersRoute,
   ApiCarsPublicListingsRoute: ApiCarsPublicListingsRoute,
   ApiCarsPublicRecentlySoldRoute: ApiCarsPublicRecentlySoldRoute,
+  ApiContactFormsIdStatusRoute: ApiContactFormsIdStatusRoute,
   CarsMakeSlugModelSlugIdRoute: CarsMakeSlugModelSlugIdRoute,
   ApiCarsBodyTypesIndexRoute: ApiCarsBodyTypesIndexRoute,
   ApiCarsCarMakesIndexRoute: ApiCarsCarMakesIndexRoute,

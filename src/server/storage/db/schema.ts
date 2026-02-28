@@ -170,3 +170,35 @@ export const settings = pgTable('settings', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
+
+export const contactForms = pgTable('contact_forms', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  firstName: varchar('first_name', { length: 120 }).notNull(),
+  lastName: varchar('last_name', { length: 120 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull(),
+  phone: varchar('phone', { length: 50 }),
+  subject: varchar('subject', { length: 255 }).notNull(),
+  message: text('message').notNull(),
+  interestedInVehicles: boolean('interested_in_vehicles').notNull().default(false),
+  status: varchar('status', { length: 24 }).notNull().default('incoming'),
+  readAt: timestamp('read_at'),
+  respondedAt: timestamp('responded_at'),
+  closedAt: timestamp('closed_at'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ([
+  index('contact_forms_status_idx').on(table.status),
+  index('contact_forms_email_idx').on(table.email),
+  index('contact_forms_created_at_idx').on(table.createdAt),
+]));
+
+export const contactFormVehicles = pgTable('contact_form_vehicles', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  contactFormId: uuid('contact_form_id').notNull().references(() => contactForms.id, { onDelete: 'cascade' }),
+  carId: uuid('car_id').notNull().references(() => cars.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => ([
+  index('contact_form_vehicles_contact_form_id_idx').on(table.contactFormId),
+  index('contact_form_vehicles_car_id_idx').on(table.carId),
+  unique('contact_form_vehicles_unique_idx').on(table.contactFormId, table.carId),
+]));
