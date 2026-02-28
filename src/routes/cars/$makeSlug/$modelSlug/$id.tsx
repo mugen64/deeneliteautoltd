@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { 
   ChevronLeft, Calendar, Fuel, Gauge, MapPin, Phone, Car
@@ -9,6 +9,23 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { IconPreview } from '@/components/IconPreview'
 import { useState, useEffect } from 'react'
+
+type SimilarVehicle = {
+  id: string
+  year: number
+  price: string
+  mileage: number
+  transmission: string
+  fuelType: string
+  bodyType: { name: string }
+  make: { name: string; slug: string }
+  model: { name: string; slug: string }
+  primaryImage: string | null
+}
+
+type SimilarVehicleResponse = {
+  data: SimilarVehicle[]
+}
 
 export const Route = createFileRoute('/cars/$makeSlug/$modelSlug/$id')({
   component: CarDetailsPage,
@@ -59,6 +76,27 @@ function CarDetailsPage() {
       }
     },
   })
+
+  const { data: similarVehiclesData, isLoading: isLoadingSimilarVehicles } = useQuery<SimilarVehicleResponse>({
+    queryKey: ['similarVehicles', id, carDetails?.make?.id, carDetails?.bodyType?.id],
+    enabled: !!carDetails?.make?.id && !!carDetails?.bodyType?.id,
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      params.set('makeIds', carDetails.make.id)
+      params.set('bodyTypeIds', carDetails.bodyType.id)
+      params.set('limit', '6')
+      params.set('page', '1')
+      params.set('sortBy', 'year_desc')
+
+      const response = await fetch(`/api/cars/public/listings?${params.toString()}`)
+      if (!response.ok) throw new Error('Failed to fetch similar vehicles')
+      return response.json()
+    },
+  })
+
+  const similarVehicles = (similarVehiclesData?.data ?? [])
+    .filter((vehicle) => vehicle.id !== id)
+    .slice(0, 3)
 
   // Set selected photo to primary when data loads
   useEffect(() => {
@@ -449,6 +487,59 @@ function CarDetailsPage() {
             </Card>
           </div>
         </div>
+
+        <section className="mt-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Similar Vehicles</h2>
+          </div>
+
+          {isLoadingSimilarVehicles ? (
+            <p className="text-sm text-muted-foreground">Loading similar vehicles...</p>
+          ) : similarVehicles.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No similar vehicles available right now.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {similarVehicles.map((vehicle) => (
+                <Link
+                  key={vehicle.id}
+                  to="/cars/$makeSlug/$modelSlug/$id"
+                  params={{
+                    makeSlug: vehicle.make.slug,
+                    modelSlug: vehicle.model.slug,
+                    id: vehicle.id,
+                  }}
+                  className="group"
+                >
+                  <Card className="overflow-hidden h-full transition-colors group-hover:border-primary/60">
+                    <div className="aspect-4/3 bg-muted">
+                      {vehicle.primaryImage ? (
+                        <img
+                          src={vehicle.primaryImage}
+                          alt={`${vehicle.year} ${vehicle.make.name} ${vehicle.model.name}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Car className="size-12 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    <CardContent className="pt-4 space-y-2">
+                      <h3 className="font-semibold text-sm leading-tight">
+                        {vehicle.year} {vehicle.make.name} {vehicle.model.name}
+                      </h3>
+                      <p className="text-sm font-bold">UGX {Number(vehicle.price).toLocaleString()}</p>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>{vehicle.mileage.toLocaleString()} km</span>
+                        <span>{vehicle.fuelType}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   )
