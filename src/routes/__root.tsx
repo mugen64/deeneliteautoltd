@@ -1,13 +1,39 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRoute, redirect } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from 'sonner'
 
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 import { ThemeProvider } from '../lib/theme'
+import { AuthProvider } from '../contexts/auth'
+import { SettingsProvider, type SiteSettings } from '../contexts/settings'
+import { PageViewTracker } from '../components/PageViewTracker'
 
 import appCss from '../styles.css?url'
+import { getSessionUserFn } from '@/server/auth'
+
+const queryClient = new QueryClient()
+const showDevtools = import.meta.env.DEV
 
 export const Route = createRootRoute({
+  beforeLoad: async ({ location }) => {
+    // Protect routes starting with /admin
+    let user = null
+    if (location.pathname.startsWith('/admin')) {
+      user = await getSessionUserFn()
+      if (!user && location.pathname !== '/admin/login') {
+        throw redirect({ to: '/admin/login' })
+      }
+      if (user && location.pathname === '/admin/login') {
+        throw redirect({ to: '/admin' })
+      }
+    }
+
+    // Skip settings load on server - will be loaded by client via SettingsProvider
+    return { user, siteSettings: null }
+  },
   head: () => ({
     meta: [
       {
@@ -56,21 +82,32 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         />
       </head>
       <body>
-        <ThemeProvider defaultTheme="system" storageKey="deeneliteauto-theme">
-          <Header />
-          {children}
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Deen Elite Auto Ltd Router Devtools',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <SettingsProvider>
+              <ThemeProvider defaultTheme="system" storageKey="deeneliteauto-theme">
+                <PageViewTracker />
+                <Header />
+                {children}
+                <Footer />
+                <Toaster richColors closeButton />
+                {showDevtools ? (
+                  <TanStackDevtools
+                    config={{
+                      position: 'bottom-right',
+                    }}
+                    plugins={[
+                      {
+                        name: 'Deen Elite Auto Ltd Router Devtools',
+                        render: <TanStackRouterDevtoolsPanel />,
+                      },
+                    ]}
+                  />
+                ) : null}
+              </ThemeProvider>
+            </SettingsProvider>
+          </AuthProvider>
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>
