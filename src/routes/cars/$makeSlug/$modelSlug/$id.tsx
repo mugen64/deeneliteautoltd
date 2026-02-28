@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { IconPreview } from '@/components/IconPreview'
 import { useState, useEffect } from 'react'
+import { useSettings } from '@/contexts/settings'
 
 type SimilarVehicle = {
   id: string
@@ -417,33 +418,7 @@ function CarDetailsPage() {
             {/* Contact Card */}
             <Card className="sticky top-20">
               <CardContent className="pt-5 space-y-3">
-                <div>
-                  <h3 className="font-semibold mb-2">Contact Dealer</h3>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Interested in this vehicle? Get in touch with Deen Elite Auto Ltd today.
-                  </p>
-                </div>
-
-                <Button className="w-full">
-                  <Phone className="mr-2 size-4" />
-                  Call Now
-                </Button>
-
-                <Button variant="outline" className="w-full">
-                  <MapPin className="mr-2 size-4" />
-                  Visit Showroom
-                </Button>
-
-                <div className="space-y-2 pt-3 border-t border-border">
-                  <div className="flex items-center gap-2 text-xs">
-                    <Phone className="size-3 text-muted-foreground" />
-                    <span>+256 993523948</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <MapPin className="size-3 text-muted-foreground" />
-                    <span>Kampala, Uganda</span>
-                  </div>
-                </div>
+                <ContactDealerCard />
               </CardContent>
             </Card>
 
@@ -542,5 +517,60 @@ function CarDetailsPage() {
         </section>
       </div>
     </div>
+  )
+}
+
+function ContactDealerCard() {
+  const { settings } = useSettings()
+  const companyName = settings?.companyName || 'Deen Elite Auto Ltd'
+  const phoneNumber = settings?.phoneNumber || '+256 993523948'
+  const address = settings?.address || 'Kampala, Uganda'
+
+  // Clean phone number for tel: link (remove spaces and special chars except +)
+  const telNumber = phoneNumber.replace(/[\s\-()]/g, '')
+
+  // Build Google Maps query
+  const mapsQuery = `${companyName} ${address}`.replace(/\s+/g, '+')
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`
+
+  return (
+    <>
+      <div>
+        <h3 className="font-semibold mb-2">Contact Dealer</h3>
+        <p className="text-xs text-muted-foreground mb-3">
+          Interested in this vehicle? Get in touch with {companyName} today.
+        </p>
+      </div>
+
+      <a href={`tel:${telNumber}`} className="w-full inline-block">
+        <Button className="w-full">
+          <Phone className="mr-2 size-4" />
+          Call Now
+        </Button>
+      </a>
+
+      <a 
+        href={mapsUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full inline-block"
+      >
+        <Button variant="outline" className="w-full">
+          <MapPin className="mr-2 size-4" />
+          Visit Showroom
+        </Button>
+      </a>
+
+      <div className="space-y-2 pt-3 border-t border-border">
+        <div className="flex items-center gap-2 text-xs">
+          <Phone className="size-3 text-muted-foreground" />
+          <span>{phoneNumber}</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <MapPin className="size-3 text-muted-foreground" />
+          <span>{address}</span>
+        </div>
+      </div>
+    </>
   )
 }

@@ -12,12 +12,16 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTheme } from '@/lib/theme'
 import { useAuth } from '@/contexts/auth'
+import { useSettings } from '@/contexts/settings'
 import { logoutFn } from '@/server/auth'
 
 export default function Header() {
   const { setTheme } = useTheme()
   const { user } = useAuth()
+  const { settings } = useSettings()
   const logout = useServerFn(logoutFn)
+
+  const companyName = settings?.companyName || 'DEEN ELITE AUTO LTD'
 
   return (
     <>
@@ -27,7 +31,7 @@ export default function Header() {
           <div className="flex items-center gap-8">
             <h1 className="text-mds font-black">
               <Link to="/">
-                DEEN <span className="font-bold">ELITE AUTO LTD</span>
+                {companyName}
               </Link>
             </h1>
           </div>
