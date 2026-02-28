@@ -65,6 +65,49 @@ type FilterOptions = {
 
 export const Route = createFileRoute('/')({
   component: App,
+  head: () => ({
+    meta: [
+      {
+        title: 'Car Dealership - Buy & Sell Used Cars | Deen Elite Auto Ltd',
+      },
+      {
+        name: 'description',
+        content: 'Discover quality used cars at Deen Elite Auto Ltd. Browse our extensive inventory of vehicles, compare prices, and find your perfect car. Buy or sell your vehicle with confidence.',
+      },
+      {
+        name: 'keywords',
+        content: 'used cars, car dealership, buy cars, sell cars, vehicle inventory, auto sales',
+      },
+      {
+        property: 'og:title',
+        content: 'Car Dealership - Buy & Sell Used Cars | Deen Elite Auto Ltd',
+      },
+      {
+        property: 'og:description',
+        content: 'Browse quality used cars, compare prices, and find your perfect vehicle at Deen Elite Auto Ltd.',
+      },
+      {
+        property: 'og:url',
+        content: 'https://deeneliteauto.com',
+      },
+      {
+        property: 'og:image',
+        content: 'https://deeneliteauto.com/og-image.jpg',
+      },
+      {
+        name: 'twitter:title',
+        content: 'Car Dealership - Buy & Sell Used Cars | Deen Elite Auto Ltd',
+      },
+      {
+        name: 'twitter:description',
+        content: 'Browse quality used cars, compare prices, and find your perfect vehicle at Deen Elite Auto Ltd.',
+      },
+      {
+        name: 'twitter:image',
+        content: 'https://deeneliteauto.com/og-image.jpg',
+      },
+    ],
+  }),
   validateSearch: (search) => {
     return {
       page: Number(search.page) || 1,

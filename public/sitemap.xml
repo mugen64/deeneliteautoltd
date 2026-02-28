@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0">
+  <!-- Home Page -->
+  <url>
+    <loc>https://deeneliteauto.com/</loc>
+    <lastmod>2026-02-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Sell Car Page -->
+  <url>
+    <loc>https://deeneliteauto.com/sell-car</loc>
+    <lastmod>2026-02-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Submit Enquiry Page -->
+  <url>
+    <loc>https://deeneliteauto.com/submit-enquiry</loc>
+    <lastmod>2026-02-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Note: Car detail pages at /cars/$makeSlug/$modelSlug/$id should be generated dynamically -->
+  <!-- Consider generating this file dynamically from your database on each build or via a server endpoint -->
+</urlset>

@@ -12,6 +12,41 @@ import { toast } from 'sonner'
 
 export const Route = createFileRoute('/sell-car')({
   component: SellCarPage,
+  head: () => ({
+    meta: [
+      {
+        title: 'Sell Your Car - Get Best Quote | Deen Elite Auto Ltd',
+      },
+      {
+        name: 'description',
+        content: 'Sell your car easily at Deen Elite Auto Ltd. Get an instant quote, transparent pricing, and hassle-free service. Contact us today to sell your vehicle.',
+      },
+      {
+        name: 'keywords',
+        content: 'sell car, car valuation, sell vehicle, car quote, used car buyer',
+      },
+      {
+        property: 'og:title',
+        content: 'Sell Your Car - Get Best Quote | Deen Elite Auto Ltd',
+      },
+      {
+        property: 'og:description',
+        content: 'Sell your car easily at Deen Elite Auto Ltd. Get an instant quote and hassle-free service. Contact us today.',
+      },
+      {
+        property: 'og:url',
+        content: 'https://deeneliteauto.com/sell-car',
+      },
+      {
+        name: 'twitter:title',
+        content: 'Sell Your Car - Get Best Quote | Deen Elite Auto Ltd',
+      },
+      {
+        name: 'twitter:description',
+        content: 'Sell your car easily and get the best quote. Transparent pricing and hassle-free service.',
+      },
+    ],
+  }),
 })
 
 function SellCarPage() {

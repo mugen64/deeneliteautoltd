@@ -44,13 +44,38 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Deen Elite Auto Ltd',
+        name: 'theme-color',
+        content: '#ffffff',
+      },
+      {
+        name: 'apple-mobile-web-app-capable',
+        content: 'yes',
+      },
+      {
+        name: 'apple-mobile-web-app-status-bar-style',
+        content: 'black-translucent',
+      },
+      {
+        property: 'og:type',
+        content: 'website',
+      },
+      {
+        name: 'twitter:card',
+        content: 'summary_large_image',
       },
     ],
     links: [
       {
         rel: 'stylesheet',
         href: appCss,
+      },
+      {
+        rel: 'icon',
+        href: '/favicon.ico',
+      },
+      {
+        rel: 'canonical',
+        href: typeof window !== 'undefined' ? window.location.href : 'https://deeneliteauto.com',
       },
     ],
   }),
@@ -78,6 +103,24 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 }
               })();
             `,
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'AutoDealer',
+              name: 'Deen Elite Auto Ltd',
+              url: 'https://deeneliteauto.com',
+              logo: 'https://deeneliteauto.com/logo.png',
+              description: 'Premium used car dealership offering quality vehicles and excellent customer service',
+              sameAs: [
+                'https://www.facebook.com/deeneliteauto',
+                'https://www.twitter.com/deeneliteauto',
+                'https://www.instagram.com/deeneliteauto',
+              ],
+            }),
           }}
         />
       </head>
