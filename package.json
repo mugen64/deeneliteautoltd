@@ -15,7 +15,7 @@
     "db:rollback": "drizzle-kit rollback --config drizzle.config.ts"
   },
   "dependencies": {
-     "@auth/pg-adapter": "^1.11.1",
+    "@auth/pg-adapter": "^1.11.1",
     "@base-ui/react": "^1.2.0",
     "@fontsource-variable/nunito-sans": "^5.2.7",
     "@neondatabase/serverless": "^1.0.2",
