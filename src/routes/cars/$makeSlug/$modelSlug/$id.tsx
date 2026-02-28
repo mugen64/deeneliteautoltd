@@ -31,6 +31,37 @@ type SimilarVehicleResponse = {
 
 export const Route = createFileRoute('/cars/$makeSlug/$modelSlug/$id')({
   component: CarDetailsPage,
+  head: ({ params }) => ({
+    meta: [
+      {
+        title: `${params.makeSlug} ${params.modelSlug} - Used Car Details | Deen Elite Auto Ltd`,
+      },
+      {
+        name: 'description',
+        content: `View detailed information about this ${params.makeSlug} ${params.modelSlug}. Check specifications, price, mileage, and more. Get in touch for a test drive.`,
+      },
+      {
+        property: 'og:title',
+        content: `${params.makeSlug} ${params.modelSlug} - Used Car Details | Deen Elite Auto Ltd`,
+      },
+      {
+        property: 'og:description',
+        content: `View detailed information about this ${params.makeSlug} ${params.modelSlug}. Check specifications, price, mileage, and more.`,
+      },
+      {
+        property: 'og:url',
+        content: `https://deeneliteauto.com/cars/${params.makeSlug}/${params.modelSlug}/${params.id}`,
+      },
+      {
+        name: 'twitter:title',
+        content: `${params.makeSlug} ${params.modelSlug} - Used Car Details`,
+      },
+      {
+        name: 'twitter:description',
+        content: `View detailed information about this ${params.makeSlug} ${params.modelSlug}. Check specifications and pricing.`,
+      },
+    ],
+  }),
 })
 
 function CarDetailsPage() {

@@ -13,6 +13,41 @@ import { toast } from 'sonner'
 
 export const Route = createFileRoute('/submit-enquiry')({
   component: SubmitEnquiryPage,
+  head: () => ({
+    meta: [
+      {
+        title: 'Contact Us - Submit Your Enquiry | Deen Elite Auto Ltd',
+      },
+      {
+        name: 'description',
+        content: 'Have questions about our vehicles or services? Submit your enquiry to Deen Elite Auto Ltd today. Our team will get back to you promptly with answers and assistance.',
+      },
+      {
+        name: 'keywords',
+        content: 'contact dealership, vehicle enquiry, car questions, customer support, automotive help',
+      },
+      {
+        property: 'og:title',
+        content: 'Contact Us - Submit Your Enquiry | Deen Elite Auto Ltd',
+      },
+      {
+        property: 'og:description',
+        content: 'Have questions about our vehicles? Submit your enquiry and our team will get back to you promptly.',
+      },
+      {
+        property: 'og:url',
+        content: 'https://deeneliteauto.com/submit-enquiry',
+      },
+      {
+        name: 'twitter:title',
+        content: 'Contact Us - Submit Your Enquiry | Deen Elite Auto Ltd',
+      },
+      {
+        name: 'twitter:description',
+        content: 'Have questions? Submit your enquiry and our team will assist you promptly.',
+      },
+    ],
+  }),
 })
 
 interface CarListing {
