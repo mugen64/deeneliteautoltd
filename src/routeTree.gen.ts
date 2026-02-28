@@ -14,17 +14,22 @@ import { Route as SellCarRouteImport } from './routes/sell-car'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminConsoleRouteRouteImport } from './routes/admin/console/route'
 import { Route as ApiUsersIndexRouteImport } from './routes/api/users/index'
+import { Route as ApiSettingsIndexRouteImport } from './routes/api/settings/index'
 import { Route as ApiCarsIndexRouteImport } from './routes/api/cars/index'
 import { Route as AdminConsoleIndexRouteImport } from './routes/admin/console/index'
+import { Route as ApiSettingsSocialMediaRouteImport } from './routes/api/settings/social-media'
+import { Route as ApiSettingsSeoRouteImport } from './routes/api/settings/seo'
+import { Route as ApiSettingsLocationContactRouteImport } from './routes/api/settings/location-contact'
+import { Route as ApiSettingsCompanyRouteImport } from './routes/api/settings/company'
 import { Route as ApiDashboardStatsRouteImport } from './routes/api/dashboard/stats'
 import { Route as ApiCarsUpdateRouteImport } from './routes/api/cars/update'
 import { Route as ApiCarsCreateRouteImport } from './routes/api/cars/create'
 import { Route as ApiCarsIdRouteImport } from './routes/api/cars/$id'
 import { Route as AdminConsoleUserManagementRouteImport } from './routes/admin/console/user-management'
+import { Route as AdminConsoleSettingsRouteImport } from './routes/admin/console/settings'
 import { Route as AdminConsoleContentRouteImport } from './routes/admin/console/content'
 import { Route as AdminConsoleContactFormsRouteImport } from './routes/admin/console/contact-forms'
 import { Route as AdminConsoleAnalyticsRouteImport } from './routes/admin/console/analytics'
@@ -103,11 +108,6 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -123,6 +123,11 @@ const ApiUsersIndexRoute = ApiUsersIndexRouteImport.update({
   path: '/api/users/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSettingsIndexRoute = ApiSettingsIndexRouteImport.update({
+  id: '/api/settings/',
+  path: '/api/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCarsIndexRoute = ApiCarsIndexRouteImport.update({
   id: '/api/cars/',
   path: '/api/cars/',
@@ -132,6 +137,27 @@ const AdminConsoleIndexRoute = AdminConsoleIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminConsoleRouteRoute,
+} as any)
+const ApiSettingsSocialMediaRoute = ApiSettingsSocialMediaRouteImport.update({
+  id: '/api/settings/social-media',
+  path: '/api/settings/social-media',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSettingsSeoRoute = ApiSettingsSeoRouteImport.update({
+  id: '/api/settings/seo',
+  path: '/api/settings/seo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSettingsLocationContactRoute =
+  ApiSettingsLocationContactRouteImport.update({
+    id: '/api/settings/location-contact',
+    path: '/api/settings/location-contact',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiSettingsCompanyRoute = ApiSettingsCompanyRouteImport.update({
+  id: '/api/settings/company',
+  path: '/api/settings/company',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiDashboardStatsRoute = ApiDashboardStatsRouteImport.update({
   id: '/api/dashboard/stats',
@@ -159,6 +185,11 @@ const AdminConsoleUserManagementRoute =
     path: '/user-management',
     getParentRoute: () => AdminConsoleRouteRoute,
   } as any)
+const AdminConsoleSettingsRoute = AdminConsoleSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminConsoleRouteRoute,
+} as any)
 const AdminConsoleContentRoute = AdminConsoleContentRouteImport.update({
   id: '/content',
   path: '/content',
@@ -453,18 +484,23 @@ export interface FileRoutesByFullPath {
   '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin/console': typeof AdminConsoleRouteRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
-  '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/console/analytics': typeof AdminConsoleAnalyticsRoute
   '/admin/console/contact-forms': typeof AdminConsoleContactFormsRoute
   '/admin/console/content': typeof AdminConsoleContentRoute
+  '/admin/console/settings': typeof AdminConsoleSettingsRoute
   '/admin/console/user-management': typeof AdminConsoleUserManagementRoute
   '/api/cars/$id': typeof ApiCarsIdRoute
   '/api/cars/create': typeof ApiCarsCreateRoute
   '/api/cars/update': typeof ApiCarsUpdateRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
+  '/api/settings/company': typeof ApiSettingsCompanyRoute
+  '/api/settings/location-contact': typeof ApiSettingsLocationContactRoute
+  '/api/settings/seo': typeof ApiSettingsSeoRoute
+  '/api/settings/social-media': typeof ApiSettingsSocialMediaRoute
   '/admin/console/': typeof AdminConsoleIndexRoute
   '/api/cars/': typeof ApiCarsIndexRoute
+  '/api/settings/': typeof ApiSettingsIndexRoute
   '/api/users/': typeof ApiUsersIndexRoute
   '/admin/console/car-inventory/$id': typeof AdminConsoleCarInventoryIdRouteWithChildren
   '/admin/console/car-inventory/add': typeof AdminConsoleCarInventoryAddRoute
@@ -521,18 +557,23 @@ export interface FileRoutesByTo {
   '/sell-car': typeof SellCarRoute
   '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/settings': typeof AdminSettingsRoute
   '/admin': typeof AdminIndexRoute
   '/admin/console/analytics': typeof AdminConsoleAnalyticsRoute
   '/admin/console/contact-forms': typeof AdminConsoleContactFormsRoute
   '/admin/console/content': typeof AdminConsoleContentRoute
+  '/admin/console/settings': typeof AdminConsoleSettingsRoute
   '/admin/console/user-management': typeof AdminConsoleUserManagementRoute
   '/api/cars/$id': typeof ApiCarsIdRoute
   '/api/cars/create': typeof ApiCarsCreateRoute
   '/api/cars/update': typeof ApiCarsUpdateRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
+  '/api/settings/company': typeof ApiSettingsCompanyRoute
+  '/api/settings/location-contact': typeof ApiSettingsLocationContactRoute
+  '/api/settings/seo': typeof ApiSettingsSeoRoute
+  '/api/settings/social-media': typeof ApiSettingsSocialMediaRoute
   '/admin/console': typeof AdminConsoleIndexRoute
   '/api/cars': typeof ApiCarsIndexRoute
+  '/api/settings': typeof ApiSettingsIndexRoute
   '/api/users': typeof ApiUsersIndexRoute
   '/admin/console/car-inventory/add': typeof AdminConsoleCarInventoryAddRoute
   '/admin/console/car-models/add-body-type': typeof AdminConsoleCarModelsAddBodyTypeRoute
@@ -591,18 +632,23 @@ export interface FileRoutesById {
   '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin/console': typeof AdminConsoleRouteRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
-  '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/console/analytics': typeof AdminConsoleAnalyticsRoute
   '/admin/console/contact-forms': typeof AdminConsoleContactFormsRoute
   '/admin/console/content': typeof AdminConsoleContentRoute
+  '/admin/console/settings': typeof AdminConsoleSettingsRoute
   '/admin/console/user-management': typeof AdminConsoleUserManagementRoute
   '/api/cars/$id': typeof ApiCarsIdRoute
   '/api/cars/create': typeof ApiCarsCreateRoute
   '/api/cars/update': typeof ApiCarsUpdateRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
+  '/api/settings/company': typeof ApiSettingsCompanyRoute
+  '/api/settings/location-contact': typeof ApiSettingsLocationContactRoute
+  '/api/settings/seo': typeof ApiSettingsSeoRoute
+  '/api/settings/social-media': typeof ApiSettingsSocialMediaRoute
   '/admin/console/': typeof AdminConsoleIndexRoute
   '/api/cars/': typeof ApiCarsIndexRoute
+  '/api/settings/': typeof ApiSettingsIndexRoute
   '/api/users/': typeof ApiUsersIndexRoute
   '/admin/console/car-inventory/$id': typeof AdminConsoleCarInventoryIdRouteWithChildren
   '/admin/console/car-inventory/add': typeof AdminConsoleCarInventoryAddRoute
@@ -663,18 +709,23 @@ export interface FileRouteTypes {
     | '/submit-enquiry'
     | '/admin/console'
     | '/admin/login'
-    | '/admin/settings'
     | '/admin/'
     | '/admin/console/analytics'
     | '/admin/console/contact-forms'
     | '/admin/console/content'
+    | '/admin/console/settings'
     | '/admin/console/user-management'
     | '/api/cars/$id'
     | '/api/cars/create'
     | '/api/cars/update'
     | '/api/dashboard/stats'
+    | '/api/settings/company'
+    | '/api/settings/location-contact'
+    | '/api/settings/seo'
+    | '/api/settings/social-media'
     | '/admin/console/'
     | '/api/cars/'
+    | '/api/settings/'
     | '/api/users/'
     | '/admin/console/car-inventory/$id'
     | '/admin/console/car-inventory/add'
@@ -731,18 +782,23 @@ export interface FileRouteTypes {
     | '/sell-car'
     | '/submit-enquiry'
     | '/admin/login'
-    | '/admin/settings'
     | '/admin'
     | '/admin/console/analytics'
     | '/admin/console/contact-forms'
     | '/admin/console/content'
+    | '/admin/console/settings'
     | '/admin/console/user-management'
     | '/api/cars/$id'
     | '/api/cars/create'
     | '/api/cars/update'
     | '/api/dashboard/stats'
+    | '/api/settings/company'
+    | '/api/settings/location-contact'
+    | '/api/settings/seo'
+    | '/api/settings/social-media'
     | '/admin/console'
     | '/api/cars'
+    | '/api/settings'
     | '/api/users'
     | '/admin/console/car-inventory/add'
     | '/admin/console/car-models/add-body-type'
@@ -800,18 +856,23 @@ export interface FileRouteTypes {
     | '/submit-enquiry'
     | '/admin/console'
     | '/admin/login'
-    | '/admin/settings'
     | '/admin/'
     | '/admin/console/analytics'
     | '/admin/console/contact-forms'
     | '/admin/console/content'
+    | '/admin/console/settings'
     | '/admin/console/user-management'
     | '/api/cars/$id'
     | '/api/cars/create'
     | '/api/cars/update'
     | '/api/dashboard/stats'
+    | '/api/settings/company'
+    | '/api/settings/location-contact'
+    | '/api/settings/seo'
+    | '/api/settings/social-media'
     | '/admin/console/'
     | '/api/cars/'
+    | '/api/settings/'
     | '/api/users/'
     | '/admin/console/car-inventory/$id'
     | '/admin/console/car-inventory/add'
@@ -873,7 +934,12 @@ export interface RootRouteChildren {
   ApiCarsCreateRoute: typeof ApiCarsCreateRoute
   ApiCarsUpdateRoute: typeof ApiCarsUpdateRoute
   ApiDashboardStatsRoute: typeof ApiDashboardStatsRoute
+  ApiSettingsCompanyRoute: typeof ApiSettingsCompanyRoute
+  ApiSettingsLocationContactRoute: typeof ApiSettingsLocationContactRoute
+  ApiSettingsSeoRoute: typeof ApiSettingsSeoRoute
+  ApiSettingsSocialMediaRoute: typeof ApiSettingsSocialMediaRoute
   ApiCarsIndexRoute: typeof ApiCarsIndexRoute
+  ApiSettingsIndexRoute: typeof ApiSettingsIndexRoute
   ApiUsersIndexRoute: typeof ApiUsersIndexRoute
   ApiCarsBodyTypesIdRoute: typeof ApiCarsBodyTypesIdRoute
   ApiCarsBodyTypesCreateRoute: typeof ApiCarsBodyTypesCreateRoute
@@ -946,13 +1012,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -974,6 +1033,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiUsersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/settings/': {
+      id: '/api/settings/'
+      path: '/api/settings'
+      fullPath: '/api/settings/'
+      preLoaderRoute: typeof ApiSettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/cars/': {
       id: '/api/cars/'
       path: '/api/cars'
@@ -987,6 +1053,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/console/'
       preLoaderRoute: typeof AdminConsoleIndexRouteImport
       parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/api/settings/social-media': {
+      id: '/api/settings/social-media'
+      path: '/api/settings/social-media'
+      fullPath: '/api/settings/social-media'
+      preLoaderRoute: typeof ApiSettingsSocialMediaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/settings/seo': {
+      id: '/api/settings/seo'
+      path: '/api/settings/seo'
+      fullPath: '/api/settings/seo'
+      preLoaderRoute: typeof ApiSettingsSeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/settings/location-contact': {
+      id: '/api/settings/location-contact'
+      path: '/api/settings/location-contact'
+      fullPath: '/api/settings/location-contact'
+      preLoaderRoute: typeof ApiSettingsLocationContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/settings/company': {
+      id: '/api/settings/company'
+      path: '/api/settings/company'
+      fullPath: '/api/settings/company'
+      preLoaderRoute: typeof ApiSettingsCompanyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/dashboard/stats': {
       id: '/api/dashboard/stats'
@@ -1021,6 +1115,13 @@ declare module '@tanstack/react-router' {
       path: '/user-management'
       fullPath: '/admin/console/user-management'
       preLoaderRoute: typeof AdminConsoleUserManagementRouteImport
+      parentRoute: typeof AdminConsoleRouteRoute
+    }
+    '/admin/console/settings': {
+      id: '/admin/console/settings'
+      path: '/settings'
+      fullPath: '/admin/console/settings'
+      preLoaderRoute: typeof AdminConsoleSettingsRouteImport
       parentRoute: typeof AdminConsoleRouteRoute
     }
     '/admin/console/content': {
@@ -1411,6 +1512,7 @@ interface AdminConsoleRouteRouteChildren {
   AdminConsoleAnalyticsRoute: typeof AdminConsoleAnalyticsRoute
   AdminConsoleContactFormsRoute: typeof AdminConsoleContactFormsRoute
   AdminConsoleContentRoute: typeof AdminConsoleContentRoute
+  AdminConsoleSettingsRoute: typeof AdminConsoleSettingsRoute
   AdminConsoleUserManagementRoute: typeof AdminConsoleUserManagementRoute
   AdminConsoleIndexRoute: typeof AdminConsoleIndexRoute
   AdminConsoleCarInventoryIdRoute: typeof AdminConsoleCarInventoryIdRouteWithChildren
@@ -1430,6 +1532,7 @@ const AdminConsoleRouteRouteChildren: AdminConsoleRouteRouteChildren = {
   AdminConsoleAnalyticsRoute: AdminConsoleAnalyticsRoute,
   AdminConsoleContactFormsRoute: AdminConsoleContactFormsRoute,
   AdminConsoleContentRoute: AdminConsoleContentRoute,
+  AdminConsoleSettingsRoute: AdminConsoleSettingsRoute,
   AdminConsoleUserManagementRoute: AdminConsoleUserManagementRoute,
   AdminConsoleIndexRoute: AdminConsoleIndexRoute,
   AdminConsoleCarInventoryIdRoute: AdminConsoleCarInventoryIdRouteWithChildren,
@@ -1454,14 +1557,12 @@ const AdminConsoleRouteRouteWithChildren =
 interface AdminRouteRouteChildren {
   AdminConsoleRouteRoute: typeof AdminConsoleRouteRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
-  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminConsoleRouteRoute: AdminConsoleRouteRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
-  AdminSettingsRoute: AdminSettingsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -1508,7 +1609,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCarsCreateRoute: ApiCarsCreateRoute,
   ApiCarsUpdateRoute: ApiCarsUpdateRoute,
   ApiDashboardStatsRoute: ApiDashboardStatsRoute,
+  ApiSettingsCompanyRoute: ApiSettingsCompanyRoute,
+  ApiSettingsLocationContactRoute: ApiSettingsLocationContactRoute,
+  ApiSettingsSeoRoute: ApiSettingsSeoRoute,
+  ApiSettingsSocialMediaRoute: ApiSettingsSocialMediaRoute,
   ApiCarsIndexRoute: ApiCarsIndexRoute,
+  ApiSettingsIndexRoute: ApiSettingsIndexRoute,
   ApiUsersIndexRoute: ApiUsersIndexRoute,
   ApiCarsBodyTypesIdRoute: ApiCarsBodyTypesIdRoute,
   ApiCarsBodyTypesCreateRoute: ApiCarsBodyTypesCreateRoute,

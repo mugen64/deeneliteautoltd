@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, timestamp, varchar, index, unique, integer, decimal, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, text, uuid, timestamp, varchar, index, unique, integer, decimal, boolean, jsonb } from 'drizzle-orm/pg-core';
 
 
 export const users = pgTable('users', {
@@ -162,3 +162,11 @@ export const carHistory = pgTable('car_history', {
   index('car_history_checklist_id_idx').on(table.checklistId),
   unique('car_history_unique_idx').on(table.carId, table.checklistId),
 ]));
+
+export const settings = pgTable('settings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  type: varchar('type', { length: 120 }).notNull().unique(),
+  value: jsonb('value').notNull().default({}),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
