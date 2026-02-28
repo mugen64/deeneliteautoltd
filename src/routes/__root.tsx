@@ -29,20 +29,8 @@ export const Route = createRootRoute({
       }
     }
 
-    // Load site settings
-    let siteSettings: SiteSettings | null = null
-    try {
-      const response = await fetch('/api/settings/', {
-        method: 'GET',
-      })
-      if (response.ok) {
-        siteSettings = await response.json()
-      }
-    } catch (error) {
-      console.error('Failed to load site settings:', error)
-    }
-
-    return { user, siteSettings }
+    // Skip settings load on server - will be loaded by client via SettingsProvider
+    return { user, siteSettings: null }
   },
   head: () => ({
     meta: [

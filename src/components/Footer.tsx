@@ -1,4 +1,4 @@
-import { ArrowRight, Facebook, Instagram, Linkedin } from 'lucide-react'
+import { ArrowRight, Facebook, Instagram, Linkedin, CheckCircle, TrendingUp, Eye } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 
@@ -8,6 +8,15 @@ import { useSettings } from '@/contexts/settings'
 
 type FooterFilterOptions = {
   bodyTypes: Array<{ id: string; name: string }>
+}
+
+type CarStatistics = {
+  total: number
+  sold: number
+  available: number
+  listed: number
+  byMake: Array<{ makeName: string; count: number }>
+  byBodyType: Array<{ bodyTypeName: string; count: number }>
 }
 
 export default function Footer() {
@@ -21,6 +30,15 @@ export default function Footer() {
     },
   })
 
+  const { data: statistics } = useQuery<CarStatistics>({
+    queryKey: ['carStatistics'],
+    queryFn: async () => {
+      const response = await fetch('/api/cars/statistics')
+      if (!response.ok) throw new Error('Failed to fetch statistics')
+      return response.json()
+    },
+  })
+
   const companyName = settings?.companyName || 'Deen Elite Auto Ltd'
   const facebookUrl = settings?.facebookUrl || '#'
   const instagramUrl = settings?.instagramUrl || '#'
@@ -29,7 +47,45 @@ export default function Footer() {
   return (
     <footer className="mt-16 border-t border-border bg-card">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        {/* Statistics Section - Top */}
+        <div className="mb-12">
+          <h3 className="font-semibold text-sm mb-6">Our Inventory Statistics</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-card rounded-lg p-6 border border-border">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wide mb-2">Available</p>
+                  <p className="text-4xl font-bold text-foreground">{statistics?.available || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-2">Cars ready to go</p>
+                </div>
+                <CheckCircle className="size-8 text-muted-foreground opacity-80 shrink-0" />
+              </div>
+            </div>
+            <div className="bg-card rounded-lg p-6 border border-border">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wide mb-2">Sold</p>
+                  <p className="text-4xl font-bold text-foreground">{statistics?.sold || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-2">Happy customers</p>
+                </div>
+                <TrendingUp className="size-8 text-muted-foreground opacity-80 shrink-0" />
+              </div>
+            </div>
+            <div className="bg-card rounded-lg p-6 border border-border">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wide mb-2">Listed</p>
+                  <p className="text-4xl font-bold text-foreground">{statistics?.listed || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-2">Active listings</p>
+                </div>
+                <Eye className="size-8 text-muted-foreground opacity-80 shrink-0" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Footer Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 py-8 border-t border-border">
           <div>
             <h3 className="font-semibold text-sm mb-4">Buy</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">

@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { RecentlySoldCars } from '@/components/RecentlySoldCars'
 
 type CarListing = {
   id: string
@@ -871,6 +872,7 @@ function App() {
         </div>
       </div>
 
+      <RecentlySoldCars />
     </div>
   )
 }

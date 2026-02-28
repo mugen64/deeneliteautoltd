@@ -910,6 +910,117 @@ async function deleteCar(id: string) {
     return car
 }
 
+// Get recently sold cars
+async function getRecentlySoldCars(limit: number = 5) {
+    const recentSold = await db
+        .select({
+            id: cars.id,
+            year: cars.year,
+            price: cars.price,
+            color: cars.color,
+            mileage: cars.mileage,
+            transmission: cars.transmission,
+            fuelType: cars.fuelType,
+            condition: cars.condition,
+            createdAt: cars.createdAt,
+            modelId: carModels.id,
+            modelName: carModels.name,
+            modelSlug: carModels.slug,
+            makeName: carMakes.name,
+            makeSlug: carMakes.slug,
+            bodyTypeName: carBodyTypes.name,
+            bodyTypeSlug: carBodyTypes.slug,
+        })
+        .from(cars)
+        .innerJoin(carModels, eq(cars.modelId, carModels.id))
+        .innerJoin(carMakes, eq(carModels.makeId, carMakes.id))
+        .innerJoin(carBodyTypes, eq(cars.bodyTypeId, carBodyTypes.id))
+        .where(eq(cars.sold, true))
+        .orderBy(desc(cars.updatedAt))
+        .limit(limit)
+        .execute()
+
+    // Get primary photos for each car
+    const carsWithPhotos = await Promise.all(
+        recentSold.map(async (car) => {
+            const [primaryPhoto] = await db
+                .select({
+                    url: files.media_url,
+                    publicId: files.public_id,
+                })
+                .from(carPhotos)
+                .innerJoin(files, eq(carPhotos.photoId, files.id))
+                .where(and(eq(carPhotos.carId, car.id), eq(carPhotos.isPrimary, true)))
+                .limit(1)
+                .execute()
+
+            return {
+                ...car,
+                primaryPhoto: primaryPhoto || null,
+            }
+        })
+    )
+
+    return carsWithPhotos
+}
+
+// Get car statistics
+async function getCarStatistics() {
+    // Total cars
+    const [totalCarsCount] = await db
+        .select({ count: count() })
+        .from(cars)
+        .execute()
+
+    // Sold vs unsold
+    const [soldCount] = await db
+        .select({ count: count() })
+        .from(cars)
+        .where(eq(cars.sold, true))
+        .execute()
+
+    // Listed vs unlisted
+    const [listedCount] = await db
+        .select({ count: count() })
+        .from(cars)
+        .where(eq(cars.listed, true))
+        .execute()
+
+    // By make
+    const byMake = await db
+        .select({
+            makeName: carMakes.name,
+            count: count(),
+        })
+        .from(cars)
+        .innerJoin(carModels, eq(cars.modelId, carModels.id))
+        .innerJoin(carMakes, eq(carModels.makeId, carMakes.id))
+        .groupBy(carMakes.id, carMakes.name)
+        .orderBy(desc(count()))
+        .execute()
+
+    // By body type
+    const byBodyType = await db
+        .select({
+            bodyTypeName: carBodyTypes.name,
+            count: count(),
+        })
+        .from(cars)
+        .innerJoin(carBodyTypes, eq(cars.bodyTypeId, carBodyTypes.id))
+        .groupBy(carBodyTypes.id, carBodyTypes.name)
+        .orderBy(desc(count()))
+        .execute()
+
+    return {
+        total: totalCarsCount.count,
+        sold: soldCount.count,
+        available: (totalCarsCount.count as number) - (soldCount.count as number),
+        listed: listedCount.count,
+        byMake,
+        byBodyType,
+    }
+}
+
 export const carStore = {
     getCarMakes,
     getCarMakeById,
@@ -962,4 +1073,6 @@ export const carStore = {
     getPublicCarListings,
     getPublicCarDetails,
     getCarFilterOptions,
+    getRecentlySoldCars,
+    getCarStatistics,
 }
