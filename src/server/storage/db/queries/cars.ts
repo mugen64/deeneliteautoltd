@@ -305,6 +305,9 @@ async function getCarsInventoryList() {
             color: cars.color,
             listed: cars.listed,
             sold: cars.sold,
+            soldAmount: cars.soldAmount,
+            soldCustomerDetails: cars.soldCustomerDetails,
+            soldAt: cars.soldAt,
             isFeatured: cars.isFeatured,
             primaryImage: files.media_url,
         })
@@ -878,13 +881,44 @@ async function toggleCarListed(id: string) {
     return updated
 }
 
-async function toggleCarSold(id: string) {
+async function toggleCarSold(
+    id: string,
+    data?: {
+        soldAmount?: string
+        soldCustomerDetails?: {
+            name?: string
+            email?: string
+            phone?: string
+        }
+    }
+) {
     const [car] = await db.select().from(cars).where(eq(cars.id, id)).execute()
     if (!car) return null
+    if (car.sold) return car
+
+    const soldAmount = data?.soldAmount?.trim() ? data.soldAmount.trim() : null
+    const soldCustomerName = data?.soldCustomerDetails?.name?.trim() || ''
+    const soldCustomerEmail = data?.soldCustomerDetails?.email?.trim() || ''
+    const soldCustomerPhone = data?.soldCustomerDetails?.phone?.trim() || ''
+    const soldCustomerDetails =
+        soldCustomerName || soldCustomerEmail || soldCustomerPhone
+            ? {
+                ...(soldCustomerName ? { name: soldCustomerName } : {}),
+                ...(soldCustomerEmail ? { email: soldCustomerEmail } : {}),
+                ...(soldCustomerPhone ? { phone: soldCustomerPhone } : {}),
+              }
+            : null
     
     const [updated] = await db
         .update(cars)
-        .set({ sold: !car.sold })
+        .set({
+            sold: true,
+            listed: false,
+            soldAmount,
+            soldCustomerDetails,
+            soldAt: new Date(),
+            updatedAt: new Date(),
+        })
         .where(eq(cars.id, id))
         .returning()
     return updated

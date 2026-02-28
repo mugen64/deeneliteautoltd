@@ -1,13 +1,26 @@
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
 import { Edit, Images, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 export function InventoryTab() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const [markSoldDialogOpen, setMarkSoldDialogOpen] = useState(false)
+  const [soldDetailsDialogOpen, setSoldDetailsDialogOpen] = useState(false)
+  const [selectedCar, setSelectedCar] = useState<any | null>(null)
+  const [soldAmount, setSoldAmount] = useState('')
+  const [soldCustomerName, setSoldCustomerName] = useState('')
+  const [soldCustomerEmail, setSoldCustomerEmail] = useState('')
+  const [soldCustomerPhone, setSoldCustomerPhone] = useState('')
+  const [markingSold, setMarkingSold] = useState(false)
+
   const { data: allCars = [], isLoading } = useQuery({
     queryKey: ['cars'],
     queryFn: async () => {
@@ -94,9 +107,24 @@ export function InventoryTab() {
       return
     }
 
-    if (!confirm('Mark this car as sold? This action cannot be undone.')) {
+    const car = allCars.find((item: { id: string }) => item.id === carId)
+    if (!car) {
+      toast.error('Car not found')
       return
     }
+
+    setSelectedCar(car)
+    setSoldAmount('')
+    setSoldCustomerName('')
+    setSoldCustomerEmail('')
+    setSoldCustomerPhone('')
+    setMarkSoldDialogOpen(true)
+  }
+
+  const confirmMarkSold = async () => {
+    if (!selectedCar) return
+
+    setMarkingSold(true)
 
     try {
       const response = await fetch('/api/cars/inventory/toggle-sold', {
@@ -104,7 +132,15 @@ export function InventoryTab() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ carId }),
+        body: JSON.stringify({
+          carId: selectedCar.id,
+          soldAmount,
+          soldCustomerDetails: {
+            name: soldCustomerName,
+            email: soldCustomerEmail,
+            phone: soldCustomerPhone,
+          },
+        }),
       })
 
       if (!response.ok) {
@@ -115,10 +151,23 @@ export function InventoryTab() {
 
       queryClient.invalidateQueries({ queryKey: ['cars'] })
       toast.success('Car marked as sold successfully')
+      setMarkSoldDialogOpen(false)
+      setSelectedCar(null)
+      setSoldAmount('')
+      setSoldCustomerName('')
+      setSoldCustomerEmail('')
+      setSoldCustomerPhone('')
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to update car'
       toast.error(message)
+    } finally {
+      setMarkingSold(false)
     }
+  }
+
+  const openSoldDetailsDialog = (car: any) => {
+    setSelectedCar(car)
+    setSoldDetailsDialogOpen(true)
   }
 
   const handleDelete = async (carId: string) => {
@@ -243,7 +292,8 @@ export function InventoryTab() {
                       >
                         {car.isFeatured ? 'Unfeature' : 'Feature'}
                       </Button>
-                      <Button
+                      {car.listed && (
+                        <Button
                         variant={car.sold ? 'destructive' : 'outline'}
                         size="sm"
                         onClick={() => handleToggleSold(car.id, car.sold)}
@@ -252,6 +302,17 @@ export function InventoryTab() {
                       >
                         {car.sold ? 'Sold' : 'Mark Sold'}
                       </Button>
+                      )}
+                      {car.sold && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openSoldDetailsDialog(car)}
+                          className="gap-2"
+                        >
+                          View Sold Details
+                        </Button>
+                      )}
                     </div>
 
                     <div className="flex gap-2">
@@ -301,6 +362,140 @@ export function InventoryTab() {
           <div className="text-muted-foreground">No cars found</div>
         )}
       </div>
+
+      <Dialog open={markSoldDialogOpen} onOpenChange={setMarkSoldDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mark Car as Sold</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            {selectedCar && (
+              <p className="text-sm text-muted-foreground">
+                {selectedCar.year} • {selectedCar.sku}
+              </p>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="soldAmount">Amount Sold (optional)</Label>
+              <Input
+                id="soldAmount"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Enter sold amount"
+                value={soldAmount}
+                onChange={(e) => setSoldAmount(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="soldCustomerName">Customer Name (optional)</Label>
+              <Input
+                id="soldCustomerName"
+                placeholder="Enter customer name"
+                value={soldCustomerName}
+                onChange={(e) => setSoldCustomerName(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="soldCustomerEmail">Customer Email (optional)</Label>
+              <Input
+                id="soldCustomerEmail"
+                type="email"
+                placeholder="Enter customer email"
+                value={soldCustomerEmail}
+                onChange={(e) => setSoldCustomerEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="soldCustomerPhone">Customer Phone (optional)</Label>
+              <Input
+                id="soldCustomerPhone"
+                placeholder="Enter customer phone"
+                value={soldCustomerPhone}
+                onChange={(e) => setSoldCustomerPhone(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMarkSoldDialogOpen(false)} disabled={markingSold}>
+              Cancel
+            </Button>
+            <Button onClick={confirmMarkSold} disabled={markingSold}>
+              {markingSold ? 'Saving...' : 'Confirm Sold'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={soldDetailsDialogOpen} onOpenChange={setSoldDetailsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sold Details</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3 py-2 text-sm">
+            {selectedCar && (
+              <p className="text-muted-foreground">
+                {selectedCar.year} • {selectedCar.sku}
+              </p>
+            )}
+
+            <div>
+              <p className="font-medium">Amount Sold</p>
+              <p className="text-muted-foreground">
+                {selectedCar?.soldAmount ? `UGX ${parseFloat(selectedCar.soldAmount).toLocaleString()}` : 'Not provided'}
+              </p>
+            </div>
+
+            <div>
+              <p className="font-medium">Customer Name</p>
+              <p className="text-muted-foreground">
+                {selectedCar?.soldCustomerDetails?.name || 'Not provided'}
+              </p>
+            </div>
+
+            <div>
+              <p className="font-medium">Customer Email</p>
+              <p className="text-muted-foreground">
+                {selectedCar?.soldCustomerDetails?.email || 'Not provided'}
+              </p>
+            </div>
+
+            <div>
+              <p className="font-medium">Customer Phone</p>
+              <p className="text-muted-foreground">
+                {selectedCar?.soldCustomerDetails?.phone || 'Not provided'}
+              </p>
+            </div>
+
+            <div>
+              <p className="font-medium">Sold At</p>
+              <p className="text-muted-foreground">
+                {selectedCar?.soldAt
+                  ? new Intl.DateTimeFormat('en-GB', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }).format(new Date(selectedCar.soldAt))
+                  : 'Not available'}
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSoldDetailsDialogOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

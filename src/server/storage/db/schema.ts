@@ -97,6 +97,9 @@ export const cars = pgTable('cars', {
   sku: varchar('sku', { length: 20 }).notNull().unique(),
   listed: boolean('listed').notNull().default(false),
   sold: boolean('sold').notNull().default(false),
+  soldAmount: decimal('sold_amount', { precision: 12, scale: 2 }),
+  soldCustomerDetails: jsonb('sold_customer_details'),
+  soldAt: timestamp('sold_at'),
   isFeatured: boolean('is_featured').notNull().default(false),
   
   createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -113,6 +116,7 @@ export const cars = pgTable('cars', {
   index('cars_listed_idx').on(table.listed),
   index('cars_featured_idx').on(table.isFeatured),
   index('cars_sold_idx').on(table.sold),
+  index('cars_sold_at_idx').on(table.soldAt),
   index('cars_sku_idx').on(table.sku),
   index('cars_listed_sold_idx').on(table.listed, table.sold),
   index('cars_listed_sold_year_idx').on(table.listed, table.sold, table.year),
