@@ -864,7 +864,7 @@ function App() {
 
                           <div className="flex items-baseline gap-2">
                             <span className="font-bold text-base">
-                              ${Number(car.price).toLocaleString()}
+                              UGX{Number(car.price).toLocaleString()}
                             </span>
                             <Badge
                               variant="secondary"
