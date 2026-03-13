@@ -158,8 +158,26 @@ function SubmitEnquiryPage() {
   }
 
   // Contact info from settings
-  const phoneNumber = settings?.phoneNumber || '+256 993523948'
-  const emailAddress = settings?.emailAddress || 'sales@deeneliteauto.com'
+  const phoneNumbers = [settings?.phoneNumber, ...(settings?.additionalPhoneNumbers || []).map((item) => item.value)]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value))
+  const titledPhoneNumbers = (settings?.additionalPhoneNumbers || [])
+    .map((item) => ({
+      title: item.title?.trim() || '',
+      value: item.value?.trim() || '',
+    }))
+    .filter((item) => Boolean(item.value))
+  const emailAddresses = [settings?.emailAddress, ...(settings?.additionalEmailAddresses || []).map((item) => item.value)]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value))
+  const titledEmailAddresses = (settings?.additionalEmailAddresses || [])
+    .map((item) => ({
+      title: item.title?.trim() || '',
+      value: item.value?.trim() || '',
+    }))
+    .filter((item) => Boolean(item.value))
+  const phoneNumber = phoneNumbers[0] || '+256 993523948'
+  const emailAddress = emailAddresses[0] || 'sales@deeneliteauto.com'
   const address = settings?.address || 'Kampala, Uganda'
   const businessHours = settings?.businessHours || [
     { days: 'Monday - Friday', time: '8:00 AM - 6:00 PM' },
@@ -401,9 +419,22 @@ function SubmitEnquiryPage() {
                   <Phone className="size-5 text-muted-foreground" />
                   <span className="font-semibold text-sm">Phone</span>
                 </div>
-                <a href={`tel:${phoneNumber.replace(/[\s\-()]/g, '')}`} className="text-sm text-primary hover:underline">
-                  {phoneNumber}
-                </a>
+                <div className="space-y-1.5">
+                  {phoneNumbers.length > 0 ? phoneNumbers.map((value, index) => (
+                    <div key={`${value}-${index}`} className="space-y-0.5">
+                      {index > 0 && titledPhoneNumbers[index - 1]?.title ? (
+                        <p className="text-xs text-muted-foreground">{titledPhoneNumbers[index - 1].title}</p>
+                      ) : null}
+                      <a href={`tel:${value.replace(/[\s\-()]/g, '')}`} className="block text-sm text-primary hover:underline">
+                        {value}
+                      </a>
+                    </div>
+                  )) : (
+                    <a href={`tel:${phoneNumber.replace(/[\s\-()]/g, '')}`} className="text-sm text-primary hover:underline">
+                      {phoneNumber}
+                    </a>
+                  )}
+                </div>
               </div>
 
               {/* Email */}
@@ -412,9 +443,22 @@ function SubmitEnquiryPage() {
                   <Mail className="size-5 text-muted-foreground" />
                   <span className="font-semibold text-sm">Email</span>
                 </div>
-                <a href={`mailto:${emailAddress}`} className="text-sm text-primary hover:underline">
-                  {emailAddress}
-                </a>
+                <div className="space-y-1.5">
+                  {emailAddresses.length > 0 ? emailAddresses.map((value, index) => (
+                    <div key={`${value}-${index}`} className="space-y-0.5">
+                      {index > 0 && titledEmailAddresses[index - 1]?.title ? (
+                        <p className="text-xs text-muted-foreground">{titledEmailAddresses[index - 1].title}</p>
+                      ) : null}
+                      <a href={`mailto:${value}`} className="block text-sm text-primary hover:underline">
+                        {value}
+                      </a>
+                    </div>
+                  )) : (
+                    <a href={`mailto:${emailAddress}`} className="text-sm text-primary hover:underline">
+                      {emailAddress}
+                    </a>
+                  )}
+                </div>
               </div>
 
               {/* Address */}

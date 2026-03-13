@@ -19,7 +19,9 @@ export const Route = createFileRoute("/api/settings/location-contact")({
           const settings = await settingsStore.updateLocationAndContact({
             address: data.address,
             phoneNumber: data.phoneNumber,
+            additionalPhoneNumbers: data.additionalPhoneNumbers,
             emailAddress: data.emailAddress,
+            additionalEmailAddresses: data.additionalEmailAddresses,
             businessHours: data.businessHours,
           });
 

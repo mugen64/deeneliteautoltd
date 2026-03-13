@@ -620,7 +620,16 @@ function CarDetailsPage() {
 function ContactDealerCard() {
   const { settings } = useSettings()
   const companyName = settings?.companyName || 'Deen Elite Auto Ltd'
-  const phoneNumber = settings?.phoneNumber || '+256 993523948'
+  const titledPhoneNumbers = (settings?.additionalPhoneNumbers || [])
+    .map((item) => ({
+      title: item.title?.trim() || '',
+      value: item.value?.trim() || '',
+    }))
+    .filter((item) => Boolean(item.value))
+  const phoneNumbers = [settings?.phoneNumber, ...titledPhoneNumbers.map((item) => item.value)]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value))
+  const phoneNumber = phoneNumbers[0] || '+256 993523948'
   const address = settings?.address || 'Kampala, Uganda'
 
   // Clean phone number for tel: link (remove spaces and special chars except +)
@@ -659,10 +668,17 @@ function ContactDealerCard() {
       </a>
 
       <div className="space-y-2 pt-3 border-t border-border">
-        <div className="flex items-center gap-2 text-xs">
-          <Phone className="size-3 text-muted-foreground" />
-          <span>{phoneNumber}</span>
-        </div>
+        {phoneNumbers.map((value, index) => (
+          <div key={`${value}-${index}`} className="flex items-start gap-2 text-xs">
+            <Phone className="size-3 text-muted-foreground" />
+            <div>
+              {index > 0 && titledPhoneNumbers[index - 1]?.title ? (
+                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{titledPhoneNumbers[index - 1].title}</p>
+              ) : null}
+              <span>{value}</span>
+            </div>
+          </div>
+        ))}
         <div className="flex items-center gap-2 text-xs">
           <MapPin className="size-3 text-muted-foreground" />
           <span>{address}</span>
