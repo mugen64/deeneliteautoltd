@@ -9,12 +9,19 @@ type BusinessHour = {
     time: string;
 };
 
+type ContactDetail = {
+    title: string;
+    value: string;
+};
+
 type SiteSettingsValue = {
     companyName?: string;
     companyDescription?: string;
     address?: string;
     phoneNumber?: string;
+    additionalPhoneNumbers?: ContactDetail[];
     emailAddress?: string;
+    additionalEmailAddresses?: ContactDetail[];
     businessHours?: BusinessHour[];
     facebookUrl?: string;
     twitterUrl?: string;
@@ -66,6 +73,42 @@ async function getSettings() {
     return (row.value ?? {}) as SiteSettingsValue;
 }
 
+function sanitizeString(value?: string) {
+    return value?.trim() || undefined;
+}
+
+function sanitizeContactDetails(values?: unknown[]) {
+    if (!Array.isArray(values)) {
+        return [];
+    }
+
+    const normalized = values.flatMap((item) => {
+        if (typeof item === "string") {
+            const value = item.trim();
+            return value ? [{ title: "", value }] : [];
+        }
+
+        if (item && typeof item === "object") {
+            const title = "title" in item && typeof item.title === "string"
+                ? item.title.trim()
+                : "";
+            const value = "value" in item && typeof item.value === "string"
+                ? item.value.trim()
+                : "";
+
+            return value ? [{ title, value }] : [];
+        }
+
+        return [];
+    });
+
+    return normalized.filter((item, index, array) => (
+        array.findIndex((candidate) => (
+            candidate.title === item.title && candidate.value === item.value
+        )) === index
+    ));
+}
+
 async function updateCompanyInformation(data: {
     companyName?: string;
     companyDescription?: string;
@@ -79,13 +122,17 @@ async function updateCompanyInformation(data: {
 async function updateLocationAndContact(data: {
     address?: string;
     phoneNumber?: string;
+    additionalPhoneNumbers?: ContactDetail[];
     emailAddress?: string;
+    additionalEmailAddresses?: ContactDetail[];
     businessHours?: BusinessHour[];
 }) {
     return updateSettingsValue({
         address: data.address,
-        phoneNumber: data.phoneNumber,
-        emailAddress: data.emailAddress,
+        phoneNumber: sanitizeString(data.phoneNumber),
+        additionalPhoneNumbers: sanitizeContactDetails(data.additionalPhoneNumbers),
+        emailAddress: sanitizeString(data.emailAddress),
+        additionalEmailAddresses: sanitizeContactDetails(data.additionalEmailAddresses),
         businessHours: data.businessHours,
     });
 }

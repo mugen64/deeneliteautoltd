@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import type { ContactDetail } from '@/contexts/settings'
 import { Building2, MapPin, Globe, Search, Plus, Trash2 } from 'lucide-react'
 
 export const Route = createFileRoute('/admin/console/settings')({
@@ -15,6 +16,27 @@ export const Route = createFileRoute('/admin/console/settings')({
 interface BusinessHour {
   days: string
   time: string
+}
+
+function normalizeContactDetails(value: unknown): ContactDetail[] {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value.flatMap((item) => {
+    if (typeof item === 'string') {
+      const normalizedValue = item.trim()
+      return normalizedValue ? [{ title: '', value: normalizedValue }] : []
+    }
+
+    if (item && typeof item === 'object') {
+      const title = 'title' in item && typeof item.title === 'string' ? item.title : ''
+      const contactValue = 'value' in item && typeof item.value === 'string' ? item.value : ''
+      return contactValue.trim() ? [{ title, value: contactValue }] : []
+    }
+
+    return []
+  })
 }
 
 function RouteComponent() {
@@ -31,7 +53,9 @@ function RouteComponent() {
   // Location & Contact
   const [address, setAddress] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
+  const [additionalPhoneNumbers, setAdditionalPhoneNumbers] = useState<ContactDetail[]>([])
   const [emailAddress, setEmailAddress] = useState('')
+  const [additionalEmailAddresses, setAdditionalEmailAddresses] = useState<ContactDetail[]>([])
   const [businessHours, setBusinessHours] = useState<BusinessHour[]>([
     { days: 'Monday - Friday', time: '8:00 AM - 6:00 PM' },
   ])
@@ -62,7 +86,9 @@ function RouteComponent() {
       setCompanyDescription(data.companyDescription || '')
       setAddress(data.address || '')
       setPhoneNumber(data.phoneNumber || '')
+      setAdditionalPhoneNumbers(normalizeContactDetails(data.additionalPhoneNumbers))
       setEmailAddress(data.emailAddress || '')
+      setAdditionalEmailAddresses(normalizeContactDetails(data.additionalEmailAddresses))
       
       if (Array.isArray(data.businessHours)) {
         setBusinessHours(data.businessHours)
@@ -121,7 +147,9 @@ function RouteComponent() {
         body: JSON.stringify({
           address,
           phoneNumber,
+          additionalPhoneNumbers,
           emailAddress,
+          additionalEmailAddresses,
           businessHours,
         }),
       })
@@ -195,6 +223,34 @@ function RouteComponent() {
     const updated = [...businessHours]
     updated[index][field] = value
     setBusinessHours(updated)
+  }
+
+  const addAdditionalPhoneNumber = () => {
+    setAdditionalPhoneNumbers([...additionalPhoneNumbers, { title: '', value: '' }])
+  }
+
+  const updateAdditionalPhoneNumber = (index: number, field: keyof ContactDetail, value: string) => {
+    setAdditionalPhoneNumbers(additionalPhoneNumbers.map((item, itemIndex) => (
+      itemIndex === index ? { ...item, [field]: value } : item
+    )))
+  }
+
+  const removeAdditionalPhoneNumber = (index: number) => {
+    setAdditionalPhoneNumbers(additionalPhoneNumbers.filter((_, itemIndex) => itemIndex !== index))
+  }
+
+  const addAdditionalEmailAddress = () => {
+    setAdditionalEmailAddresses([...additionalEmailAddresses, { title: '', value: '' }])
+  }
+
+  const updateAdditionalEmailAddress = (index: number, field: keyof ContactDetail, value: string) => {
+    setAdditionalEmailAddresses(additionalEmailAddresses.map((item, itemIndex) => (
+      itemIndex === index ? { ...item, [field]: value } : item
+    )))
+  }
+
+  const removeAdditionalEmailAddress = (index: number) => {
+    setAdditionalEmailAddresses(additionalEmailAddresses.filter((_, itemIndex) => itemIndex !== index))
   }
 
   const addKeyword = () => {
@@ -309,7 +365,7 @@ function RouteComponent() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="phoneNumber">Phone Number</Label>
                     <Input
@@ -329,6 +385,85 @@ function RouteComponent() {
                       onChange={(e) => setEmailAddress(e.target.value)}
                       placeholder="sales@deeneliteauto.com"
                     />
+                  </div>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Other Phone Numbers</Label>
+                      <Button
+                        onClick={addAdditionalPhoneNumber}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Plus className="size-3.5" />
+                        Add Number
+                      </Button>
+                    </div>
+
+                    {additionalPhoneNumbers.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No additional phone numbers added.</p>
+                    ) : additionalPhoneNumbers.map((value, index) => (
+                      <div key={`phone-${index}`} className="grid gap-3 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_auto]">
+                        <Input
+                          value={value.title}
+                          onChange={(e) => updateAdditionalPhoneNumber(index, 'title', e.target.value)}
+                          placeholder="Sales"
+                        />
+                        <Input
+                          value={value.value}
+                          onChange={(e) => updateAdditionalPhoneNumber(index, 'value', e.target.value)}
+                          placeholder="+256 700000000"
+                        />
+                        <Button
+                          onClick={() => removeAdditionalPhoneNumber(index)}
+                          variant="ghost"
+                          size="icon"
+                        >
+                          <Trash2 className="size-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Other Email Addresses</Label>
+                      <Button
+                        onClick={addAdditionalEmailAddress}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Plus className="size-3.5" />
+                        Add Email
+                      </Button>
+                    </div>
+
+                    {additionalEmailAddresses.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No additional email addresses added.</p>
+                    ) : additionalEmailAddresses.map((value, index) => (
+                      <div key={`email-${index}`} className="grid gap-3 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_auto]">
+                        <Input
+                          value={value.title}
+                          onChange={(e) => updateAdditionalEmailAddress(index, 'title', e.target.value)}
+                          placeholder="Support"
+                        />
+                        <Input
+                          type="email"
+                          value={value.value}
+                          onChange={(e) => updateAdditionalEmailAddress(index, 'value', e.target.value)}
+                          placeholder="support@deeneliteauto.com"
+                        />
+                        <Button
+                          onClick={() => removeAdditionalEmailAddress(index)}
+                          variant="ghost"
+                          size="icon"
+                        >
+                          <Trash2 className="size-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
                   </div>
                 </div>
 

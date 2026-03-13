@@ -5,12 +5,19 @@ export interface BusinessHour {
   time: string
 }
 
+export interface ContactDetail {
+  title: string
+  value: string
+}
+
 export interface SiteSettings {
   companyName?: string
   companyDescription?: string
   address?: string
   phoneNumber?: string
+  additionalPhoneNumbers?: ContactDetail[]
   emailAddress?: string
+  additionalEmailAddresses?: ContactDetail[]
   businessHours?: BusinessHour[]
   facebookUrl?: string
   twitterUrl?: string
@@ -33,8 +40,42 @@ export interface SettingsProviderProps {
   initialSettings?: SiteSettings | null
 }
 
+function normalizeContactDetails(value: unknown): ContactDetail[] {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value.flatMap((item) => {
+    if (typeof item === 'string') {
+      const normalizedValue = item.trim()
+      return normalizedValue ? [{ title: '', value: normalizedValue }] : []
+    }
+
+    if (item && typeof item === 'object') {
+      const title = 'title' in item && typeof item.title === 'string' ? item.title.trim() : ''
+      const contactValue = 'value' in item && typeof item.value === 'string' ? item.value.trim() : ''
+
+      return contactValue ? [{ title, value: contactValue }] : []
+    }
+
+    return []
+  })
+}
+
+function normalizeSettings(settings: SiteSettings | null | undefined): SiteSettings | null {
+  if (!settings) {
+    return null
+  }
+
+  return {
+    ...settings,
+    additionalPhoneNumbers: normalizeContactDetails(settings.additionalPhoneNumbers),
+    additionalEmailAddresses: normalizeContactDetails(settings.additionalEmailAddresses),
+  }
+}
+
 export function SettingsProvider({ children, initialSettings = null }: SettingsProviderProps) {
-  const [settings, setSettings] = React.useState<SiteSettings | null>(initialSettings)
+  const [settings, setSettings] = React.useState<SiteSettings | null>(normalizeSettings(initialSettings))
   const [loading, setLoading] = React.useState(!initialSettings)
 
   React.useEffect(() => {
@@ -47,7 +88,7 @@ export function SettingsProvider({ children, initialSettings = null }: SettingsP
         const response = await fetch('/api/settings/', { signal: controller.signal })
         if (response.ok) {
           const data = await response.json()
-          setSettings(data)
+          setSettings(normalizeSettings(data))
         }
       } catch (error) {
         if (!(error instanceof DOMException && error.name === 'AbortError')) {
