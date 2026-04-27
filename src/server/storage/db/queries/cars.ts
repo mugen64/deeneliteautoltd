@@ -522,6 +522,7 @@ async function getPublicCarListings(filters: PublicCarListingFilters = {}) {
             listed: cars.listed,
             sold: cars.sold,
             createdAt: cars.createdAt,
+            updatedAt: cars.updatedAt,
             make: {
                 id: carMakes.id,
                 name: carMakes.name,

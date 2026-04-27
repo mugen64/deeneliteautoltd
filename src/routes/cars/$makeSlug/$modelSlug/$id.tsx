@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { createServerFn } from '@tanstack/react-start'
 import { useQuery } from '@tanstack/react-query'
 import { 
   ChevronLeft, Calendar, Fuel, Gauge, MapPin, Phone, Car
@@ -11,6 +12,88 @@ import { IconPreview } from '@/components/IconPreview'
 import { useState, useEffect } from 'react'
 import { useSettings } from '@/contexts/settings'
 import { trackCarView } from '@/lib/analytics'
+import { carStore } from '@/server/storage/db/queries/cars'
+
+type CarDetailData = {
+  car: {
+    id: string
+    sku: string
+    year: number
+    price: string
+    color: string
+    transmission: string
+    fuelType: string
+    mileage: number
+    condition: string
+    isFeatured: boolean
+  }
+  make: {
+    id: string
+    name: string
+    slug: string
+  }
+  model: {
+    id: string
+    name: string
+    slug: string
+  }
+  bodyType: {
+    id: string
+    name: string
+  }
+  photos: Array<{
+    id: string
+    url: string
+    isPrimary: boolean
+    description: string | null
+  }>
+  features: Array<{ name: string; icon: string }>
+  history: Array<{ id: string; description: string; iconSvg: string }>
+}
+
+function normalizeCarDetailPayload(data: any): CarDetailData | null {
+  if (!data?.cars || !data?.car_makes || !data?.car_models || !data?.car_body_types) {
+    return null
+  }
+
+  return {
+    car: {
+      id: data.cars.id,
+      sku: data.cars.sku,
+      year: data.cars.year,
+      price: data.cars.price,
+      color: data.cars.color,
+      transmission: data.cars.transmission,
+      fuelType: data.cars.fuelType,
+      mileage: data.cars.mileage,
+      condition: data.cars.condition,
+      isFeatured: data.cars.isFeatured,
+    },
+    make: {
+      id: data.car_makes.id,
+      name: data.car_makes.name,
+      slug: data.car_makes.slug,
+    },
+    model: {
+      id: data.car_models.id,
+      name: data.car_models.name,
+      slug: data.car_models.slug,
+    },
+    bodyType: {
+      id: data.car_body_types.id,
+      name: data.car_body_types.name,
+    },
+    photos: data.photos || [],
+    features: data.features?.map((feature: any) => ({ name: feature.name, icon: feature.icon })) || [],
+    history: data.history || [],
+  }
+}
+
+const getCarDetailsForSeoFn = createServerFn({ method: 'GET' })
+  .inputValidator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    return carStore.getPublicCarDetails(data.id)
+  })
 
 type SimilarVehicle = {
   id: string
@@ -30,85 +113,181 @@ type SimilarVehicleResponse = {
 }
 
 export const Route = createFileRoute('/cars/$makeSlug/$modelSlug/$id')({
+  loader: async ({ params }) => {
+    const rawData = await getCarDetailsForSeoFn({ data: { id: params.id } })
+    return normalizeCarDetailPayload(rawData)
+  },
   component: CarDetailsPage,
-  head: ({ params }) => ({
-    meta: [
-      {
-        title: `${params.makeSlug} ${params.modelSlug} - Car Details | Deen Elite Auto Ltd`,
+  head: ({ params, loaderData }) => {
+    const canonicalUrl = `https://deeneliteauto.com/cars/${params.makeSlug}/${params.modelSlug}/${params.id}`
+
+    if (!loaderData) {
+      return {
+        meta: [
+          {
+            title: `${params.makeSlug} ${params.modelSlug} - Car Details | Deen Elite Auto Ltd`,
+          },
+          {
+            name: 'description',
+            content: `View detailed information about this ${params.makeSlug} ${params.modelSlug}. Check specifications, price, mileage, and more. Get in touch for a test drive.`,
+          },
+          {
+            property: 'og:title',
+            content: `${params.makeSlug} ${params.modelSlug} - Car Details | Deen Elite Auto Ltd`,
+          },
+          {
+            property: 'og:description',
+            content: `View detailed information about this ${params.makeSlug} ${params.modelSlug}. Check specifications, price, mileage, and more.`,
+          },
+          {
+            property: 'og:url',
+            content: canonicalUrl,
+          },
+          {
+            name: 'twitter:title',
+            content: `${params.makeSlug} ${params.modelSlug} - Car Details | Deen Elite Auto Ltd`,
+          },
+          {
+            name: 'twitter:description',
+            content: `View detailed information about this ${params.makeSlug} ${params.modelSlug}. Check specifications and pricing.`,
+          },
+        ],
+        links: [
+          {
+            rel: 'canonical',
+            href: canonicalUrl,
+          },
+        ],
+      }
+    }
+
+    const { car, make, model, photos } = loaderData
+    const title = `${car.year} ${make.name} ${model.name} for Sale | Deen Elite Auto Ltd`
+    const description = `${car.year} ${make.name} ${model.name} in ${car.color}. ${car.transmission} transmission, ${car.fuelType}, ${car.mileage.toLocaleString()} km, ${car.condition} condition. Price: UGX ${Number(car.price).toLocaleString()}.`
+    const primaryImage = photos.find((photo) => photo.isPrimary)?.url || photos[0]?.url || 'https://deeneliteauto.com/og-image.jpg'
+
+    const vehicleSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'Car',
+      name: `${car.year} ${make.name} ${model.name}`,
+      image: primaryImage,
+      description,
+      brand: {
+        '@type': 'Brand',
+        name: make.name,
       },
-      {
-        name: 'description',
-        content: `View detailed information about this ${params.makeSlug} ${params.modelSlug}. Check specifications, price, mileage, and more. Get in touch for a test drive.`,
+      model: model.name,
+      vehicleModelDate: car.year,
+      vehicleTransmission: car.transmission,
+      fuelType: car.fuelType,
+      mileageFromOdometer: {
+        '@type': 'QuantitativeValue',
+        value: car.mileage,
+        unitCode: 'KMT',
       },
-      {
-        property: 'og:title',
-        content: `${params.makeSlug} ${params.modelSlug} - Car Details | Deen Elite Auto Ltd`,
+      color: car.color,
+      offers: {
+        '@type': 'Offer',
+        price: car.price,
+        priceCurrency: 'UGX',
+        availability: 'https://schema.org/InStock',
+        url: canonicalUrl,
       },
-      {
-        property: 'og:description',
-        content: `View detailed information about this ${params.makeSlug} ${params.modelSlug}. Check specifications, price, mileage, and more.`,
-      },
-      {
-        property: 'og:url',
-        content: `https://deeneliteauto.com/cars/${params.makeSlug}/${params.modelSlug}/${params.id}`,
-      },
-      {
-        name: 'twitter:title',
-        content: `${params.makeSlug} ${params.modelSlug} - Car Details | Deen Elite Auto Ltd`,
-      },
-      {
-        name: 'twitter:description',
-        content: `View detailed information about this ${params.makeSlug} ${params.modelSlug}. Check specifications and pricing.`,
-      },
-    ],
-  }),
+    }
+
+    const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://deeneliteauto.com/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Cars',
+          item: 'https://deeneliteauto.com/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: make.name,
+          item: `https://deeneliteauto.com/?makeIds=${make.id}`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 4,
+          name: `${car.year} ${make.name} ${model.name}`,
+          item: canonicalUrl,
+        },
+      ],
+    }
+
+    return {
+      meta: [
+        {
+          title,
+        },
+        {
+          name: 'description',
+          content: description,
+        },
+        {
+          property: 'og:title',
+          content: title,
+        },
+        {
+          property: 'og:description',
+          content: description,
+        },
+        {
+          property: 'og:url',
+          content: canonicalUrl,
+        },
+        {
+          property: 'og:image',
+          content: primaryImage,
+        },
+        {
+          name: 'twitter:title',
+          content: title,
+        },
+        {
+          name: 'twitter:description',
+          content: description,
+        },
+        {
+          name: 'twitter:image',
+          content: primaryImage,
+        },
+      ],
+      links: [
+        {
+          rel: 'canonical',
+          href: canonicalUrl,
+        },
+      ],
+      scripts: [
+        {
+          type: 'application/ld+json',
+          innerHTML: JSON.stringify(vehicleSchema),
+        },
+        {
+          type: 'application/ld+json',
+          innerHTML: JSON.stringify(breadcrumbSchema),
+        },
+      ],
+    }
+  },
 })
 
 function CarDetailsPage() {
   const { id } = Route.useParams()
+  const carDetails = Route.useLoaderData()
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0)
-
-  const { data: carDetails, isLoading, error } = useQuery<any>({
-    queryKey: ['carDetails', id],
-    queryFn: async () => {
-      const response = await fetch(`/api/cars/public/${id}`)
-      if (!response.ok) throw new Error('Failed to fetch car details')
-      const data = await response.json()
-      
-      // Transform the response to match the expected structure
-      return {
-        car: {
-          id: data.cars.id,
-          sku: data.cars.sku,
-          year: data.cars.year,
-          price: data.cars.price,
-          color: data.cars.color,
-          transmission: data.cars.transmission,
-          fuelType: data.cars.fuelType,
-          mileage: data.cars.mileage,
-          condition: data.cars.condition,
-          isFeatured: data.cars.isFeatured,
-        },
-        make: {
-          id: data.car_makes.id,
-          name: data.car_makes.name,
-          slug: data.car_makes.slug,
-        },
-        model: {
-          id: data.car_models.id,
-          name: data.car_models.name,
-          slug: data.car_models.slug,
-        },
-        bodyType: {
-          id: data.car_body_types.id,
-          name: data.car_body_types.name,
-        },
-        photos: data.photos || [],
-        features: data.features?.map((f: any) => ({ name: f.name, icon: f.icon })) || [],
-        history: data.history || [],
-      }
-    },
-  })
 
   const { data: similarVehiclesData, isLoading: isLoadingSimilarVehicles } = useQuery<SimilarVehicleResponse>({
     queryKey: ['similarVehicles', id, carDetails?.make?.id, carDetails?.bodyType?.id],
@@ -152,71 +331,7 @@ function CarDetailsPage() {
     }
   }, [carDetails?.car?.id])
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background animate-pulse">
-        <div className="bg-card border-b border-border sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="h-9 w-36 rounded bg-muted" />
-            <div className="flex items-center gap-4">
-              <div className="h-9 w-24 rounded bg-muted" />
-              <div className="h-9 w-28 rounded bg-muted" />
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 space-y-4">
-              <div className="aspect-4/3 rounded-lg bg-muted" />
-
-              <div className="grid grid-cols-6 gap-2">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <div key={`car-photo-skeleton-${index}`} className="aspect-square rounded-md bg-muted" />
-                ))}
-              </div>
-
-              <div className="space-y-2">
-                <div className="h-7 w-2/3 rounded bg-muted" />
-                <div className="h-4 w-1/3 rounded bg-muted" />
-                <div className="h-6 w-1/4 rounded bg-muted" />
-              </div>
-
-              <div className="grid grid-cols-4 gap-3">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <div key={`car-spec-skeleton-${index}`} className="rounded-lg border border-border p-4 space-y-2">
-                    <div className="h-3 w-1/2 rounded bg-muted" />
-                    <div className="h-4 w-2/3 rounded bg-muted" />
-                  </div>
-                ))}
-              </div>
-
-              <div className="space-y-3">
-                <div className="h-10 w-full rounded bg-muted" />
-                <div className="h-20 w-full rounded bg-muted" />
-              </div>
-            </div>
-
-            <div className="md:col-span-1 space-y-4">
-              <div className="rounded-lg border border-border p-5 space-y-3">
-                <div className="h-5 w-1/2 rounded bg-muted" />
-                <div className="h-9 w-full rounded bg-muted" />
-                <div className="h-9 w-full rounded bg-muted" />
-              </div>
-
-              <div className="rounded-lg border border-border p-5 space-y-3">
-                <div className="h-5 w-1/3 rounded bg-muted" />
-                <div className="h-4 w-2/3 rounded bg-muted" />
-                <div className="h-4 w-1/2 rounded bg-muted" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !carDetails) {
+  if (!carDetails) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <p className="text-muted-foreground">Car not found</p>
@@ -249,6 +364,22 @@ function CarDetailsPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-6">
+        <nav aria-label="Breadcrumb" className="mb-4 text-sm text-muted-foreground">
+          <ol className="flex items-center gap-2">
+            <li>
+              <Link to="/" className="hover:text-foreground">Home</Link>
+            </li>
+            <li>/</li>
+            <li>
+              <Link to="/" className="hover:text-foreground">Cars</Link>
+            </li>
+            <li>/</li>
+            <li className="text-foreground font-medium" aria-current="page">
+              {car.year} {make.name} {model.name}
+            </li>
+          </ol>
+        </nav>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Images Section */}
           <div className="md:col-span-2">
@@ -257,7 +388,7 @@ function CarDetailsPage() {
               {selectedPhoto?.url ? (
                 <img
                   src={selectedPhoto.url}
-                  alt={`${make.name} ${model.name}`}
+                  alt={`${car.year} ${make.name} ${model.name} in ${car.color} - primary view`}
                   className="object-cover w-full h-full"
                 />
               ) : (
@@ -303,7 +434,7 @@ function CarDetailsPage() {
                   >
                     <img
                       src={photo.url}
-                      alt={`View ${idx + 1}`}
+                      alt={`${car.year} ${make.name} ${model.name} photo ${idx + 1}`}
                       className="object-cover w-full h-full"
                     />
                   </button>

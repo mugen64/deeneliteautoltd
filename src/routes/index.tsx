@@ -72,11 +72,11 @@ export const Route = createFileRoute('/')({
       },
       {
         name: 'description',
-        content: 'Discover quality used cars at Deen Elite Auto Ltd. Browse our extensive inventory of vehicles, compare prices, and find your perfect car. Buy or sell your vehicle with confidence.',
+        content: 'Discover quality new and used cars at Deen Elite Auto Ltd. Browse our extensive inventory of vehicles, compare prices, and find your perfect car. Buy or sell your vehicle with confidence.',
       },
       {
         name: 'keywords',
-        content: 'used cars, car dealership, buy cars, sell cars, vehicle inventory, auto sales',
+        content: 'new cars, used cars, car dealership, buy cars, sell cars, vehicle inventory, auto sales, hirepurchase, car listings, car prices, car comparisons, uganda cars, buy cars in uganda',
       },
       {
         property: 'og:title',
@@ -96,28 +96,52 @@ export const Route = createFileRoute('/')({
       },
       {
         name: 'twitter:title',
-        content: 'Car Dealership - Buy & Sell Used Cars | Deen Elite Auto Ltd',
+        content: 'Car Dealership - Buy & Sell New and Used Cars | Deen Elite Auto Ltd',
       },
       {
         name: 'twitter:description',
-        content: 'Browse quality used cars, compare prices, and find your perfect vehicle at Deen Elite Auto Ltd.',
+        content: 'Browse quality new and used cars, compare prices, and find your perfect vehicle at Deen Elite Auto Ltd.',
       },
       {
         name: 'twitter:image',
         content: 'https://deeneliteauto.com/og-image.jpg',
       },
     ],
+    links: [
+      {
+        rel: 'canonical',
+        href: 'https://deeneliteauto.com',
+      },
+    ],
   }),
   validateSearch: (search) => {
+    const parsedPage = Number(search.page)
+    const sortBy = typeof search.sortBy === 'string' ? search.sortBy : undefined
+
     return {
-      page: Number(search.page) || 1,
-      search: (search.search as string) || '',
-      sortBy: (search.sortBy as string) || 'year_desc',
-      bodyTypeId: (search.bodyTypeId as string) || '',
-      makeIds: (search.makeIds as string) || '',
-      fuelTypes: (search.fuelTypes as string) || '',
-      transmissions: (search.transmissions as string) || '',
-      years: (search.years as string) || '',
+      page: Number.isFinite(parsedPage) && parsedPage > 1 ? parsedPage : undefined,
+      search: typeof search.search === 'string' && search.search.trim() ? (search.search as string) : undefined,
+      sortBy: sortBy && sortBy !== 'year_desc' ? sortBy : undefined,
+      bodyTypeId:
+        typeof search.bodyTypeId === 'string' && search.bodyTypeId.trim()
+          ? (search.bodyTypeId as string)
+          : undefined,
+      makeIds:
+        typeof search.makeIds === 'string' && search.makeIds.trim()
+          ? (search.makeIds as string)
+          : undefined,
+      fuelTypes:
+        typeof search.fuelTypes === 'string' && search.fuelTypes.trim()
+          ? (search.fuelTypes as string)
+          : undefined,
+      transmissions:
+        typeof search.transmissions === 'string' && search.transmissions.trim()
+          ? (search.transmissions as string)
+          : undefined,
+      years:
+        typeof search.years === 'string' && search.years.trim()
+          ? (search.years as string)
+          : undefined,
       minPrice: Number(search.minPrice) || undefined,
       maxPrice: Number(search.maxPrice) || undefined,
       minMileage: Number(search.minMileage) || undefined,
@@ -129,10 +153,28 @@ export const Route = createFileRoute('/')({
 function App() {
   const navigate = Route.useNavigate()
   const searchParams = Route.useSearch()
+  const currentPage = searchParams.page ?? 1
+
+  const buildNormalizedSearch = () => {
+    return {
+      page: currentPage > 1 ? currentPage : undefined,
+      search: searchParams.search || undefined,
+      sortBy: searchParams.sortBy && searchParams.sortBy !== 'year_desc' ? searchParams.sortBy : undefined,
+      bodyTypeId: searchParams.bodyTypeId || undefined,
+      makeIds: searchParams.makeIds || undefined,
+      fuelTypes: searchParams.fuelTypes || undefined,
+      transmissions: searchParams.transmissions || undefined,
+      years: searchParams.years || undefined,
+      minPrice: searchParams.minPrice || undefined,
+      maxPrice: searchParams.maxPrice || undefined,
+      minMileage: searchParams.minMileage || undefined,
+      maxMileage: searchParams.maxMileage || undefined,
+    }
+  }
 
   // Local state for filters
-  const [searchText, setSearchText] = useState(searchParams.search)
-  const [selectedBodyTypeId, setSelectedBodyTypeId] = useState<string>(searchParams.bodyTypeId)
+  const [searchText, setSearchText] = useState(searchParams.search ?? '')
+  const [selectedBodyTypeId, setSelectedBodyTypeId] = useState<string>(searchParams.bodyTypeId ?? '')
   const [selectedMakeIds, setSelectedMakeIds] = useState<string[]>(
     searchParams.makeIds ? searchParams.makeIds.split(',').filter(Boolean) : []
   )
@@ -148,11 +190,57 @@ function App() {
   const [showMobileFilters, setShowMobileFilters] = useState(false)
 
   useEffect(() => {
-    setSearchText(searchParams.search)
+    setSearchText(searchParams.search ?? '')
   }, [searchParams.search])
 
   useEffect(() => {
-    setSelectedBodyTypeId(searchParams.bodyTypeId)
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const normalized = buildNormalizedSearch()
+    const normalizedQuery = new URLSearchParams(
+      Object.entries(normalized).reduce(
+        (acc, [key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            acc[key] = String(value)
+          }
+          return acc
+        },
+        {} as Record<string, string>
+      )
+    ).toString()
+
+    const currentQuery = window.location.search.startsWith('?')
+      ? window.location.search.slice(1)
+      : window.location.search
+
+    if (normalizedQuery === currentQuery) {
+      return
+    }
+
+    navigate({
+      replace: true,
+      search: normalized,
+    })
+  }, [
+    navigate,
+    searchParams.page,
+    searchParams.search,
+    searchParams.sortBy,
+    searchParams.bodyTypeId,
+    searchParams.makeIds,
+    searchParams.fuelTypes,
+    searchParams.transmissions,
+    searchParams.years,
+    searchParams.minPrice,
+    searchParams.maxPrice,
+    searchParams.minMileage,
+    searchParams.maxMileage,
+  ])
+
+  useEffect(() => {
+    setSelectedBodyTypeId(searchParams.bodyTypeId ?? '')
     setSelectedMakeIds(searchParams.makeIds ? searchParams.makeIds.split(',').filter(Boolean) : [])
     setSelectedFuelTypes(searchParams.fuelTypes ? searchParams.fuelTypes.split(',').filter(Boolean) : [])
     setSelectedTransmissions(
@@ -180,7 +268,7 @@ function App() {
 
   const listingQueryParams = useMemo(() => {
     const params = new URLSearchParams()
-    params.set('page', searchParams.page.toString())
+    params.set('page', currentPage.toString())
     params.set('limit', '12')
     if (searchParams.search) params.set('search', searchParams.search)
     if (searchParams.sortBy) params.set('sortBy', searchParams.sortBy)
@@ -195,7 +283,7 @@ function App() {
     if (searchParams.maxMileage) params.set('maxMileage', searchParams.maxMileage.toString())
     return params.toString()
   }, [
-    searchParams.page,
+    currentPage,
     searchParams.search,
     searchParams.sortBy,
     searchParams.minPrice,
@@ -227,13 +315,79 @@ function App() {
   const priceRange = filterOptions?.priceRange || { min: 0, max: 100000 }
   const mileageRange = filterOptions?.mileageRange || { min: 0, max: 200000 }
 
+  useEffect(() => {
+    if (typeof document === 'undefined' || !listingsData?.pagination) {
+      return
+    }
+
+    const buildInventoryUrl = (page: number) => {
+      const params = new URLSearchParams()
+
+      if (page > 1) params.set('page', page.toString())
+      if (searchParams.search) params.set('search', searchParams.search)
+      if (searchParams.sortBy && searchParams.sortBy !== 'year_desc') params.set('sortBy', searchParams.sortBy)
+      if (searchParams.bodyTypeId) params.set('bodyTypeId', searchParams.bodyTypeId)
+      if (searchParams.makeIds) params.set('makeIds', searchParams.makeIds)
+      if (searchParams.fuelTypes) params.set('fuelTypes', searchParams.fuelTypes)
+      if (searchParams.transmissions) params.set('transmissions', searchParams.transmissions)
+      if (searchParams.years) params.set('years', searchParams.years)
+      if (searchParams.minPrice) params.set('minPrice', searchParams.minPrice.toString())
+      if (searchParams.maxPrice) params.set('maxPrice', searchParams.maxPrice.toString())
+      if (searchParams.minMileage) params.set('minMileage', searchParams.minMileage.toString())
+      if (searchParams.maxMileage) params.set('maxMileage', searchParams.maxMileage.toString())
+
+      const query = params.toString()
+      return query ? `https://deeneliteauto.com/?${query}` : 'https://deeneliteauto.com/'
+    }
+
+    const existing = document.head.querySelectorAll('link[data-seo-pagination="true"]')
+    existing.forEach((node) => node.parentNode?.removeChild(node))
+
+    const { page, totalPages } = listingsData.pagination
+
+    if (page > 1) {
+      const prevLink = document.createElement('link')
+      prevLink.setAttribute('rel', 'prev')
+      prevLink.setAttribute('href', buildInventoryUrl(page - 1))
+      prevLink.setAttribute('data-seo-pagination', 'true')
+      document.head.appendChild(prevLink)
+    }
+
+    if (page < totalPages) {
+      const nextLink = document.createElement('link')
+      nextLink.setAttribute('rel', 'next')
+      nextLink.setAttribute('href', buildInventoryUrl(page + 1))
+      nextLink.setAttribute('data-seo-pagination', 'true')
+      document.head.appendChild(nextLink)
+    }
+
+    return () => {
+      const links = document.head.querySelectorAll('link[data-seo-pagination="true"]')
+      links.forEach((node) => node.parentNode?.removeChild(node))
+    }
+  }, [
+    listingsData?.pagination,
+    searchParams.page,
+    searchParams.search,
+    searchParams.sortBy,
+    searchParams.bodyTypeId,
+    searchParams.makeIds,
+    searchParams.fuelTypes,
+    searchParams.transmissions,
+    searchParams.years,
+    searchParams.minPrice,
+    searchParams.maxPrice,
+    searchParams.minMileage,
+    searchParams.maxMileage,
+  ])
+
   const removeMake = (makeId: string) => {
     const newMakes = selectedMakeIds.filter((id) => id !== makeId)
     navigate({
       search: (prev) => ({
         ...prev,
-        makeIds: newMakes.join(','),
-        page: 1,
+        makeIds: newMakes.length ? newMakes.join(',') : undefined,
+        page: undefined,
       }),
     })
   }
@@ -245,8 +399,8 @@ function App() {
     navigate({
       search: (prev) => ({
         ...prev,
-        fuelTypes: newFuels.join(','),
-        page: 1,
+        fuelTypes: newFuels.length ? newFuels.join(',') : undefined,
+        page: undefined,
       }),
     })
   }
@@ -258,8 +412,8 @@ function App() {
     navigate({
       search: (prev) => ({
         ...prev,
-        transmissions: newTrans.join(','),
-        page: 1,
+        transmissions: newTrans.length ? newTrans.join(',') : undefined,
+        page: undefined,
       }),
     })
   }
@@ -271,8 +425,8 @@ function App() {
     navigate({
       search: (prev) => ({
         ...prev,
-        years: newYears.join(','),
-        page: 1,
+        years: newYears.length ? newYears.join(',') : undefined,
+        page: undefined,
       }),
     })
   }
@@ -280,14 +434,14 @@ function App() {
   const resetFilters = () => {
     navigate({
       search: {
-        page: 1,
-        search: '',
-        sortBy: 'year_desc',
-        bodyTypeId: '',
-        makeIds: '',
-        fuelTypes: '',
-        transmissions: '',
-        years: '',
+        page: undefined,
+        search: undefined,
+        sortBy: undefined,
+        bodyTypeId: undefined,
+        makeIds: undefined,
+        fuelTypes: undefined,
+        transmissions: undefined,
+        years: undefined,
         minPrice: undefined,
         maxPrice: undefined,
         minMileage: undefined,
@@ -300,19 +454,19 @@ function App() {
     navigate({
       search: (prev) => ({
         ...prev,
-        search: searchText.trim(),
-        page: 1,
+        search: searchText.trim() || undefined,
+        page: undefined,
       }),
     })
   }
 
   const handleBodyTypeClick = (bodyTypeId: string) => {
-    const newBodyTypeId = searchParams.bodyTypeId === bodyTypeId ? '' : bodyTypeId
+    const newBodyTypeId = searchParams.bodyTypeId === bodyTypeId ? undefined : bodyTypeId
     navigate({
       search: (prev) => ({
         ...prev,
         bodyTypeId: newBodyTypeId,
-        page: 1,
+        page: undefined,
       }),
     })
   }
@@ -430,7 +584,7 @@ function App() {
                             search: (prev) => ({
                               ...prev,
                               makeIds: newMakes.join(','),
-                              page: 1,
+                              page: undefined,
                             }),
                           })
                         }}
@@ -457,7 +611,7 @@ function App() {
                           ...prev,
                           minPrice: undefined,
                           maxPrice: undefined,
-                          page: 1,
+                          page: undefined,
                         }),
                       })
                     }
@@ -490,7 +644,7 @@ function App() {
                           search: (prev) => ({
                             ...prev,
                             minPrice: Number(e.target.value) || undefined,
-                            page: 1,
+                            page: undefined,
                           }),
                         })
                       }
@@ -508,7 +662,7 @@ function App() {
                           search: (prev) => ({
                             ...prev,
                             maxPrice: Number(e.target.value) || undefined,
-                            page: 1,
+                            page: undefined,
                           }),
                         })
                       }
@@ -532,7 +686,7 @@ function App() {
                           ...prev,
                           minMileage: undefined,
                           maxMileage: undefined,
-                          page: 1,
+                          page: undefined,
                         }),
                       })
                     }
@@ -559,7 +713,7 @@ function App() {
                         search: (prev) => ({
                           ...prev,
                           minMileage: Number(e.target.value) || undefined,
-                          page: 1,
+                          page: undefined,
                         }),
                       })
                     }
@@ -574,7 +728,7 @@ function App() {
                         search: (prev) => ({
                           ...prev,
                           maxMileage: Number(e.target.value) || undefined,
-                          page: 1,
+                          page: undefined,
                         }),
                       })
                     }
@@ -595,8 +749,8 @@ function App() {
                       navigate({
                         search: (prev) => ({
                           ...prev,
-                          fuelTypes: '',
-                          page: 1,
+                          fuelTypes: undefined,
+                          page: undefined,
                         }),
                       })
                     }}
@@ -630,8 +784,8 @@ function App() {
                       navigate({
                         search: (prev) => ({
                           ...prev,
-                          transmissions: '',
-                          page: 1,
+                          transmissions: undefined,
+                          page: undefined,
                         }),
                       })
                     }}
@@ -665,8 +819,8 @@ function App() {
                       navigate({
                         search: (prev) => ({
                           ...prev,
-                          years: '',
-                          page: 1,
+                          years: undefined,
+                          page: undefined,
                         }),
                       })
                     }}
@@ -727,7 +881,7 @@ function App() {
                         search: (prev) => ({
                           ...prev,
                           sortBy: value || 'year_desc',
-                          page: 1,
+                          page: undefined,
                         }),
                       })
                     }
@@ -806,7 +960,7 @@ function App() {
                           {car.primaryImage ? (
                             <img
                               src={car.primaryImage}
-                              alt={`${car.make.name} ${car.model.name}`}
+                              alt={`${car.year} ${car.make.name} ${car.model.name} in ${car.color}`}
                               className="object-cover w-full h-full"
                             />
                           ) : (
@@ -890,10 +1044,13 @@ function App() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      disabled={searchParams.page <= 1}
+                      disabled={currentPage <= 1}
                       onClick={() =>
                         navigate({
-                          search: (prev) => ({ ...prev, page: prev.page - 1 }),
+                          search: (prev) => {
+                            const nextPage = (prev.page ?? 1) - 1
+                            return { ...prev, page: nextPage > 1 ? nextPage : undefined }
+                          },
                         })
                       }
                     >
@@ -907,16 +1064,16 @@ function App() {
                         if (
                           page === 1 ||
                           page === listingsData.pagination.totalPages ||
-                          (page >= searchParams.page - 1 && page <= searchParams.page + 1)
+                          (page >= currentPage - 1 && page <= currentPage + 1)
                         ) {
                           return (
                             <Button
                               key={page}
-                              variant={searchParams.page === page ? 'default' : 'outline'}
+                              variant={currentPage === page ? 'default' : 'outline'}
                               size="sm"
                               onClick={() =>
                                 navigate({
-                                  search: (prev) => ({ ...prev, page }),
+                                  search: (prev) => ({ ...prev, page: page > 1 ? page : undefined }),
                                 })
                               }
                             >
@@ -924,8 +1081,8 @@ function App() {
                             </Button>
                           )
                         } else if (
-                          page === searchParams.page - 2 ||
-                          page === searchParams.page + 2
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
                         ) {
                           return (
                             <span key={page} className="px-2 text-sm text-muted-foreground">
@@ -939,10 +1096,10 @@ function App() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      disabled={searchParams.page >= listingsData.pagination.totalPages}
+                      disabled={currentPage >= listingsData.pagination.totalPages}
                       onClick={() =>
                         navigate({
-                          search: (prev) => ({ ...prev, page: prev.page + 1 }),
+                          search: (prev) => ({ ...prev, page: (prev.page ?? 1) + 1 }),
                         })
                       }
                     >

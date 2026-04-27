@@ -46,6 +46,12 @@ export const Route = createFileRoute('/sell-car')({
         content: 'Sell your car easily and get the best quote. Transparent pricing and hassle-free service.',
       },
     ],
+    links: [
+      {
+        rel: 'canonical',
+        href: 'https://deeneliteauto.com/sell-car',
+      },
+    ],
   }),
 })
 

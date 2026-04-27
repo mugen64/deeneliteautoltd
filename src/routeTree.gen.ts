@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitEnquiryRouteImport } from './routes/submit-enquiry'
+import { Route as SitemapRouteImport } from './routes/sitemap'
 import { Route as SellCarRouteImport } from './routes/sell-car'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -93,6 +94,11 @@ import { Route as ApiCarsInventoryPhotosPhotoIdPrimaryRouteImport } from './rout
 const SubmitEnquiryRoute = SubmitEnquiryRouteImport.update({
   id: '/submit-enquiry',
   path: '/submit-enquiry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapRoute = SitemapRouteImport.update({
+  id: '/sitemap',
+  path: '/sitemap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SellCarRoute = SellCarRouteImport.update({
@@ -524,6 +530,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/sell-car': typeof SellCarRoute
+  '/sitemap': typeof SitemapRoute
   '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin/console': typeof AdminConsoleRouteRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
@@ -605,6 +612,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sell-car': typeof SellCarRoute
+  '/sitemap': typeof SitemapRoute
   '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
@@ -686,6 +694,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/sell-car': typeof SellCarRoute
+  '/sitemap': typeof SitemapRoute
   '/submit-enquiry': typeof SubmitEnquiryRoute
   '/admin/console': typeof AdminConsoleRouteRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
@@ -770,6 +779,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/sell-car'
+    | '/sitemap'
     | '/submit-enquiry'
     | '/admin/console'
     | '/admin/login'
@@ -851,6 +861,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/sell-car'
+    | '/sitemap'
     | '/submit-enquiry'
     | '/admin/login'
     | '/admin'
@@ -931,6 +942,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/sell-car'
+    | '/sitemap'
     | '/submit-enquiry'
     | '/admin/console'
     | '/admin/login'
@@ -1014,6 +1026,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SellCarRoute: typeof SellCarRoute
+  SitemapRoute: typeof SitemapRoute
   SubmitEnquiryRoute: typeof SubmitEnquiryRoute
   ApiAnalyticsCarViewRoute: typeof ApiAnalyticsCarViewRoute
   ApiAnalyticsPageViewRoute: typeof ApiAnalyticsPageViewRoute
@@ -1074,6 +1087,13 @@ declare module '@tanstack/react-router' {
       path: '/submit-enquiry'
       fullPath: '/submit-enquiry'
       preLoaderRoute: typeof SubmitEnquiryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap': {
+      id: '/sitemap'
+      path: '/sitemap'
+      fullPath: '/sitemap'
+      preLoaderRoute: typeof SitemapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sell-car': {
@@ -1745,6 +1765,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SellCarRoute: SellCarRoute,
+  SitemapRoute: SitemapRoute,
   SubmitEnquiryRoute: SubmitEnquiryRoute,
   ApiAnalyticsCarViewRoute: ApiAnalyticsCarViewRoute,
   ApiAnalyticsPageViewRoute: ApiAnalyticsPageViewRoute,

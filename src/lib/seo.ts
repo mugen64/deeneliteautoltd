@@ -60,14 +60,14 @@ export function generateLocalBusinessSchema(phone?: string, address?: string) {
     '@type': 'AutoDealer',
     name: 'Deen Elite Auto Ltd',
     url: 'https://deeneliteauto.com',
-    telephone: phone || '+44 (0) 123 456 7890',
+    telephone: phone || '+256 700 000000',
     address: address || {
       '@type': 'PostalAddress',
-      streetAddress: 'Your Street Address',
-      addressLocality: 'Your City',
-      addressRegion: 'Your Region',
-      postalCode: 'Your Postal Code',
-      addressCountry: 'GB',
+      streetAddress: 'Kampala',
+      addressLocality: 'Kampala',
+      addressRegion: 'Central Region',
+      postalCode: '00000',
+      addressCountry: 'UG',
     },
   }
 }
@@ -94,7 +94,7 @@ export function generateVehicleSchema(vehicle: {
     mileageFromOdometer: {
       '@type': 'QuantitativeValue',
       value: vehicle.mileage,
-      unitCode: 'MI',
+      unitCode: 'KMT',
     },
     vehicleCondition: `https://schema.org/${
       vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1)
@@ -102,7 +102,7 @@ export function generateVehicleSchema(vehicle: {
     offers: {
       '@type': 'Offer',
       price: vehicle.price,
-      priceCurrency: 'GBP',
+      priceCurrency: 'UGX',
     },
   }
 }
