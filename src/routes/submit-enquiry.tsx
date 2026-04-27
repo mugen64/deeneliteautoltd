@@ -47,6 +47,12 @@ export const Route = createFileRoute('/submit-enquiry')({
         content: 'Have questions? Submit your enquiry and our team will assist you promptly.',
       },
     ],
+    links: [
+      {
+        rel: 'canonical',
+        href: 'https://deeneliteauto.com/submit-enquiry',
+      },
+    ],
   }),
 })
 

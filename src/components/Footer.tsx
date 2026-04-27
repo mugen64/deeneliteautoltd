@@ -96,18 +96,7 @@ export default function Footer() {
                   <Link
                     to="/"
                     search={{
-                      page: 1,
-                      search: '',
-                      sortBy: 'year_desc',
                       bodyTypeId: type.id,
-                      makeIds: '',
-                      fuelTypes: '',
-                      transmissions: '',
-                      years: '',
-                      minPrice: undefined,
-                      maxPrice: undefined,
-                      minMileage: undefined,
-                      maxMileage: undefined,
                     }}
                     className="hover:text-foreground transition-colors"
                   >

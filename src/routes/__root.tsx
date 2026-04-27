@@ -9,7 +9,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { ThemeProvider } from '../lib/theme'
 import { AuthProvider } from '../contexts/auth'
-import { SettingsProvider, type SiteSettings } from '../contexts/settings'
+import { SettingsProvider } from '../contexts/settings'
 import { PageViewTracker } from '../components/PageViewTracker'
 
 import appCss from '../styles.css?url'
@@ -20,6 +20,10 @@ const showDevtools = import.meta.env.DEV
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
+    if (location.pathname === '/sitemap.xml') {
+      throw redirect({ to: '/sitemap' })
+    }
+
     // Protect routes starting with /admin
     let user = null
     if (location.pathname.startsWith('/admin')) {
@@ -64,7 +68,7 @@ export const Route = createRootRoute({
         name: 'twitter:card',
         content: 'summary_large_image',
       },
-    ],
+      ],
     links: [
       {
         rel: 'stylesheet',
@@ -74,10 +78,6 @@ export const Route = createRootRoute({
         rel: 'icon',
         href: '/favicon.ico',
       },
-      {
-        rel: 'canonical',
-        href: typeof window !== 'undefined' ? window.location.href : 'https://deeneliteauto.com',
-      },
     ],
   }),
   shellComponent: RootDocument,
@@ -85,7 +85,7 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
         <script
